@@ -8,6 +8,7 @@
 from __future__ import absolute_import, print_function
 
 import math
+
 # import time
 import random
 from array import *
@@ -22,9 +23,9 @@ __name__ = _("Sketch")
 __version__ = "0.5.1"
 
 
-# ==============================================================================
+# =============================================================================
 # Create sketch
-# ==============================================================================
+# =============================================================================
 class Tool(Plugin):
     __doc__ = _("Create sketch based on picture brightness")
 
@@ -113,7 +114,8 @@ class Tool(Plugin):
                 if distance > maxRange:
                     continue
                 val = pix[x, y]
-                val += random.random() * 2.0  # avoid ugly straight lines, steal time
+                # avoid ugly straight lines, steal time
+                val += random.random() * 2.0
                 if val < most:
                     most = val
                     bestX = x
@@ -197,7 +199,8 @@ class Tool(Plugin):
             from PIL import Image
         except ImportError:
             app.setStatus(
-                _("Sketch abort: This plugin requires PIL/Pillow to read image data")
+                _("Sketch abort: This plugin requires PIL/Pillow to "
+                  + "read image data")
             )
             return
 
@@ -254,11 +257,13 @@ class Tool(Plugin):
             app.setStatus(_("Sketch abort: Can't read image file"))
             return
 
-        # Create a scaled image to work faster with big image and better with small ones
+        # Create a scaled image to work faster with big image and better
+        # with small ones
         iWidth, iHeight = img.size
         resampleRatio = 800.0 / iHeight
         img = img.resize(
-            (int(iWidth * resampleRatio), int(iHeight * resampleRatio)), Image.ANTIALIAS
+            (int(iWidth * resampleRatio),
+             int(iHeight * resampleRatio)), Image.ANTIALIAS
         )
         if channel == "Blue":
             img = img.convert("RGB")
@@ -291,19 +296,19 @@ class Tool(Plugin):
             "(Sketch size W=%d x H=%d x distance=%d)"
             % (self.imgWidth * self.ratio, self.imgHeight * self.ratio, depth)
         )
-        block.append("(Channel = %s)" % (channel))
+        block.append(f"(Channel = {channel})")
         blocks.append(block)
 
         # Border block
-        block = Block("%s-border" % (self.name))
+        block = Block(f"{self.name}-border")
         block.enable = drawBorder
         block.append(CNC.zsafe())
         block.append(CNC.grapid(0, 0))
         block.append(CNC.zenter(depth))
         block.append(CNC.gcode(1, [("f", CNC.vars["cutfeed"])]))
         block.append(CNC.gline(self.imgWidth * self.ratio, 0))
-        block.append(CNC.gline(self.imgWidth * self.ratio,
-                     self.imgHeight * self.ratio))
+        block.append(
+            CNC.gline(self.imgWidth * self.ratio, self.imgHeight * self.ratio))
         block.append(CNC.gline(0, self.imgHeight * self.ratio))
         block.append(CNC.gline(0, 0))
         blocks.append(block)
@@ -360,14 +365,10 @@ class Tool(Plugin):
         app.refresh()
         app.setStatus(
             _(
-                "Generated Sketch size W=%d x H=%d x distance=%d, Total line:%i, Total length:%d"
-            )
-            % (
-                self.imgWidth * self.ratio,
-                self.imgHeight * self.ratio,
-                depth,
-                total_line,
-                total_length,
+                f"Generated Sketch size W={int(self.imgWidth * self.ratio)} x "
+                + f"H={int(self.imgHeight * self.ratio)} x "
+                + f"distance={int(depth)}, Total line:{int(total_line)}, "
+                + f"Total length:{int(total_length)}"
             )
         )
         # img.save('test.png')

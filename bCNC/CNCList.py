@@ -36,9 +36,9 @@ DISABLE_COLOR = "Gray"
 MAXINT = 1000000000  # python3 doesn't have maxint
 
 
-# ==============================================================================
+# =============================================================================
 # CNC Listbox
-# ==============================================================================
+# =============================================================================
 class CNCListbox(Listbox):
     def __init__(self, master, app, *kw, **kwargs):
         Listbox.__init__(self, master, *kw, **kwargs)
@@ -215,8 +215,8 @@ class CNCListbox(Listbox):
                 else:
                     self._lid += 1
                     selitems.append((self._bid, self._lid))
-                undoinfo.append(self.gcode.insLineUndo(
-                    self._bid, self._lid, line))
+                undoinfo.append(
+                    self.gcode.insLineUndo(self._bid, self._lid, line))
 
         try:
             objs = json.loads(clipboard)
@@ -759,7 +759,9 @@ class CNCListbox(Listbox):
 
         try:
             rgb, color = tkExtra.askcolor(
-                title=_("Color"), initialcolor=self.gcode[bid].color, parent=self
+                title=_("Color"),
+                initialcolor=self.gcode[bid].color,
+                parent=self
             )
         except TclError:
             color = None

@@ -38,9 +38,9 @@ webpath = f"{prgpath}/pendant"
 iconpath = f"{prgpath}/icons/"
 
 
-# ==============================================================================
+# =============================================================================
 # Simple Pendant controller for CNC
-# ==============================================================================
+# =============================================================================
 class Pendant(HTTPServer.BaseHTTPRequestHandler):
     camera = None
 
@@ -276,19 +276,19 @@ class Pendant(HTTPServer.BaseHTTPRequestHandler):
             self.wfile.write(f.read())
             f.close()
         except OSError:
-            self.wfile.write(
-                b"""<!DOCTYPE html>
-<html>
-<head>
-<title>Errortitle</title>
-<meta name="viewport" content="width=device-width,initial-scale=1, user-scalable=yes" />
-</head>
-<body>
-Page not found.
-</body>
-</html>
-"""
-            )
+            self.wfile.write("\n".join([
+                b"<!DOCTYPE html>",
+                b"<html>",
+                b"<head>",
+                b"<title>Errortitle</title>",
+                b"<meta name=\"viewport\" content=\"width=device-width,"
+                + b"initial-scale=1, user-scalable=yes\" />",
+                b"</head>",
+                b"<body>",
+                b"Page not found.",
+                b"</body>",
+                b"</html>",
+            ]))
 
 
 # -----------------------------------------------------------------------------

@@ -72,7 +72,12 @@ __date__ = Utils.__date__
 __author__ = Utils.__author__
 __email__ = Utils.__email__
 
-__platform_fingerprint__ = f"({sys.platform} py{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro})"
+__platform_fingerprint__ = "".join([
+    f"({sys.platform} ",
+    f"py{sys.version_info.major}.",
+    f"{sys.version_info.minor}.",
+    f"{sys.version_info.micro})"
+])
 
 _openserial = True  # override ini parameters
 _device = None
@@ -115,9 +120,9 @@ FILETYPES = [
 
 geometry = None
 
-# ==============================================================================
+# =============================================================================
 # Main Application window
-# ==============================================================================
+# =============================================================================
 
 
 class Application(Toplevel, Sender):
@@ -689,8 +694,10 @@ class Application(Toplevel, Sender):
         global geometry
 
         if geometry is None:
-            geometry = f"{Utils.getInt(Utils.__prg__, "width", 900)}x"
-                       f"{Utils.getInt(Utils.__prg__, "height", 650)}"
+            geometry = "x".join([
+                f"{Utils.getInt(Utils.__prg__, 'width', 900)}",
+                f"{Utils.getInt(Utils.__prg__, 'height', 650)}"
+            ])
         try:
             self.geometry(geometry)
         except Exception:
@@ -854,7 +861,7 @@ class Application(Toplevel, Sender):
         la = Label(
             frame,
             text=_(
-                "bCNC/\tAn advanced fully featured\n" 
+                "bCNC/\tAn advanced fully featured\n"
                 "\tg-code sender for GRBL."
             ),
             font=font3,
@@ -872,11 +879,11 @@ class Application(Toplevel, Sender):
         # -----
         row += 1
         la = Label(
-            frame, 
-            text="www:", 
-            foreground=fg, 
-            background=bg, 
-            justify=LEFT, 
+            frame,
+            text="www:",
+            foreground=fg,
+            background=bg,
+            justify=LEFT,
             font=font2
         )
         la.grid(row=row, column=0, sticky=E, padx=10, pady=2)
@@ -897,11 +904,11 @@ class Application(Toplevel, Sender):
         # -----
         row += 1
         la = Label(
-            frame, 
-            text="email:", 
-            foreground=fg, 
-            background=bg, 
-            justify=LEFT, 
+            frame,
+            text="email:",
+            foreground=fg,
+            background=bg,
+            justify=LEFT,
             font=font2
         )
         la.grid(row=row, column=0, sticky=E, padx=10, pady=2)
@@ -1039,11 +1046,11 @@ class Application(Toplevel, Sender):
         la.grid(row=row, column=0, sticky=E, padx=10, pady=2)
 
         la = Label(
-            frame, 
-            text=__date__, 
-            foreground=fg, 
-            background=bg, 
-            justify=LEFT, 
+            frame,
+            text=__date__,
+            foreground=fg,
+            background=bg,
+            justify=LEFT,
             font=font2
         )
         la.grid(row=row, column=1, sticky=NW, padx=2, pady=2)
@@ -1129,7 +1136,7 @@ class Application(Toplevel, Sender):
         col += 1
         Label(
             frame,
-            text=f"{CNC.vars['xmin']:g} .. {CNC.vars['xmax']:g} " + 
+            text=f"{CNC.vars['xmin']:g} .. {CNC.vars['xmax']:g} " +
                  f"[{CNC.vars['xmax'] - CNC.vars['xmin']:g}] {unit}",
             foreground="DarkBlue",
         ).grid(row=row, column=col, sticky=W)
@@ -1245,12 +1252,12 @@ class Application(Toplevel, Sender):
         Label(frame, text=_("# Blocks:")).grid(row=row, column=col, sticky=E)
         col += 1
         Label(
-            frame, 
-            text=str(len(self.gcode.blocks)), 
+            frame,
+            text=str(len(self.gcode.blocks)),
             foreground="DarkBlue"
         ).grid(
-            row=row, 
-            column=col, 
+            row=row,
+            column=col,
             sticky=W
         )
         # ---
@@ -1500,7 +1507,7 @@ class Application(Toplevel, Sender):
         elif rexx.abbrev("CONTROL", cmd, 4):
             self.ribbon.changePage("Control")
 
-        # CUT [depth] [pass-per-depth] [z-surface] [feed] [feedz]: replicate 
+        # CUT [depth] [pass-per-depth] [z-surface] [feed] [feedz]: replicate
         # selected blocks to cut-height
         # default values are taken from the active material
         elif cmd == "CUT":
@@ -1574,7 +1581,7 @@ class Application(Toplevel, Sender):
         elif cmd == "ECHO":
             self.setStatus(oline[5:].strip())
 
-        # FEED on/off: append feed commands on every motion line for 
+        # FEED on/off: append feed commands on every motion line for
         # feed override testing
         elif cmd == "FEED":
             try:
@@ -1609,7 +1616,7 @@ class Application(Toplevel, Sender):
         elif rexx.abbrev("EDIT", cmd, 2):
             self.edit()
 
-        # IM*PORT <filename>: import filename with gcode or dxf at cursor 
+        # IM*PORT <filename>: import filename with gcode or dxf at cursor
         # location or at the end of the file
         elif rexx.abbrev("IMPORT", cmd, 2):
             try:
@@ -1617,7 +1624,7 @@ class Application(Toplevel, Sender):
             except Exception:
                 self.importFile()
 
-        # INK*SCAPE: remove uneccessary Z motion as a result of inkscape 
+        # INK*SCAPE: remove uneccessary Z motion as a result of inkscape
         # gcodetools
         elif rexx.abbrev("INKSCAPE", cmd, 3):
             if len(line) > 1 and rexx.abbrev("ALL", line[1].upper()):
@@ -1754,7 +1761,7 @@ class Application(Toplevel, Sender):
                 self.executeOnSelection("OPTIMIZE", True)
 
         # # FIXME comment for ORIENT not OPTIMIZE
-        # OPT*IMIZE: reorder selected blocks to minimize rapid motions 
+        # OPT*IMIZE: reorder selected blocks to minimize rapid motions
         elif rexx.abbrev("ORIENT", cmd, 4):
             if not self.editor.curselection():
                 self.editor.selectAll()
@@ -2411,12 +2418,12 @@ class Application(Toplevel, Sender):
 
         if autoloaded:
             self.setStatus(
-               _(f"'{filename}' reloaded at '{str(datetime.now())}'") 
+               _(f"'{filename}' reloaded at '{str(datetime.now())}'")
            )
         else:
             self.setStatus(_(f"'{filename}' loaded") )
         self.title(
-            f"{Utils.__prg__} {__version__}: {self.gcode.filename} " + 
+            f"{Utils.__prg__} {__version__}: {self.gcode.filename} " +
             f"{__platform_fingerprint__}"
         )
 
@@ -2425,7 +2432,7 @@ class Application(Toplevel, Sender):
         Sender.save(self, filename)
         self.setStatus(_(f"'{filename}' saved") )
         self.title(
-            f"{Utils.__prg__} {__version__}: {self.gcode.filename} " + 
+            f"{Utils.__prg__} {__version__}: {self.gcode.filename} " +
             f"{__platform_fingerprint__}"
         )
 
@@ -2621,8 +2628,8 @@ class Application(Toplevel, Sender):
             elif not self._paths:
                 self.runEnded()
                 tkMessageBox.showerror(
-                    _("Empty gcode"), 
-                    _("Not gcode file was loaded"), 
+                    _("Empty gcode"),
+                    _("Not gcode file was loaded"),
                     parent=self
                 )
                 return
@@ -2655,8 +2662,8 @@ class Application(Toplevel, Sender):
                     else:
                         self.queue.put(line)
                     n += 1
-            # set it at the end to be sure that all lines are queued        
-            self._runLines = n  
+            # set it at the end to be sure that all lines are queued
+            self._runLines = n
         self.queue.put((WAIT,))  # wait at the end to become idle
 
         self.setStatus(_("Running..."))
@@ -2677,8 +2684,8 @@ class Application(Toplevel, Sender):
             hostName = f"http://{socket.gethostname()}:{Pendant.port}"
             if started:
                 tkMessageBox.showinfo(
-                    _("Pendant"), 
-                    _("Pendant started:\n") + hostName, 
+                    _("Pendant"),
+                    _("Pendant started:\n") + hostName,
                     parent=self
                 )
             else:
@@ -2884,10 +2891,10 @@ class Application(Toplevel, Sender):
         return Utils.config.set(section, item, value)
 
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def usage(rc):
     sys.stdout.write(
-        f"{Utils.__prg__} V{__version__} [{__date__}] " + 
+        f"{Utils.__prg__} V{__version__} [{__date__}] " +
         f"{__platform_fingerprint__}\n"
     )
     sys.stdout.write(f"{__author__} <{__email__}>\n\n")
@@ -2912,7 +2919,7 @@ def usage(rc):
     sys.exit(rc)
 
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 tk = None
 application = None
 
@@ -2924,14 +2931,14 @@ def main(args=None):
     # if sys.version_info[0] != 2:
     sys.stdout.write("=" * 80 + "\n")
     sys.stdout.write(
-        "WARNING: bCNC has been recently ported to support both " + 
+        "WARNING: bCNC has been recently ported to support both " +
         "python v2.x and v3.x\n"
     )
     sys.stdout.write(
         "Most things seem to work reasonably well in both python versions.\n"
     )
     sys.stdout.write(
-        "Please report any issues to: " + 
+        "Please report any issues to: " +
         "https://github.com/vlachoudis/bCNC/issues\n"
     )
     sys.stdout.write("=" * 80 + "\n")

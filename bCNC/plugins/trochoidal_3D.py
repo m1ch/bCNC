@@ -39,9 +39,9 @@ from CNC import CNC, Block
 from ToolsPage import Plugin
 
 
-# ==============================================================================
+# =============================================================================
 # Create trochoids along selected block
-# ==============================================================================
+# =============================================================================
 class Tool(Plugin):
     __doc__ = _("Create trochoids along selected blocks")
 
@@ -58,12 +58,14 @@ class Tool(Plugin):
             ("ae", "mm", 0.30, _("Trochoids Advance")),
             (
                 "TypeSplice",
-                "Warpedarc,Splices,Circular one side rectified,Circular both sides rectified,Straight,Cut",
+                "Warpedarc,Splices,Circular one side rectified,Circular both "
+                + "sides rectified,Straight,Cut",
                 "Warpedarc",
                 _("Type of Splice"),
                 "Currently Splices works very slow",
             ),
-            ("direction", "inside,outside,on (3d Path)", "inside", _("Direction")),
+            ("direction", "inside,outside,on (3d Path)", "inside",
+             _("Direction")),
             (
                 "offset",
                 "float",
@@ -76,9 +78,11 @@ class Tool(Plugin):
                 "bool",
                 1,
                 _("Adaptative"),
-                "Generate path for adaptative trochoids in the corners. Only for In or On direction",
+                "Generate path for adaptative trochoids in the corners. "
+                + "Only for In or On direction",
             ),
-            ("overcut", "bool", 0, _("Overcut"), " Only for In or On direction"),
+            ("overcut", "bool", 0, _("Overcut"),
+             " Only for In or On direction"),
             (
                 "targetDepth",
                 "mm",
@@ -129,12 +133,15 @@ class Tool(Plugin):
             # 			("minimfeed",   "int" ,   "", _("Minimum Adaptative Feed")),
         ]
         self.buttons.append("exe")
-        self.help = """It generates the trochoidal cutting mode on the selected block, even at different heights.
-Currently, it only works by selecting only one block (a solution is to join the blocks).
-In or Out generates the route and on it generates trochoids.
-"""
+        self.help = "\n".join([
+            "It generates the trochoidal cutting mode on the selected block, "
+            + "even at different heights.",
+            "Currently, it only works by selecting only one block (a solution "
+            + "is to join the blocks).",
+            "In or Out generates the route and on it generates trochoids.",
+        ])
 
-    # calculate separation between centers of trochoidsegments -----------------------------------------------------
+    # calculate separation between centers of trochoidsegments ----------------
     # 	def information(self, xyz):
     # 		return 0
     # ----------------------------------------------------------------------
@@ -227,7 +234,8 @@ In or Out generates the route and on it generates trochoids.
                     if xyz:
                         # exclude if fast move or z only movement
                         G0 = ("g0" in cmd) or ("G0" in cmd)
-                        Zonly = xyz[0][0] == xyz[1][0] and xyz[0][1] == xyz[1][1]
+                        Zonly = (xyz[0][0] == xyz[1][0]
+                                 and xyz[0][1] == xyz[1][1])
                         exclude = Zonly
 
                         # save length for later use
@@ -263,11 +271,11 @@ In or Out generates the route and on it generates trochoids.
 
         # 		manualsetting = self["manualsetting"]
         manualsetting = 1
-        # =========== Converted to comment and changed for current compatibility ==============================
+        # === Converted to comment and changed for current compatibility ===
         # 		cutradius = CNC.vars["trochcutdiam"]/2.0
         cutradius = self["diam"] / 2.0
         # 		cutradius = CNC.vars["trochcutdiam"]/2.0
-        # =========================================================================================
+        # ==================================================================
         zfeed = CNC.vars["cutfeedz"]
         feed = CNC.vars["cutfeed"]
         minimfeed = CNC.vars["cutfeed"]
@@ -315,7 +323,7 @@ In or Out generates the route and on it generates trochoids.
 
         cw = self["cw"]
         surface = CNC.vars["surface"]
-        # =========== Converted to comment and changed for current compatibility ==============================
+        # === Converted to comment and changed for current compatibility ===
         # 		zbeforecontact=surface+CNC.vars["zretract"]
         # 		zbeforecontact=surface+CNC.vars["zretract"]
         # 		hardcrust = surface - CNC.vars["hardcrust"]
@@ -327,7 +335,7 @@ In or Out generates the route and on it generates trochoids.
         hardcrust = surface
         feedbeforecontact = zfeed
         hardcrustfeed = feed
-        # =====================================================================================================
+        # ==================================================================
 
         t_splice = self["TypeSplice"]
         dtadaptative = 0.0001
@@ -420,7 +428,8 @@ In or Out generates the route and on it generates trochoids.
             return
 
         if minimfeed <= 0:
-            app.setStatus(_("Minimum Adaptative Feed has to be greater than 0"))
+            app.setStatus(
+                _("Minimum Adaptative Feed has to be greater than 0"))
             return
 
         # Get all segments from gcode
@@ -449,15 +458,15 @@ In or Out generates the route and on it generates trochoids.
                 else:
                     u = -1
                     arc = "G3"
-                # 		////////////---------------------------------------------------------------------
-                # 		information: ---------------------------------------------------------------------
+                # ////////////-------------------------------------------------
+                # information: ------------------------------------------------
                 segLength = self.calcSegmentLength(segm)
-                # 			    ---------------------------------------------
-                # 				tr_block.append("(seg length "+str(round(segLength,4))+" )")
-                # 				-----------------------------------------------------------------------------
-                # 				////////----------------------------------------------------------------------
+                # ---------------------------------------------
+                # tr_block.append("(seg length "+str(round(segLength,4))+" )")
+                # -------------------------------------------------------------
+                # ////////-----------------------------------------------------
                 if idx == 0:
-                    # 					tr_block.append("(--------------   PARAMETERS   ------------------------)")
+                    # tr_block.append("(--------------   PARAMETERS   ------------------------)")
                     tr_block.append(
                         "(Cut diam "
                         + str(cutradius * 2)
@@ -487,7 +496,8 @@ In or Out generates the route and on it generates trochoids.
                     tr_block.append(
                         "(--------------------------------------------------)"
                     )
-                    tr_block.append("(M06 T0 " + str(toolRadius * 2.0) + " mm)")
+                    tr_block.append(
+                        "(M06 T0 " + str(toolRadius * 2.0) + " mm)")
                     tr_block.append("M03")
                     tr_block.append("S " + str(rpm))
                     tr_block.append("F " + str(feed))
@@ -542,7 +552,8 @@ In or Out generates the route and on it generates trochoids.
                 # 					distance to trochoid center
 
                 # if there is movement in xy plane phi calculate
-                if segm[1][1] - segm[0][1] != 0 or segm[1][0] - segm[0][0] != 0:
+                if (segm[1][1] - segm[0][1] != 0
+                        or segm[1][0] - segm[0][0] != 0):
                     phi = atan2(segm[1][1] - segm[0][1],
                                 segm[1][0] - segm[0][0])
                     # 					On surface
@@ -557,18 +568,18 @@ In or Out generates the route and on it generates trochoids.
                             + str(round(degrees(phi), 2))
                             + " On Surface)"
                         )
-                        tr_block.append(CNC.grapid(
-                            segm[1][0], segm[1][1], segm[1][2]))
+                        tr_block.append(
+                            CNC.grapid(segm[1][0], segm[1][1], segm[1][2]))
                     else:
                         tr_distance = self.center_distance(segm, atot)
                         A = segm[0][0], segm[0][1], segm[0][2]
                         d = segLength
                         ae = tr_distance[4]
-                        # 				////////////---------------------------------------------------------------------
-                        # 				information: ---------------------------------------------------------------------
+                        # ////////////-----------------------------------------
+                        # information: ----------------------------------------
                         adv = tr_distance[3]  # <<<
                         ap = tr_distance[2]  # << =zadd
-                        # 			    ---------------------------------------------
+                        # ---------------------------------------------
                         tr_block.append(
                             "(-----------------------------------------)")
                         control_cameback = self.came_back(segm, oldsegm)
@@ -589,7 +600,7 @@ In or Out generates the route and on it generates trochoids.
                                 + str(round(segLength, 5))
                                 + " )"
                             )
-                        # 	///////////	Trochoid method //////////////////////////////////////////////////////////////////////////////
+                        # ///////////	Trochoid method ///////////////////////
                         if adaptativepolice == 0 or adaptativepolice > 2.5:
 
                             tr_block.append(
@@ -612,18 +623,19 @@ In or Out generates the route and on it generates trochoids.
                                 + str(round(adv, 4))
                                 + " )"
                             )
-                            # 					tr_block.append("( Bx "+str(round(segm[1][0],2))+ " By "+ str(round(segm[1][1],2)))
-                            # 					-----------------------------------------------------------------------------
-                            # 					////////----------------------------------------------------------------------
+                            # tr_block.append("( Bx "+str(round(segm[1][0],2))+ " By "+ str(round(segm[1][1],2)))
+                            # -------------------------------------------------
+                            # ////////-----------------------------------------
                             if control_cameback:
                                 # 						adaptativepolice+=0.5
                                 B = segm[1][0], segm[1][1], segm[1][2]
-                                # 								tr_block.append(CNC.gline(segm[1][0],segm[1][1],segm[1][2]))
+                                # tr_block.append(CNC.gline(segm[1][0],segm[1][1],segm[1][2]))
                                 t_splice = "came_back"
-                                # 								tr_block.extend(self.trochoid(t_splice,A,B,minimradius,radius,oldphi,phi,cw))
+                                # tr_block.extend(self.trochoid(t_splice,A,B,minimradius,radius,oldphi,phi,cw))
                                 tr_block.extend(
                                     self.trochoid(
-                                        t_splice, A, B, 0.0, radius, oldphi, phi, cw
+                                        t_splice, A, B, 0.0,
+                                        radius, oldphi, phi, cw
                                     )
                                 )
                                 tr_block.append("F " + str(feed))
@@ -690,7 +702,8 @@ In or Out generates the route and on it generates trochoids.
                                     B = segm[1][0], segm[1][1], segm[1][2]
                                     # 						tr_block.append(CNC.gline(B[0],B[1],B[2]))  # <<< TROCHOID CENTER
                                     tr_block.append(
-                                        "(---last trochoid, distance to end segment "
+                                        "(---last trochoid, distance to "
+                                        + "end segment "
                                         + str(round(d, 4))
                                         + " ---)"
                                     )
@@ -708,7 +721,7 @@ In or Out generates the route and on it generates trochoids.
                                     )
                             adaptativepolice = 0
 
-                        # 	///////	Adapative method //////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        # ///////	Adapative method //////////////////////////
                         # 						if oldphi==3600:
                         else:
                             if adaptativepolice == 1:
@@ -741,8 +754,8 @@ In or Out generates the route and on it generates trochoids.
                                     )
                                     adaptativepolice += 0.5
                             elif adaptativepolice == 2.5:
-                                # 								tr_block.append("(-----------------------------------------)")
-                                # 								adaptradius=minimradius
+                                # tr_block.append("(-----------------------------------------)")
+                                # adaptradius=minimradius
                                 tr_block.append(
                                     "(Adaptative Seg: "
                                     + str(idx)
@@ -785,13 +798,13 @@ In or Out generates the route and on it generates trochoids.
                                     # 									a=(radius-minimradius)/segLength
                                     # 									adaptradius=a*d+minimradius
                                     a = radius / segLength
-                                    adaptradius = self.roundup(
-                                        a * d, 4)  # +minimradius
+                                    adaptradius = self.roundup(a * d, 4)  # +minimradius
                                     # ------------------------------
                                     if t_splice != "Splices":
                                         t_splice = "Warpedarc"
                                     tr_block.append(
-                                        "(from trochoid distance to end segment "
+                                        "(from trochoid distance to "
+                                        + "end segment "
                                         + str(round(d, 4))
                                         + " )"
                                     )
@@ -826,7 +839,8 @@ In or Out generates the route and on it generates trochoids.
                                         )
                                     else:
                                         tr_block.append(
-                                            "(R= " + str(adaptradius) + "not sent )"
+                                            "(R= " + str(adaptradius)
+                                            + "not sent )"
                                         )
                                     # 										tr_block.append("G1 x"+str(round(B[0],4))+" y "+str(round(B[1],4))+" z "+str(round(B[2],4)))
                                     A = B
@@ -856,7 +870,7 @@ In or Out generates the route and on it generates trochoids.
                             oldradius = radius
                         oldsegm = segm
                     oldphi = phi
-                # 	///////	Vertical movement ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                # 	///////	Vertical movement /////////////////////////////////
                 elif idx != 0:
                     tr_block.append(
                         "(Seg: "
@@ -889,14 +903,15 @@ In or Out generates the route and on it generates trochoids.
                                 )
                                 if idx == 1 and oldphi == 1234567890:
                                     tr_block.append(
-                                        "g0 x " + str(B[0])
-                                        + " y" + str(B[1]) + " )"
+                                        "g0 x " + str(B[0]) + " y"
+                                        + str(B[1]) + " )"
                                     )  # " z "+str(B[2])+" )")
                                 tr_block.extend(
                                     self.helical(A, B, helicalRadius, phi, u)
                                 )
 
-                        # 						Instead of decreasing the speed, to avoid the jerkl, decrease the drop by lap
+                        # Instead of decreasing the speed, to avoid the jerkl,
+                        # decrease the drop by lap
                         if segm[0][2] > surface:  # and segm[1][2]<=surface:
                             if segm[1][2] <= surface:
                                 tr_block.append("(Slow helical to surface )")
@@ -951,16 +966,16 @@ In or Out generates the route and on it generates trochoids.
                         adv = downPecking
                         while d > adv:
                             B = segm[1][0], segm[1][1], A[2] - adv
-                            tr_block.extend(self.helical(
-                                A, B, helicalRadius, phi, u))
+                            tr_block.extend(
+                                self.helical(A, B, helicalRadius, phi, u))
                             A = A[0], A[1], B[2]
                             d -= adv
                         B = segm[1][0], segm[1][1], segm[1][2]
-                        tr_block.extend(self.helical(
-                            A, B, helicalRadius, phi, u))
+                        tr_block.extend(
+                            self.helical(A, B, helicalRadius, phi, u))
                         tr_block.append("(Flatten)")
-                        tr_block.extend(self.helical(
-                            B, B, helicalRadius, phi, u))
+                        tr_block.extend(
+                            self.helical(B, B, helicalRadius, phi, u))
                         if round(helicalRadius, 4) != round(radius, 4):
                             tr_block.append("(Spiral adjustement)")
                             # 								tr_block.extend(self.trochoid(t_splice,B,B,radius,helicalRadius,phi,phi+4*pi,cw))
@@ -990,7 +1005,8 @@ In or Out generates the route and on it generates trochoids.
                             # 							tr_block.extend(self.helical(B,B,radius,phi,u))
                             tr_block.extend(
                                 self.trochoid(
-                                    t_splice, B, B, radius, radius, phi, phi, cw
+                                    t_splice, B, B, radius,
+                                    radius, phi, phi, cw
                                 )
                             )
 
@@ -1003,8 +1019,8 @@ In or Out generates the route and on it generates trochoids.
                             + " )"
                         )
                         B = segm[1][0], segm[1][1], segm[1][2]
-                        tr_block.extend(self.helical(
-                            A, B, helicalRadius, phi, u))
+                        tr_block.extend(
+                            self.helical(A, B, helicalRadius, phi, u))
         # 					tr_block.append(CNC.grapid(center[0],center[1],center[2]))
         # 					tr_block.extend(CNC.grapid(center))
         # 					end of segment
@@ -1023,7 +1039,8 @@ In or Out generates the route and on it generates trochoids.
         return [round(a[0] + r * cos(phi), 5), round(a[1] + r * sin(phi), 5)]
 
     # Generate single trochoidal element between two points
-    def trochoid(self, typesplice, A, B, oldradius, radius, oldphi, phi, cw=True):
+    def trochoid(
+            self, typesplice, A, B, oldradius, radius, oldphi, phi, cw=True):
 
         if self["splicesteps"] == "" or self["splicesteps"] < 4:
             steps = 4 / (2 * pi)
@@ -1090,11 +1107,11 @@ In or Out generates the route and on it generates trochoids.
         #        *   *
 
         # TODO: improve strategies
-        # 			block.append("g1 x"+str(al[0])+" y"+str(al[1])+" z"+str(A[2]))
-        # 		First splice to next trochoid ========================================================
-        # 		steps=self["splicesteps"]
-        # 		steps = max(steps*oldradius,steps*radius)#self["splicesteps"]
-        # 		steps = int(min(10,steps))#self["splicesteps"]
+        # 		block.append("g1 x"+str(al[0])+" y"+str(al[1])+" z"+str(A[2]))
+        # 	First splice to next trochoid =================================
+        # 	steps=self["splicesteps"]
+        # 	steps = max(steps*oldradius,steps*radius)#self["splicesteps"]
+        # 	steps = int(min(10,steps))#self["splicesteps"]
 
         block.append(
             "(---------trochoid center x "
@@ -1133,7 +1150,7 @@ In or Out generates the route and on it generates trochoids.
             )
             if oldphi != phi:
                 block.append(
-                    "(=============== Direction changed olldhi ==================)"
+                    f"({' Direction changed olldhi ':=^60})"
                 )
                 # if oldphi!=phi and t_splice!="Splices" and t_splice!="Warpedarc" and t_splice!="Circular one side rectified":
                 # 				steps = int(15*radius)
@@ -1157,7 +1174,7 @@ In or Out generates the route and on it generates trochoids.
                     )
                 )  # << steps=4
                 block.append(
-                    "(=============== End Direction changed ==================)"
+                    f"({' End Direction changed ':=^60})"
                 )
             # 				block.append("(new phi)")
             # 				block.append(CNC.gline(old_ar[0],old_ar[1]))
@@ -1287,7 +1304,7 @@ In or Out generates the route and on it generates trochoids.
                     + str(round(B[2], 4))
                 )
 
-            # 		========================================================================================================
+            # ===========================================================
             # 	cut
             # 			block.append(arc+" x"+str(br[0])+" y"+str(br[1])+" i"+str(r[0])+" j"+str(r[1])+" z"+str(round(B[2],5)))
             block.append("(cuting)")
@@ -1303,7 +1320,7 @@ In or Out generates the route and on it generates trochoids.
                 + str(round(B[2], 4))
             )
             # 	block.append("(cut)")
-            # 	========================================================================================================
+            # 	===============================================================
             if t_splice == "Circular both sides rectified":
                 block.append(
                     "g1 x"
@@ -1337,7 +1354,8 @@ In or Out generates the route and on it generates trochoids.
         return block
 
     # --------------------------------------------------------------
-    def splice_generator(self, C1, C2, r1, r2, phi1, phi2, alpha_1, alpha_2, u, steps):
+    def splice_generator(
+        self, C1, C2, r1, r2, phi1, phi2, alpha_1, alpha_2, u, steps):
         block = []
         # 		steps=self["splicesteps"]/(2*pi)
         # 			when "Soft Arc" splice from AR to BL

@@ -16,17 +16,17 @@ __name__ = "Text"
 __version__ = "0.0.1"
 
 
-# ==============================================================================
+# =============================================================================
 # Text class
-# ==============================================================================
+# =============================================================================
 class Text:
     def __init__(self, name="Text"):
         self.name = name
 
 
-# ==============================================================================
+# =============================================================================
 # Create Text
-# ==============================================================================
+# =============================================================================
 class Tool(Plugin):
     __doc__ = _("Create text using a ttf font")
 
@@ -84,16 +84,17 @@ class Tool(Plugin):
         if "\n" in textToWrite:
             block.append("(Text:)")
             for line in textToWrite.splitlines():
-                block.append("(%s)" % line)
+                block.append(f"({line})")
         else:
-            block.append("(Text: %s)" % textToWrite)
+            block.append(f"(Text: {textToWrite})")
         try:
             import ttf
 
             font = ttf.TruetypeInfo(fontFileName)
         except ImportError:
             app.setStatus(
-                _("Text abort: That's embarrassing, I can't read this font file!")
+                _("Text abort: That's embarrassing, "
+                  + "I can't read this font file!")
             )
             return
         cmap = font.get_character_map()
@@ -156,7 +157,8 @@ class Tool(Plugin):
         app.setStatus("Generated Text")
 
     # Write GCode from glyph contours
-    def writeGlyphContour(self, block, font, contours, fontSize, depth, xO, yO):
+    def writeGlyphContour(
+            self, block, font, contours, fontSize, depth, xO, yO):
         width = font.header.x_max - font.header.x_min
         height = font.header.y_max - font.header.y_min
         scale = fontSize / font.header.units_per_em
@@ -165,8 +167,8 @@ class Tool(Plugin):
         for cont in contours:
             block.append("( ---------- cut-here ---------- )")
             block.append(CNC.zsafe())
-            block.append(CNC.grapid(
-                xO + cont[0].x * scale, yO + cont[0].y * scale))
+            block.append(
+                CNC.grapid(xO + cont[0].x * scale, yO + cont[0].y * scale))
             block.append(CNC.zenter(depth))
             block.append(CNC.gcode(1, [("f", CNC.vars["cutfeed"])]))
             for p in cont:
@@ -190,12 +192,13 @@ class Tool(Plugin):
         new_image = img.resize((new_width, new_height))
         new_image = new_image.convert("L")  # convert to grayscale
 
-        # now that we have a grayscale image with some fixed width we have to convert every pixel
+        # now that we have a grayscale image with some fixed width we have
+        # to convert every pixel
         # to the appropriate ascii character from "ascii_chars"
         img_as_ascii = self.image_to_ascii(new_image)
         img_as_ascii = "".join(ch for ch in img_as_ascii)
         output = ""
         for c in range(0, len(img_as_ascii), new_width):
             # print img_as_ascii[c:c+new_width]
-            output += img_as_ascii[c: c + new_width] + "\n"
+            output += img_as_ascii[c : c + new_width] + "\n"
         return output

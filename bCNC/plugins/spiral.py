@@ -31,9 +31,9 @@ except ImportError:
     import tkinter.messagebox as tkMessageBox
 
 
-# ==============================================================================
+# =============================================================================
 # Spiral class
-# ==============================================================================
+# =============================================================================
 class Spiral:
     def __init__(self, name="Spiral"):
         self.name = name
@@ -96,9 +96,11 @@ class Spiral:
         ):  # This could cause a tool crash, but could also be used to make faceted shapes.
             dr = tkMessageBox.askyesno(
                 "Crash Risk",
-                "WARNING: Using a larger stepover value than tool's maximum with lines operation may result in a tool crash. Do you want to continue?",
+                "WARNING: Using a larger stepover value than tool's "
+                + "maximum with lines operation may result in a tool crash. "
+                + "Do you want to continue?",
             )
-            sys.stdout.write("%s" % (dr))
+            sys.stdout.write(f"{dr}")
             if dr == True or dr == "yes":
                 app.setStatus(
                     _("Risk Accepted")
@@ -375,8 +377,8 @@ class Spiral:
         # Start G-Code Processes
         # Blocks for pocketing
         block = Block(self.name)
-        block.append("(Reduce Rotary by Y=%g)" % (ReduceDepth))
-        block.append("(Approach: %s )" % (SpiralType))
+        block.append(f"(Reduce Rotary by Y={ReduceDepth:g})")
+        block.append(f"(Approach: {SpiralType} )")
 
         # Move safe to first point
         block.append(
@@ -403,7 +405,8 @@ class Spiral:
                     # sys.stdout.write("%s,%s,%s,%s,%s"%(g,x,y,z,r))
                 else:
                     block.append(
-                        CNC.glineABC(x, y, z, r, CNC.vars["wb"], CNC.vars["wc"])
+                        CNC.glineABC(
+                            x, y, z, r, CNC.vars["wb"], CNC.vars["wc"])
                     )
                     # sys.stdout.write("%s,%s,%s,%s,%s"%(g,x,y,z,r))
             elif RotAxis == "B":
@@ -414,7 +417,8 @@ class Spiral:
                     )
                 else:
                     block.append(
-                        CNC.glineABC(x, y, z, CNC.vars["wa"], r, CNC.vars["wc"])
+                        CNC.glineABC(
+                            x, y, z, CNC.vars["wa"], r, CNC.vars["wc"])
                     )
             elif RotAxis == "C":
                 if g == 0:
@@ -424,7 +428,8 @@ class Spiral:
                     )
                 else:
                     block.append(
-                        CNC.glineABC(x, y, z, CNC.vars["wa"], CNC.vars["wb"], r)
+                        CNC.glineABC(
+                            x, y, z, CNC.vars["wa"], CNC.vars["wb"], r)
                     )
 
         block.append(
@@ -441,7 +446,8 @@ class Spiral:
         blocks.append(block)
         tkMessageBox.showinfo(
             "Crash Risk",
-            "WARNING: Check CAM file Header for Z move. If it exists, remove it to prevent tool crash.",
+            "WARNING: Check CAM file Header for Z move. If it exists, "
+            + "remove it to prevent tool crash.",
         )
 
         return blocks
@@ -464,9 +470,9 @@ class Spiral:
         return (xR, yR)
 
 
-# ==============================================================================
+# =============================================================================
 # Spiral Cut on 4th Axis to reduce size
-# ==============================================================================
+# =============================================================================
 class Tool(Plugin):
     __doc__ = _("Reduce Diameter of 4th Axis Stock")
 

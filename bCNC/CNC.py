@@ -102,9 +102,9 @@ TOLERANCE = 1e-7
 MAXINT = 1000000000  # python3 doesn't have maxint
 
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Return a value combined from two dictionaries new/old
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def getValue(name, new, old, default=0.0):
     try:
         return new[name]
@@ -115,9 +115,9 @@ def getValue(name, new, old, default=0.0):
             return default
 
 
-# ==============================================================================
+# =============================================================================
 # Probing class and linear interpolation
-# ==============================================================================
+# =============================================================================
 class Probe:
     def __init__(self):
         self.init()
@@ -460,11 +460,11 @@ class Probe:
         return segments
 
 
-# ==============================================================================
+# =============================================================================
 # contains a list of machine points vs position in the gcode
 # calculates the transformation matrix (rotation + translation) needed
 # to adjust the gcode to match the workpiece on the machine
-# ==============================================================================
+# =============================================================================
 class Orient:
     # -----------------------------------------------------------------------
     def __init__(self):
@@ -663,9 +663,9 @@ class Orient:
         self.saved = True
 
 
-# ==============================================================================
+# =============================================================================
 # Command operations on a CNC
-# ==============================================================================
+# =============================================================================
 class CNC:
     inch = False
     lasercutter = False
@@ -1202,7 +1202,7 @@ class CNC:
         line = CMDPAT.sub(r" \1", line).lstrip()
         return line.split()
 
-    # --------------------------------------------------------------------------
+    # ----------------------------------------------------------------------
     # @return line,comment
     # 	line broken in a list of commands,
     #       None,"" if empty or comment
@@ -2047,7 +2047,7 @@ class CNC:
         return lines
 
 
-# ==============================================================================
+# =============================================================================
 # Block of g-code commands. A gcode file is represented as a list of blocks
 # - Commands are grouped as (non motion commands Mxxx)
 # - Basic shape from the first rapid move command to the last rapid z raise
@@ -2056,7 +2056,7 @@ class CNC:
 # Inherits from list and contains:
 # 	- a list list of gcode lines
 # 	- (imported shape)
-# ==============================================================================
+# =============================================================================
 class Block(list):
     def __init__(self, name=None):
         # Copy constructor
@@ -2332,9 +2332,9 @@ class Block(list):
         self.zmax = max(self.zmax, max(i[2] for i in xyz))
 
 
-# ==============================================================================
+# =============================================================================
 # Gcode file
-# ==============================================================================
+# =============================================================================
 class GCode:
     LOOP_MERGE = False
 
@@ -2434,7 +2434,8 @@ class GCode:
                     self.blocks[-1]._name = value
                 return
 
-        # FIXME: Code to import legacy tabs can be probably removed in year 2020 or so:
+        # FIXME: Code to import legacy tabs can be probably removed in year
+        # 2020 or so:
         if line.startswith("(Block-tab:"):
             pat = BLOCKPAT.match(line)
             if pat:
