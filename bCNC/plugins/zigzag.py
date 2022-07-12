@@ -41,7 +41,8 @@ class ZigZag:
                 centerX = x + r
                 centerY = y
                 for j in range(CornerRes):
-                    y = centerY + r * math.sin(math.pi * (j + 1) / CornerRes) * (
+                    y = centerY + r * math.sin(math.pi
+                                               * (j + 1) / CornerRes) * (
                         -1 if goingUp else 1
                     )
                     x = centerX - r * math.cos(math.pi * (j + 1) / CornerRes)

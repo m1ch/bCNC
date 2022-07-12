@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, print_function
 
-# import cgi
 import json
 import os
 import re
@@ -18,32 +17,25 @@ import Camera
 from CNC import CNC
 from Utils import prgpath
 
-__author__ = "Vasilis Vlachoudis"
-__email__ = "Vasilis.Vlachoudis@cern.ch"
-
-
-try:
-    import urlparse
-except ImportError:
-    import urllib.parse as urlparse
+import urllib.parse as urlparse
+import http.server as HTTPServer
 
 try:
     from PIL import Image
 except ImportError:
     Image = None
 
-try:
-    import BaseHTTPServer as HTTPServer
-except ImportError:
-    import http.server as HTTPServer
 
+
+__author__ = "Vasilis Vlachoudis"
+__email__ = "Vasilis.Vlachoudis@cern.ch"
 
 HOSTNAME = "localhost"
 port = 8080
 
 httpd = None
-webpath = "%s/pendant" % (prgpath)
-iconpath = "%s/icons/" % (prgpath)
+webpath = f"{prgpath}/pendant"
+iconpath = f"{prgpath}/icons/"
 
 
 # ==============================================================================
@@ -136,7 +128,8 @@ class Pendant(HTTPServer.BaseHTTPRequestHandler):
             if arg is None:
                 return
             filename = os.path.join(iconpath, arg["name"] + ".gif")
-            self.do_HEAD(200, content="image/gif", cl=os.path.getsize(filename))
+            self.do_HEAD(200, content="image/gif",
+                         cl=os.path.getsize(filename))
             try:
                 f = open(filename, "rb")
                 self.wfile.write(f.read())
@@ -159,7 +152,9 @@ class Pendant(HTTPServer.BaseHTTPRequestHandler):
                         out.flush()
                         out.seek(0)
                         self.do_HEAD(
-                            200, content="image/gif", cl=os.path.getsize(tmp.name)
+                            200,
+                            content="image/gif",
+                            cl=os.path.getsize(tmp.name)
                         )
                         self.wfile.write(out.read())
                 except Exception:
@@ -220,7 +215,7 @@ class Pendant(HTTPServer.BaseHTTPRequestHandler):
         remainbytes -= len(line)
         try:
             out = open(fn, "wb")
-        except IOError:
+        except OSError:
             return (
                 False,
                 "Can't create file to write, do you have permission to write?",
@@ -237,7 +232,7 @@ class Pendant(HTTPServer.BaseHTTPRequestHandler):
                     preline = preline[0:-1]
                 out.write(preline)
                 out.close()
-                return (True, "%s" % fn)
+                return (True, f"{fn}")
             else:
                 out.write(preline)
                 preline = line
@@ -280,7 +275,7 @@ class Pendant(HTTPServer.BaseHTTPRequestHandler):
             f = open(os.path.join(webpath, page), "rb")
             self.wfile.write(f.read())
             f.close()
-        except IOError:
+        except OSError:
             self.wfile.write(
                 b"""<!DOCTYPE html>
 <html>

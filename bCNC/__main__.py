@@ -72,12 +72,7 @@ __date__ = Utils.__date__
 __author__ = Utils.__author__
 __email__ = Utils.__email__
 
-__platform_fingerprint__ = "({} py{}.{}.{})".format(
-    sys.platform,
-    sys.version_info.major,
-    sys.version_info.minor,
-    sys.version_info.micro,
-)
+__platform_fingerprint__ = f"({sys.platform} py{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro})"
 
 _openserial = True  # override ini parameters
 _device = None
@@ -131,14 +126,13 @@ class Application(Toplevel, Sender):
         Sender.__init__(self)
 
         if sys.platform == "win32":
-            self.iconbitmap("%s\\bCNC.ico" % (Utils.prgpath))
+            self.iconbitmap(f"{Utils.prgpath}\\bCNC.ico")
         else:
-            self.iconbitmap("@%s/bCNC.xbm" % (Utils.prgpath))
+            self.iconbitmap(f"@{Utils.prgpath}/bCNC.xbm")
             # iconbitmap left here for legacy purposes, remove in future
-        photo = PhotoImage(file = "%s/bCNC.png" % (Utils.prgpath))
+        photo = PhotoImage(file=f"{Utils.prgpath}/bCNC.png")
         self.iconphoto(True, photo)
-        self.title("{} {} {}".format(Utils.__prg__,
-                   __version__, __platform_fingerprint__))
+        self.title(f"{Utils.__prg__} {__version__} {__platform_fingerprint__}")
         self.widgets = []
 
         # Global variables
@@ -241,15 +235,16 @@ class Application(Toplevel, Sender):
         # then add their properties (in separate loop)
         errors = []
         for name, page in self.pages.items():
-            for n in Utils.getStr(Utils.__prg__, "%s.ribbon" % (page.name)).split():
+            for n in Utils.getStr(Utils.__prg__, f"{page.name}.ribbon").split():
                 try:
                     page.addRibbonGroup(n)
                 except KeyError:
                     errors.append(n)
 
-            for n in Utils.getStr(Utils.__prg__, "%s.page" % (page.name)).split():
+            for n in Utils.getStr(Utils.__prg__, f"{page.name}.page").split():
                 last = n[-1]
-                if (n == "abcDRO" or n == "abcControl") and CNC.enable6axisopt is False:
+                if ((n == "abcDRO" or n == "abcControl") and
+                      CNC.enable6axisopt is False):
                     sys.stdout.write("Not Loading 6 axis displays\n")
 
                 else:
@@ -264,10 +259,10 @@ class Application(Toplevel, Sender):
         if errors:
             tkMessageBox.showwarning(
                 "bCNC configuration",
-                'The following pages "%s" are found in your '
+                f"The following pages \"{' '.join(errors)}\" are found in your "
                 "${HOME}/.bCNC initialization "
                 "file, which are either spelled wrongly or "
-                "no longer exist in bCNC" % (" ".join(errors)),
+                "no longer exist in bCNC",
                 parent=self,
             )
 
@@ -523,9 +518,8 @@ class Application(Toplevel, Sender):
         self._pendantFileUploaded = None
         self._drawAfter = None  # after handle for modification
         self._inFocus = False
-        self._insertCount = (
-            0  # END - insertCount lines where ok was applied to for $xxx commands
-        )
+         # END - insertCount lines where ok was applied to for $xxx commands
+        self._insertCount = ( 0 )
         self._selectI = 0
         self.monitorSerial()
         self.canvasFrame.toggleDrawFlag()
@@ -681,10 +675,9 @@ class Application(Toplevel, Sender):
         for name, value in Utils.config.items("Shortcut"):
             # Convert to uppercase
             key = name.title()
-            self.unbind("<%s>" % (key))  # unbind any possible old value
+            self.unbind(f"<{key}>")  # unbind any possible old value
             if value:
-                self.bind("<%s>" % (key), lambda e,
-                          s=self, c=value: s.execute(c))
+                self.bind(f"<{key}>", lambda e, s=self, c=value: s.execute(c))
 
     # -----------------------------------------------------------------------
     def showUserFile(self):
@@ -696,10 +689,8 @@ class Application(Toplevel, Sender):
         global geometry
 
         if geometry is None:
-            geometry = "{}x{}".format(
-                Utils.getInt(Utils.__prg__, "width", 900),
-                Utils.getInt(Utils.__prg__, "height", 650),
-            )
+            geometry = f"{Utils.getInt(Utils.__prg__, "width", 900)}x"
+                       f"{Utils.getInt(Utils.__prg__, "height", 650)}"
         try:
             self.geometry(geometry)
         except Exception:
@@ -761,7 +752,7 @@ class Application(Toplevel, Sender):
     # -----------------------------------------------------------------------
     def loadHistory(self):
         try:
-            f = open(Utils.hisFile, "r")
+            f = open(Utils.hisFile)
         except Exception:
             return
         self.history = [x.strip() for x in f]
@@ -822,11 +813,11 @@ class Application(Toplevel, Sender):
     def about(self, event=None, timer=None):
         toplevel = Toplevel(self)
         toplevel.transient(self)
-        toplevel.title(_("About %s v%s") % (Utils.__prg__, __version__))
+        toplevel.title( _(f"About {Utils.__prg__} v{__version__}") )
         if sys.platform == "win32":
-            self.iconbitmap("%s\\bCNC.ico" % (Utils.prgpath))
+            self.iconbitmap(f"{Utils.prgpath}\\bCNC.ico")
         else:
-            self.iconbitmap("@%s/bCNC.xbm" % (Utils.prgpath))
+            self.iconbitmap(f"@{Utils.prgpath}/bCNC.xbm")
 
         bg = "#707070"
         fg = "#ffffff"
@@ -862,7 +853,10 @@ class Application(Toplevel, Sender):
         row += 1
         la = Label(
             frame,
-            text=_("bCNC/\tAn advanced fully featured\n" "\tg-code sender for GRBL."),
+            text=_(
+                "bCNC/\tAn advanced fully featured\n" 
+                "\tg-code sender for GRBL."
+            ),
             font=font3,
             foreground=fg,
             background=bg,
@@ -878,7 +872,12 @@ class Application(Toplevel, Sender):
         # -----
         row += 1
         la = Label(
-            frame, text="www:", foreground=fg, background=bg, justify=LEFT, font=font2
+            frame, 
+            text="www:", 
+            foreground=fg, 
+            background=bg, 
+            justify=LEFT, 
+            font=font2
         )
         la.grid(row=row, column=0, sticky=E, padx=10, pady=2)
 
@@ -898,7 +897,12 @@ class Application(Toplevel, Sender):
         # -----
         row += 1
         la = Label(
-            frame, text="email:", foreground=fg, background=bg, justify=LEFT, font=font2
+            frame, 
+            text="email:", 
+            foreground=fg, 
+            background=bg, 
+            justify=LEFT, 
+            font=font2
         )
         la.grid(row=row, column=0, sticky=E, padx=10, pady=2)
 
@@ -1035,12 +1039,18 @@ class Application(Toplevel, Sender):
         la.grid(row=row, column=0, sticky=E, padx=10, pady=2)
 
         la = Label(
-            frame, text=__date__, foreground=fg, background=bg, justify=LEFT, font=font2
+            frame, 
+            text=__date__, 
+            foreground=fg, 
+            background=bg, 
+            justify=LEFT, 
+            font=font2
         )
         la.grid(row=row, column=1, sticky=NW, padx=2, pady=2)
 
         def closeFunc(e=None, t=toplevel):
             return t.destroy()
+
         b = Button(toplevel, text=_("Close"), command=closeFunc)
         b.pack(pady=5)
         frame.grid_columnconfigure(1, weight=1)
@@ -1119,13 +1129,8 @@ class Application(Toplevel, Sender):
         col += 1
         Label(
             frame,
-            text="%g .. %g [%g] %s"
-            % (
-                CNC.vars["xmin"],
-                CNC.vars["xmax"],
-                CNC.vars["xmax"] - CNC.vars["xmin"],
-                unit,
-            ),
+            text=f"{CNC.vars['xmin']:g} .. {CNC.vars['xmax']:g} " + 
+                 f"[{CNC.vars['xmax'] - CNC.vars['xmin']:g}] {unit}",
             foreground="DarkBlue",
         ).grid(row=row, column=col, sticky=W)
 
@@ -1136,13 +1141,8 @@ class Application(Toplevel, Sender):
         col += 1
         Label(
             frame,
-            text="%g .. %g [%g] %s"
-            % (
-                CNC.vars["ymin"],
-                CNC.vars["ymax"],
-                CNC.vars["ymax"] - CNC.vars["ymin"],
-                unit,
-            ),
+            text=f"{CNC.vars['ymin']:g} .. {CNC.vars['ymax']:g} " +
+                 f"[{CNC.vars['ymax'] - CNC.vars['ymin']:g}] {unit}",
             foreground="DarkBlue",
         ).grid(row=row, column=col, sticky=W)
 
@@ -1153,13 +1153,8 @@ class Application(Toplevel, Sender):
         col += 1
         Label(
             frame,
-            text="%g .. %g [%g] %s"
-            % (
-                CNC.vars["zmin"],
-                CNC.vars["zmax"],
-                CNC.vars["zmax"] - CNC.vars["zmin"],
-                unit,
-            ),
+            text=f"{CNC.vars['zmin']:g} .. {CNC.vars['zmax']:g} " +
+                 f"[{CNC.vars['zmax'] - CNC.vars['zmin']:g}] {unit}",
             foreground="DarkBlue",
         ).grid(row=row, column=col, sticky=W)
 
@@ -1177,7 +1172,7 @@ class Application(Toplevel, Sender):
         col = 0
         Label(frame, text=_("Length:")).grid(row=row, column=col, sticky=E)
         col += 1
-        Label(frame, text="{:g} {}".format(le, unit), foreground="DarkBlue").grid(
+        Label(frame, text=f"{le:g} {unit}", foreground="DarkBlue").grid(
             row=row, column=col, sticky=W
         )
 
@@ -1186,7 +1181,7 @@ class Application(Toplevel, Sender):
         col = 0
         Label(frame, text=_("Rapid:")).grid(row=row, column=col, sticky=E)
         col += 1
-        Label(frame, text="{:g} {}".format(r, unit), foreground="DarkBlue").grid(
+        Label(frame, text=f"{r:g} {unit}", foreground="DarkBlue").grid(
             row=row, column=col, sticky=W
         )
 
@@ -1199,7 +1194,7 @@ class Application(Toplevel, Sender):
         s = (m - int(m)) * 60
         Label(
             frame,
-            text="%d:%02d:%02d s" % (int(h), int(m), int(s)),
+            text=f"{int(h)}:{int(m):02}:{int(s):02} s",
             foreground="DarkBlue",
         ).grid(row=row, column=col, sticky=W)
 
@@ -1215,13 +1210,8 @@ class Application(Toplevel, Sender):
         col += 1
         Label(
             frame,
-            text="%g .. %g [%g] %s"
-            % (
-                CNC.vars["axmin"],
-                CNC.vars["axmax"],
-                CNC.vars["axmax"] - CNC.vars["axmin"],
-                unit,
-            ),
+            text=f"{CNC.vars['axmin']:g} .. {CNC.vars['axmax']:g} " +
+                 f"[{CNC.vars['axmax'] - CNC.vars['axmin']:g}] {unit}",
             foreground="DarkBlue",
         ).grid(row=row, column=col, sticky=W)
 
@@ -1232,13 +1222,8 @@ class Application(Toplevel, Sender):
         col += 1
         Label(
             frame,
-            text="%g .. %g [%g] %s"
-            % (
-                CNC.vars["aymin"],
-                CNC.vars["aymax"],
-                CNC.vars["aymax"] - CNC.vars["aymin"],
-                unit,
-            ),
+            text=f"{CNC.vars['aymin']:g} .. {CNC.vars['aymax']:g} " +
+                 f"[{CNC.vars['aymax'] - CNC.vars['aymin']:g}] {unit}",
             foreground="DarkBlue",
         ).grid(row=row, column=col, sticky=W)
 
@@ -1249,13 +1234,8 @@ class Application(Toplevel, Sender):
         col += 1
         Label(
             frame,
-            text="%g .. %g [%g] %s"
-            % (
-                CNC.vars["azmin"],
-                CNC.vars["azmax"],
-                CNC.vars["azmax"] - CNC.vars["azmin"],
-                unit,
-            ),
+            text=f"{CNC.vars['azmin']:g} .. {CNC.vars['azmax']:g} " +
+                 f"[{CNC.vars['azmax'] - CNC.vars['azmin']:g}] {unit}",
             foreground="DarkBlue",
         ).grid(row=row, column=col, sticky=W)
 
@@ -1264,8 +1244,14 @@ class Application(Toplevel, Sender):
         col = 0
         Label(frame, text=_("# Blocks:")).grid(row=row, column=col, sticky=E)
         col += 1
-        Label(frame, text=str(len(self.gcode.blocks)), foreground="DarkBlue").grid(
-            row=row, column=col, sticky=W
+        Label(
+            frame, 
+            text=str(len(self.gcode.blocks)), 
+            foreground="DarkBlue"
+        ).grid(
+            row=row, 
+            column=col, 
+            sticky=W
         )
         # ---
         row += 1
@@ -1274,7 +1260,7 @@ class Application(Toplevel, Sender):
         col += 1
         Label(
             frame,
-            text="{:g} {}".format(self.cnc.totalLength, unit),
+            text=f"{self.cnc.totalLength:g} {unit}",
             foreground="DarkBlue",
         ).grid(row=row, column=col, sticky=W)
 
@@ -1287,7 +1273,7 @@ class Application(Toplevel, Sender):
         s = (m - int(m)) * 60
         Label(
             frame,
-            text="%d:%02d:%02d s" % (int(h), int(m), int(s)),
+            text=f"{int(int(h))}:{int(int(m)):02}:{int(int(s)):02} s",
             foreground="DarkBlue",
         ).grid(row=row, column=col, sticky=W)
 
@@ -1299,6 +1285,7 @@ class Application(Toplevel, Sender):
 
         def closeFunc(e=None, t=toplevel):
             return t.destroy()
+
         b = Button(frame, text=_("Close"), command=closeFunc)
         b.pack(pady=5)
         frame.grid_columnconfigure(1, weight=1)
@@ -1513,7 +1500,8 @@ class Application(Toplevel, Sender):
         elif rexx.abbrev("CONTROL", cmd, 4):
             self.ribbon.changePage("Control")
 
-        # CUT [depth] [pass-per-depth] [z-surface] [feed] [feedz]: replicate selected blocks to cut-height
+        # CUT [depth] [pass-per-depth] [z-surface] [feed] [feedz]: replicate 
+        # selected blocks to cut-height
         # default values are taken from the active material
         elif cmd == "CUT":
             try:
@@ -1563,7 +1551,7 @@ class Application(Toplevel, Sender):
             else:
                 tkMessageBox.showerror(
                     _("Direction command error"),
-                    _("Invalid direction %s specified" % (line[1])),
+                    _(f"Invalid direction {line[1]} specified"),
                     parent=self,
                 )
                 return "break"
@@ -1586,7 +1574,8 @@ class Application(Toplevel, Sender):
         elif cmd == "ECHO":
             self.setStatus(oline[5:].strip())
 
-        # FEED on/off: append feed commands on every motion line for feed override testing
+        # FEED on/off: append feed commands on every motion line for 
+        # feed override testing
         elif cmd == "FEED":
             try:
                 CNC.appendFeed = line[1].upper() == "ON"
@@ -1620,15 +1609,16 @@ class Application(Toplevel, Sender):
         elif rexx.abbrev("EDIT", cmd, 2):
             self.edit()
 
-        # IM*PORT <filename>: import filename with gcode or dxf at cursor location
-        # or at the end of the file
+        # IM*PORT <filename>: import filename with gcode or dxf at cursor 
+        # location or at the end of the file
         elif rexx.abbrev("IMPORT", cmd, 2):
             try:
                 self.importFile(line[1])
             except Exception:
                 self.importFile()
 
-        # INK*SCAPE: remove uneccessary Z motion as a result of inkscape gcodetools
+        # INK*SCAPE: remove uneccessary Z motion as a result of inkscape 
+        # gcodetools
         elif rexx.abbrev("INKSCAPE", cmd, 3):
             if len(line) > 1 and rexx.abbrev("ALL", line[1].upper()):
                 self.editor.selectAll()
@@ -1763,7 +1753,8 @@ class Application(Toplevel, Sender):
             else:
                 self.executeOnSelection("OPTIMIZE", True)
 
-        # OPT*IMIZE: reorder selected blocks to minimize rapid motions # FIXME comment for ORIENT not OPTIMIZE
+        # # FIXME comment for ORIENT not OPTIMIZE
+        # OPT*IMIZE: reorder selected blocks to minimize rapid motions 
         elif rexx.abbrev("ORIENT", cmd, 4):
             if not self.editor.curselection():
                 self.editor.selectAll()
@@ -1914,8 +1905,8 @@ class Application(Toplevel, Sender):
                 circular = bool(line[6])
             except Exception:
                 circular = True
-            self.executeOnSelection("TABS", True, ntabs,
-                                    dtabs, dx, dy, z, circular)
+            self.executeOnSelection(
+                "TABS", True, ntabs, dtabs, dx, dy, z, circular)
 
         # TERM*INAL: switch to terminal tab
         elif rexx.abbrev("TERMINAL", cmd, 4):
@@ -1928,7 +1919,7 @@ class Application(Toplevel, Sender):
             except Exception:
                 tool = self.tools["EndMill"]
                 diam = self.tools.fromMm(tool["diameter"])
-            self.setStatus(_("EndMill: %s %g") % (tool["name"], diam))
+            self.setStatus(_(f"EndMill: {tool['name']} {diam:g}"))
 
         # TOOLS
         elif cmd == "TOOLS":
@@ -1947,15 +1938,15 @@ class Application(Toplevel, Sender):
                 try:
                     name = line[1].upper()
                     for i in range(n):
-                        if name == Utils.getStr("Buttons", "name.%d" % (i), "").upper():
+                        if name == Utils.getStr("Buttons", f"name.{int(i)}", "").upper():
                             idx = i
                             break
                 except Exception:
                     return "break"
             if idx < 0 or idx >= n:
-                self.setStatus(_("Invalid user command %s") % (line[1]))
+                self.setStatus(_(f"Invalid user command {line[1]}"))
                 return "break"
-            cmd = Utils.getStr("Buttons", "command.%d" % (idx), "")
+            cmd = Utils.getStr("Buttons", f"command.{int(idx)}", "")
             for line in cmd.splitlines():
                 self.execute(line)
 
@@ -2011,7 +2002,7 @@ class Application(Toplevel, Sender):
         if not items:
             tkMessageBox.showwarning(
                 _("Nothing to do"),
-                _("Operation %s requires some gcode to be selected") % (cmd),
+                _(f"Operation {cmd} requires some gcode to be selected"),
                 parent=self,
             )
             return
@@ -2064,8 +2055,7 @@ class Application(Toplevel, Sender):
         self.drawAfter()
         self.notBusy()
         self.setStatus(
-            "{} {}".format(cmd, " ".join([str(a)
-                           for a in args if a is not None]))
+            f"{cmd} {' '.join([str(a) for a in args if a is not None])}"
         )
 
     # -----------------------------------------------------------------------
@@ -2100,12 +2090,12 @@ class Application(Toplevel, Sender):
         msg = self.gcode.profile(blocks, ofs * sign, overcut, name, pocket)
         if msg:
             tkMessageBox.showwarning(
-                "Open paths", "WARNING: %s" % (msg), parent=self)
+                "Open paths", f"WARNING: {msg}", parent=self)
         self.editor.fill()
         self.editor.selectBlocks(blocks)
         self.draw()
         self.notBusy()
-        self.setStatus(_("Profile block distance=%g") % (ofs * sign))
+        self.setStatus(_(f"Profile block distance={ofs * sign:g}"))
 
     # -----------------------------------------------------------------------
     def pocket(self, name=None):
@@ -2122,7 +2112,7 @@ class Application(Toplevel, Sender):
         msg = self.gcode.pocket(blocks, diameter, stepover, name)
         if msg:
             tkMessageBox.showwarning(
-                _("Open paths"), _("WARNING: %s") % (msg), parent=self
+                _("Open paths"), _(f"WARNING: {msg}"), parent=self
             )
         self.editor.fill()
         self.editor.selectBlocks(blocks)
@@ -2192,12 +2182,13 @@ class Application(Toplevel, Sender):
         )
         if msg:
             tkMessageBox.showwarning(
-                "Open paths", "WARNING: %s" % (msg), parent=self)
+                "Open paths", f"WARNING: {msg}", parent=self)
         msg2 = adaptative
         if msg2:
             tkMessageBox.showwarning(
                 "Adaptative",
-                "WARNING: Adaptive route generated, but Trocoidal still does not implement it. Use will give wrong results in the corners!",
+                "WARNING: Adaptive route generated, but Trocoidal still does " +
+                "not implement it. Use will give wrong results in the corners!",
                 parent=self,
             )
 
@@ -2205,7 +2196,7 @@ class Application(Toplevel, Sender):
         self.editor.selectBlocks(blocks)
         self.draw()
         self.notBusy()
-        self.setStatus(_("Profile block distance=%g") % (ofs * sign))
+        self.setStatus(_(f"Profile block distance={ofs * sign:g}"))
 
     # -----------------------------------------------------------------------
     def edit(self, event=None):
@@ -2309,8 +2300,7 @@ class Application(Toplevel, Sender):
         self.gcode.headerFooter()
         self.editor.fill()
         self.draw()
-        self.title("{} {} {}".format(Utils.__prg__,
-                   __version__, __platform_fingerprint__))
+        self.title(f"{Utils.__prg__} {__version__} {__platform_fingerprint__}")
 
     # -----------------------------------------------------------------------
     # load dialog
@@ -2399,7 +2389,7 @@ class Application(Toplevel, Sender):
                 if ans == tkMessageBox.YES or ans is True:
                     self.gcode.probe.init()
 
-        self.setStatus(_("Loading: %s ...") % (filename), True)
+        self.setStatus(_(f"Loading: {filename} ..."), True)
         Sender.load(self, filename)
 
         if ext == ".probe":
@@ -2420,32 +2410,23 @@ class Application(Toplevel, Sender):
             Page.frames["CAM"].populate()
 
         if autoloaded:
-            self.setStatus(_("'%s' reloaded at '%s'") %
-                           (filename, str(datetime.now())))
+            self.setStatus(
+               _(f"'{filename}' reloaded at '{str(datetime.now())}'") 
+           )
         else:
-            self.setStatus(_("'%s' loaded") % (filename))
+            self.setStatus(_(f"'{filename}' loaded") )
         self.title(
-            "%s %s: %s %s"
-            % (
-                Utils.__prg__,
-                __version__,
-                self.gcode.filename,
-                __platform_fingerprint__,
-            )
+            f"{Utils.__prg__} {__version__}: {self.gcode.filename} " + 
+            f"{__platform_fingerprint__}"
         )
 
     # -----------------------------------------------------------------------
     def save(self, filename):
         Sender.save(self, filename)
-        self.setStatus(_("'%s' saved") % (filename))
+        self.setStatus(_(f"'{filename}' saved") )
         self.title(
-            "%s %s: %s %s"
-            % (
-                Utils.__prg__,
-                __version__,
-                self.gcode.filename,
-                __platform_fingerprint__,
-            )
+            f"{Utils.__prg__} {__version__}: {self.gcode.filename} " + 
+            f"{__platform_fingerprint__}"
         )
 
     # -----------------------------------------------------------------------
@@ -2509,10 +2490,10 @@ class Application(Toplevel, Sender):
                 ans = tkMessageBox.askquestion(
                     _("Warning"),
                     _(
-                        "Gcode file %s was changed since editing started\n"
+                        f"Gcode file {self.gcode.filename} was changed since "
+                        "editing started\n"
                         "Reload new version?"
-                    )
-                    % (self.gcode.filename),
+                    ),
                     parent=self,
                 )
                 if ans == tkMessageBox.YES or ans is True:
@@ -2640,7 +2621,9 @@ class Application(Toplevel, Sender):
             elif not self._paths:
                 self.runEnded()
                 tkMessageBox.showerror(
-                    _("Empty gcode"), _("Not gcode file was loaded"), parent=self
+                    _("Empty gcode"), 
+                    _("Not gcode file was loaded"), 
+                    parent=self
                 )
                 return
 
@@ -2672,7 +2655,8 @@ class Application(Toplevel, Sender):
                     else:
                         self.queue.put(line)
                     n += 1
-            self._runLines = n  # set it at the end to be sure that all lines are queued
+            # set it at the end to be sure that all lines are queued        
+            self._runLines = n  
         self.queue.put((WAIT,))  # wait at the end to become idle
 
         self.setStatus(_("Running..."))
@@ -2690,10 +2674,12 @@ class Application(Toplevel, Sender):
     def startPendant(self, showInfo=True):
         started = Pendant.start(self)
         if showInfo:
-            hostName = "http://%s:%d" % (socket.gethostname(), Pendant.port)
+            hostName = f"http://{socket.gethostname()}:{Pendant.port}"
             if started:
                 tkMessageBox.showinfo(
-                    _("Pendant"), _("Pendant started:\n") + hostName, parent=self
+                    _("Pendant"), 
+                    _("Pendant started:\n") + hostName, 
+                    parent=self
                 )
             else:
                 dr = tkMessageBox.askquestion(
@@ -2859,7 +2845,7 @@ class Application(Toplevel, Sender):
             )
             CNC.vars["msg"] = self.statusbar.msg
             self.bufferbar.setProgress(Sender.getBufferFill(self))
-            self.bufferbar.setText("%i%%" % Sender.getBufferFill(self))
+            self.bufferbar.setText(f"{Sender.getBufferFill(self)}%")
 
             if self._selectI >= 0 and self._paths:
                 while self._selectI <= self._gcount and self._selectI < len(
@@ -2901,10 +2887,10 @@ class Application(Toplevel, Sender):
 # ------------------------------------------------------------------------------
 def usage(rc):
     sys.stdout.write(
-        "%s V%s [%s] %s\n"
-        % (Utils.__prg__, __version__, __date__, __platform_fingerprint__)
+        f"{Utils.__prg__} V{__version__} [{__date__}] " + 
+        f"{__platform_fingerprint__}\n"
     )
-    sys.stdout.write("{} <{}>\n\n".format(__author__, __email__))
+    sys.stdout.write(f"{__author__} <{__email__}>\n\n")
     sys.stdout.write("Usage: [options] [filename...]\n\n")
     sys.stdout.write("Options:\n")
     sys.stdout.write("\t-b # | --baud #\t\tSet the baud rate\n")
@@ -2938,21 +2924,21 @@ def main(args=None):
     # if sys.version_info[0] != 2:
     sys.stdout.write("=" * 80 + "\n")
     sys.stdout.write(
-        "WARNING: bCNC has been recently ported to support both python v2.x and v3.x\n"
+        "WARNING: bCNC has been recently ported to support both " + 
+        "python v2.x and v3.x\n"
     )
     sys.stdout.write(
         "Most things seem to work reasonably well in both python versions.\n"
     )
     sys.stdout.write(
-        "Please report any issues to: https://github.com/vlachoudis/bCNC/issues\n"
+        "Please report any issues to: " + 
+        "https://github.com/vlachoudis/bCNC/issues\n"
     )
     sys.stdout.write("=" * 80 + "\n")
     # sys.exit(0)
 
     tk = Tk()
     tk.withdraw()
-    # if sys.version_info[0] != 2:
-    # 	tkMessageBox.showwarning("bCNC: Unsupported Python version", "Only Python 2 is currently supported by bCNC.\nContinue at your own risk!\nPlease report any issues to\nhttps://github.com/vlachoudis/bCNC/issues")
 
     try:
         Tkinter.CallWrapper = Utils.CallWrapper
@@ -3033,8 +3019,7 @@ def main(args=None):
                         break
                     d = os.path.dirname(filename)
                     fn = os.path.basename(filename)
-                    sys.stdout.write("  %2d: %-*s  %s\n" %
-                                     (i + 1, maxlen, fn, d))
+                    sys.stdout.write(f"  {i + 1:2d}: {fn:<{maxlen}}  {d}\n")
 
                 try:
                     sys.stdout.write("Select one: ")

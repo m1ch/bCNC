@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 
 print("Running bCNC setup...")
 
-with open("README.md", "r") as fh:
+with open("README.md") as fh:
     long_description = fh.read()
 
 if sys.version_info[0] >= 3:
@@ -30,15 +30,17 @@ setup(
         "pyobjc ; sys_platform == 'darwin'",
         "pyobjc-core; sys_platform == 'darwin'",
         "pyobjc-framework-Quartz; sys_platform == 'darwin'",
-        # Windows XP can't handle pyserial newer than 3.0.1 (it can be installed, but does not work)
+        # Windows XP can't handle pyserial newer than 3.0.1 
+        #   (it can be installed, but does not work)
         "pyserial ; sys_platform != 'win32'",
         "pyserial<=3.0.1 ; sys_platform == 'win32'",
         "numpy>=1.12",
-        "Pillow>=4.0",
-        'opencv-python==%s ; ("arm" not in platform_machine) and ("aarch64" not in platform_machine)'
-        % (
-            opencv_version
-        ),  # Note there are no PyPI OpenCV packages for ARM (Raspberry PI, Orange PI, etc...)
+        "Pillow>=4.0",        
+        # Note there are no PyPI OpenCV packages for ARM 
+        # (Raspberry PI, Orange PI, etc...)
+        f"opencv-python=={opencv_version} ; " +
+        "(\"arm\" not in platform_machine) and " +
+        "(\"aarch64\" not in platform_machine)"
     ],
     entry_points={
         "console_scripts": [

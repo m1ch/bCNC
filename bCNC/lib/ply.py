@@ -72,11 +72,10 @@ def save_ply(filename, verts, faces):
         f.write("property float x\n")
         f.write("property float y\n")
         f.write("property float z\n")
-        f.write("element face %d\n" % len(faces))
+        f.write(f"element face {len(faces)}\n")
         f.write("property list uchar int vertex_indices\n")
         f.write("end_header\n")
         for i in xrange(verts.shape[0]):
-            f.write("{:f} {:f} {:f}\n".format(
-                verts[i, 0], verts[i, 1], verts[i, 2]))
+            f.write(f"{verts[i, 0]:f} {verts[i, 1]:f} {verts[i, 2]:f}\n")
         for i in xrange(len(faces)):
             f.write("3 %d %d %d\n" % (faces[i][0], faces[i][1], faces[i][2]))

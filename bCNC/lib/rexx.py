@@ -72,10 +72,10 @@ def center(s, lngt, pad=" "):
     elif i < 0:
         i = -i
         a = i // 2
-        return s[a: a + lngt]
+        return s[a : a + lngt]
     else:
         a = i // 2
-        return "{}{}{}".format(pad * a, s, pad * (i - a))
+        return f"{pad * a}{s}{pad * (i - a)}"
 
 
 # datatype
@@ -231,7 +231,12 @@ def _isnum(str):
             return False
 
     # accept one e/E/d/D
-    if i < lngte and (str[i] == "e" or str[i] == "E" or str[i] == "d" or str[i] == "D"):
+    if (    i < lngte
+            and (str[i] == "e"
+                 or str[i] == "E"
+                 or str[i] == "d"
+                 or str[i] == "D")
+            ):
         i += 1
         # accept one sign
         if i < lngte and (str[i] == "-" or str[i] == "+"):

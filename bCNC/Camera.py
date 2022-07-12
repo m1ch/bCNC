@@ -24,15 +24,15 @@ except ImportError:
     cv = None
 
 
-# -------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 def hasOpenCV():
     return cv is not None
 
 
-# ===============================================================================
+# ==============================================================================
 # Camera processing class
 # A wrapper to opencv needed functions
-# ===============================================================================
+# ==============================================================================
 class Camera:
     # -----------------------------------------------------------------------
     # prefix is the prefix to get configuration parameters from ini
@@ -326,7 +326,7 @@ class Camera:
         if self.image is None:
             return None
         self.imagetk = ImageTk.PhotoImage(
-            image=Image.fromarray(cv.cvtColor(
-                self.image, cv.COLOR_BGR2RGB), "RGB")
+            image=Image.fromarray(cv.cvtColor(self.image, cv.COLOR_BGR2RGB),
+                                  "RGB")
         )
         return self.imagetk
