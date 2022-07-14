@@ -8,6 +8,10 @@ import os.path
 import re
 import sys
 from copy import deepcopy
+import tkinter
+from tkinter import *
+import tkinter.messagebox as tkMessageBox
+
 from math import (
     acos,
     asin,
@@ -22,7 +26,6 @@ from math import (
     sin,
     sqrt,
 )
-
 from bmath import Vector
 from bpath import EPS, Path, Segment, eq
 from CNC import CNC, Block  # ,toPath,importPath,addUndo
@@ -35,19 +38,7 @@ __name__ = _("Offset")
 __version__ = "0.0.1"
 
 
-try:
-    import Tkinter
-    from Tkinter import *
-    import tkMessageBox
-except ImportError:
-    import tkinter
-    from tkinter import *
-    import tkinter.messagebox as tkMessageBox
-
 # =============================================================================
-# ==============================================================================
-
-
 def pocket(
     selectedblocks,
     RecursiveDepth,
@@ -95,7 +86,7 @@ def pocket(
                 islandslist.append(islandPath)
         for path in gcode.toPath(bid):
             if not path.isClosed():
-                m = "Path: '%s' is OPEN" % (path.name)
+                m = f"Path: '{path.name}' is OPEN"
                 if m not in msg:
                     if msg:
                         msg += "\n"
@@ -196,7 +187,8 @@ class PocketIsland:
         self.selectCutDir = cutDirChoice.get(self.CutDir, 1.0)
         self.profiledir = profileDirChoice.get(self.ProfileDir, 1.0)
         if self.RecursiveDepth == "Full pocket":
-            # to avoid making full pockets, with full recursive depth, outside the path
+            # to avoid making full pockets, with full recursive depth,
+            # outside the path
             self.profiledir = 1.0
         maxdepth = maxdepthchoice.get(self.RecursiveDepth, 0)
         maxdepth = min(maxdepth, 999)
@@ -287,17 +279,20 @@ class PocketIsland:
             if self.depth == 0:
                 path.directionSet(self.selectCutDir * float(self.profiledir))
             direct = path.direction()
-            opathCopy = path.offset(
-                self.profiledir * self.offset * float(direct))
+            opathCopy = path.offset(self.profiledir
+                                    * self.offset
+                                    * float(direct))
             points = opathCopy.intersectSelf()
             opathCopy.removeExcluded(path, abs(self.offset))
             if (
                 len(opathCopy) > 0
             ):  # there remains some path after full offset : not the last pass
-                opath = path.offset(
-                    self.profiledir * self.offset * float(direct))
+                opath = path.offset(self.profiledir
+                                    * self.offset
+                                    * float(direct))
                 offset = self.offset
-            else:  # nothing remaining after the last pass => apply offsetLastPass
+            # nothing remaining after the last pass => apply offsetLastPass
+            else:
                 opath = path.offset(
                     self.profiledir * self.offsetLastPass * float(direct)
                 )
@@ -321,10 +316,12 @@ class PocketIsland:
             if len(island) > 0:
                 p3 = island[0].A
             if self.depth == 0:
-                island.directionSet(-self.selectCutDir * float(self.profiledir))
+                island.directionSet(-self.selectCutDir
+                                    * float(self.profiledir))
             direct = island.direction()
             offIsl = island.offset(-self.profiledir
-                                   * self.offset * float(direct))
+                                   * self.offset
+                                   * float(direct))
             offIsl.intersectSelf()
             if len(offIsl) > 0:
                 offIsl.removeExcluded(island, abs(self.offset))
@@ -455,8 +452,7 @@ class PocketIsland:
 
 
 class Tool(Plugin):
-    __doc__ = _(
-        "Generate a pocket or profile for selected shape (regarding islands)")
+    __doc__ = _("Generate a pocket or profile for selected shape (regarding islands)")
 
     def __init__(self, master):
         Plugin.__init__(self, master, "Offset")

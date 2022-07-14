@@ -24,9 +24,9 @@ except ImportError:
 # from CNC import CW,CCW,CNC,Block
 
 
-# ==============================================================================
+# =============================================================================
 # Tile replicas of the selected blocks
-# ==============================================================================
+# =============================================================================
 class Tool(Plugin):
     __doc__ = _("Generate replicas of selected code")
 
@@ -50,8 +50,8 @@ class Tool(Plugin):
             blocks = app.editor.getSelectedBlocks()
 
         if not blocks:
-            tkMessageBox.showerror(
-                _("Tile error"), _("No g-code blocks selected"))
+            tkMessageBox.showerror(_("Tile error"),
+                                   _("No g-code blocks selected"))
             return
 
         try:

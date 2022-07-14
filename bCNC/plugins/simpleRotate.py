@@ -6,6 +6,7 @@
 from __future__ import absolute_import, print_function
 
 import math
+import tkinter.messagebox as tkMessageBox
 
 from bmath import Vector
 from CNC import CNC, CW, Block
@@ -16,19 +17,9 @@ __author__ = "DodoLaSaumure"
 __email__ = ""
 
 
-try:
-    # 	import Tkinter
-    # 	from Tkinter import *
-    import tkMessageBox
-except ImportError:
-    # 	import tkinter
-    # 	from tkinter import *
-    import tkinter.messagebox as tkMessageBox
-
-
-# ==============================================================================
+# =============================================================================
 # Create a simple Rotate
-# ==============================================================================
+# =============================================================================
 class Tool(Plugin):
     __doc__ = _("Rotates a block to a new position")
 
@@ -60,8 +51,8 @@ class Tool(Plugin):
             app.editor.selectAll()
             blocks = app.editor.getSelectedBlocks()
         if not blocks:
-            tkMessageBox.showerror(
-                _("Tile error"), _("No g-code blocks selected"))
+            tkMessageBox.showerror(_("Tile error"),
+                                   _("No g-code blocks selected"))
             return
         pos = blocks[-1]  # insert position
         alpha_current = alpha

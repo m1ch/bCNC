@@ -51,7 +51,7 @@ EPS2 = EPS**2
 errors = {}
 
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def error(msg):
     global errors
     if msg in errors:
@@ -61,9 +61,9 @@ def error(msg):
         errors[msg] = 1
 
 
-# ==============================================================================
+# =============================================================================
 # Entity holder
-# ==============================================================================
+# =============================================================================
 class Entity(dict):
     CLOSED = 0x01
     PERIODIC = 0x02
@@ -342,12 +342,14 @@ class Entity(dict):
 
     # ----------------------------------------------------------------------
     def __repr__(self):
-        out = "{} {} {} {}".format(
-            self.type, self.name, self.start(), self.end())
+        out = f"{self.type} {self.name} {self.start()} {self.end()}"
         if self.type == "ARC":
-            out += " R=%g" % (self.radius())
-            out += " sPhi=%g" % (self.startPhi())
-            out += " ePhi=%g" % (self.endPhi())
+            out = " ".join([
+                out,
+                f"R={self.radius():g}",
+                f"sPhi={self.startPhi():g}",
+                f"ePhi={self.endPhi():g}",
+            ])
         return out
 
     # ----------------------------------------------------------------------
@@ -374,7 +376,8 @@ class Entity(dict):
     # ----------------------------------------------------------------------
     def point3D(self, idx=0):
         """return 3D point 10+idx,20+idx"""
-        return Vector(self.get(10 + idx), self.get(20 + idx), self.get(30 + idx))
+        return Vector(
+            self.get(10 + idx), self.get(20 + idx), self.get(30 + idx))
 
     # ----------------------------------------------------------------------
     def radius(self):
@@ -456,10 +459,8 @@ class Entity(dict):
         elif self.type in ("POINT", "ELLIPSE", "DIMENSION", "@START"):
             self._start = self._end = self.point()
         else:
-            error(
-                "Cannot handle entity type: {} in layer: {}\n".format(
-                    self.type, self.name)
-            )
+            error(f"Cannot handle entity type: "
+                  + f"{self.type} in layer: {self.name}\n")
             # import traceback; traceback.print_stack()
             self._start = self._end = self.point()
 
@@ -623,8 +624,7 @@ class Entity(dict):
                     self[30].append(0.0)
                     self[42].append(0.0)
                 else:
-                    raise Exception(
-                        "Entity %s found in wrong context" % (value))
+                    raise Exception(f"Entity {value} found in wrong context")
 
             elif tag in (10, 20, 30, 42):
                 self[tag][-1] = value
@@ -668,9 +668,9 @@ class Entity(dict):
                         self[42].append(0.0)
 
 
-# ==============================================================================
+# =============================================================================
 # DXF layer
-# ==============================================================================
+# =============================================================================
 class Layer:
     # ----------------------------------------------------------------------
     def __init__(self, name, tbl=None):
@@ -700,7 +700,7 @@ class Layer:
 
     # ----------------------------------------------------------------------
     def __repr__(self):
-        return "Layer: %s" % (self.name)
+        return f"Layer: {self.name}"
 
     # ----------------------------------------------------------------------
     # Sort layer in continuation order of entities
@@ -754,7 +754,8 @@ class Layer:
                 sx, sy = entity.start()
                 d2 = (sx - ex) ** 2 + (sy - ey) ** 2
                 err = EPS2 * ((abs(sx) + abs(ex)) ** 2
-                              + (abs(sy) + abs(ey)) ** 2 + 1.0)
+                              + (abs(sy) + abs(ey)) ** 2
+                              + 1.0)
                 if d2 < err:
                     new.append(entity)
                     del self.entities[i]
@@ -764,7 +765,8 @@ class Layer:
                 sx, sy = entity.end()
                 d2 = (sx - ex) ** 2 + (sy - ey) ** 2
                 err = EPS2 * ((abs(sx) + abs(ex)) ** 2
-                              + (abs(sy) + abs(ey)) ** 2 + 1.0)
+                              + (abs(sy) + abs(ey)) ** 2
+                              + 1.0)
                 if d2 < err:
                     entity.invert()
                     new.append(entity)
@@ -778,7 +780,7 @@ class Layer:
         self.entities = new
 
 
-# ==============================================================================
+# =============================================================================
 # DXF Block
 # Block-type flags (bit coded values, may be combined):
 #   1 = This is an anonymous block generated by hatching, associative
@@ -792,7 +794,7 @@ class Layer:
 #  32 = This is a resolved external reference, or dependent of an external
 #       reference (ignored on input).
 #  64 = This definition is a referenced external reference (ignored on input).
-# ==============================================================================
+# =============================================================================
 class Block(dict):
     # ----------------------------------------------------------------------
     def __init__(self):
@@ -805,7 +807,7 @@ class Block(dict):
 
     # ----------------------------------------------------------------------
     def __repr__(self):
-        return "Block: %s [%d] Base:%s" % (self.name, self.type, str(self.base))
+        return f"Block: {self.name} [{int(self.type)}] Base:{str(self.base)}"
 
     # ----------------------------------------------------------------------
     def sort(self):
@@ -853,9 +855,9 @@ class Block(dict):
                 self[tag] = value
 
 
-# ==============================================================================
+# =============================================================================
 # DXF importer/exporter class
-# ==============================================================================
+# =============================================================================
 class DXF:
     # Default drawing units for AutoCAD DesignCenter blocks:
     UNITLESS = 0
@@ -954,8 +956,7 @@ class DXF:
             return new
 
         else:
-            raise Exception("Cannot convert type {} {}".format(
-                type(value), str(value)))
+            raise Exception(f"Cannot convert type {type(value)} {str(value)}")
 
     # ----------------------------------------------------------------------
     def open(self, filename, mode):
@@ -970,7 +971,8 @@ class DXF:
 
     # ----------------------------------------------------------------------
     # From the DXF reference manual
-    # http://www.autodesk.com/techpubs/autocad/acad2000/dxf/group_code_value_types_dxf_01.htm
+    # http://www.autodesk.com/techpubs/autocad/acad2000/dxf/
+    #   group_code_value_types_dxf_01.htm
     #
     # Code range	python	Group value type
     # 0-9		str	String. (With the introduction of extended symbol names
@@ -1015,7 +1017,7 @@ class DXF:
         try:
             tag = int(line.strip())
         except:
-            error("Error reading line %s, tag was expected\n" % (line))
+            error(f"Error reading line {line}, tag was expected\n")
             return None, None
 
         # and the value
@@ -1032,10 +1034,8 @@ class DXF:
             try:
                 value = float(value)
             except:
-                error(
-                    "Error reading line '%s', tag=%d, floating point expected found \"%s\"\n"
-                    % (line, tag, value)
-                )
+                error(f"Error reading line '{line}', tag={int(tag)}, "
+                      + f"floating point expected found \"{value}\"\n")
                 return None, None
 
         # int
@@ -1051,10 +1051,8 @@ class DXF:
             try:
                 value = int(value)
             except:
-                error(
-                    "Error reading line '%s', tag=%d, integer expected found \"%s\"\n"
-                    % (line, tag, value)
-                )
+                error(f"Error reading line '{line}', tag={int(tag)}, "
+                      + f"integer expected found \"{value}\"\n")
                 return None, None
 
         return tag, value
@@ -1074,7 +1072,8 @@ class DXF:
 
     # ----------------------------------------------------------------------
     def mustbe(self, t, v=None):
-        """Read next tag, value pair which must be (t,v) otherwise report error"""
+        """Read next tag, value pair which must be (t,v)
+        otherwise report error"""
         tag, value = self.read()
         if t != tag:
             self.push(tag, value)
@@ -1184,7 +1183,7 @@ class DXF:
                 elif value == "ENDBLK":
                     self.skipBlock()
                 else:
-                    error("Unknown %s section in blocks" % (value))
+                    error(f"Unknown {value} section in blocks")
 
     # ----------------------------------------------------------------------
     def readTable(self):
@@ -1261,15 +1260,15 @@ class DXF:
     # ----------------------------------------------------------------------
     def write(self, tag, value):
         """Write one tag,value pair"""
-        self._f.write("%d\n%s\n" % (tag, str(value)))
+        self._f.write(f"{int(tag)}\n{str(value)}\n")
 
     # ----------------------------------------------------------------------
     def writeVector(self, idx, x, y, z=None):
         """Write a vector for index idx"""
-        self.write(10 + idx, "%g" % (x))
-        self.write(20 + idx, "%g" % (y))
+        self.write(10 + idx, f"{x:g}")
+        self.write(20 + idx, f"{y:g}")
         if z is not None:
-            self.write(30 + idx, "%g" % (z))
+            self.write(30 + idx, f"{z:g}")
 
     # ----------------------------------------------------------------------
     def writeHeader(self):
@@ -1417,7 +1416,7 @@ class DXF:
                                     self.addEntity(e2)
 
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 if __name__ == "__main__":
     # 	from dxfwrite.algebra import CubicSpline, CubicBezierCurve
     dxf = DXF(sys.argv[1], "r")

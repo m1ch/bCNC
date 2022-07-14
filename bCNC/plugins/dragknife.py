@@ -146,21 +146,22 @@ This fact introduces the need for preprocessing the g-code to account with that 
                 continue
 
             opath = app.gcode.toPath(bid)[0]
-            npath = Path("dragknife {}: {}".format(
-                dragoff, app.gcode[bid].name()))
+            npath = Path(f"dragknife {dragoff}: {app.gcode[bid].name()}")
 
             if not simulate:
 
                 # Entry vector
                 ventry = Segment(
-                    Segment.LINE, initPoint(
-                        opath[0].A, initdir, -dragoff), opath[0].A
+                    Segment.LINE,
+                    initPoint(opath[0].A, initdir, -dragoff),
+                    opath[0].A
                 )
 
                 # Exit vector
                 vexit = Segment(
-                    Segment.LINE, opath[-1].B, initPoint(
-                        opath[-1].B, initdir, dragoff)
+                    Segment.LINE,
+                    opath[-1].B,
+                    initPoint(opath[-1].B, initdir, dragoff)
                 )
                 opath.append(vexit)
 
@@ -171,7 +172,8 @@ This fact introduces the need for preprocessing the g-code to account with that 
                     TA = prevseg.tangentEnd()
                     TB = seg.tangentStart()
 
-                    # Compute difference between tangential vectors of two neighbor segments
+                    # Compute difference between tangential vectors of
+                    # two neighbor segments
                     angle = degrees(acos(TA.dot(TB)))
 
                     # Compute swivel direction
@@ -181,7 +183,8 @@ This fact introduces the need for preprocessing the g-code to account with that 
                     else:
                         arcdir = Segment.CCW
 
-                    # Append swivel if needed (with an angle threshold of 1 degree on entry/exit segments)
+                    # Append swivel if needed (with an angle threshold of
+                    # 1 degree on entry/exit segments)
                     if abs(angle) > angleth or (
                         abs(angle) > 1 and (i == 0 or i == len(opath) - 1)
                     ):
@@ -216,14 +219,14 @@ This fact introduces the need for preprocessing the g-code to account with that 
                 opath = opath.linearize(simpreci, True)
                 prevknife = initPoint(opath[0].A, initdir, -dragoff)
                 for seg in opath:
-                    dist = sqrt(
-                        (seg.B[0] - prevknife[0]) ** 2
-                        + (seg.B[1] - prevknife[1]) ** 2
-                    )
+                    dist = sqrt((seg.B[0] - prevknife[0]) ** 2
+                                + (seg.B[1] - prevknife[1]) ** 2)
                     move = (seg.B - prevknife).unit() * (dist - dragoff)
                     newknife = prevknife + move
                     if not eq(newknife, prevknife):
-                        npath.append(Segment(Segment.LINE, prevknife, newknife))
+                        npath.append(Segment(Segment.LINE,
+                                             prevknife,
+                                             newknife))
                     prevknife = newknife
 
             eblock = app.gcode.fromPath(npath)

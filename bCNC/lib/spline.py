@@ -10,9 +10,9 @@ import bmath
 from Utils import to_zip
 
 
-# ===============================================================================
+# =============================================================================
 # Cardinal cubic spline class
-# ===============================================================================
+# =============================================================================
 class CardinalSpline:
     def __init__(self, A=0.5):
         # The default matrix is the Catmull-Rom splin
@@ -72,14 +72,14 @@ class CardinalSpline:
         return ((C[0] * t + C[1]) * t + C[2]) * t + C[3]
 
 
-# ===============================================================================
+# =============================================================================
 # Cubic spline ensuring that the first and second derivative are continuous
 # adapted from Penelope Manual Appending B.1
 # It requires all the points (xi,yi) and the assumption on how to deal
 # with the second derviative on the extremeties
 # Option 1: assume zero as second derivative on both ends
 # Option 2: assume the same as the next or previous one
-# ===============================================================================
+# =============================================================================
 class CubicSpline:
     def __init__(self, X, Y):
         self.X = X
@@ -143,7 +143,8 @@ class CubicSpline:
 
     # -----------------------------------------------------------------------
     def coefficients(self, i):
-        """return coefficients of cubic spline for interval i a*x**3+b*x**2+c*x+d"""
+        """return coefficients of cubic spline for interval i
+        a*x**3+b*x**2+c*x+d"""
         hi = self.h(i)
         si = self.s[i]
         si1 = self.s[i + 1]
@@ -185,11 +186,11 @@ class CubicSpline:
         return (3.0 * C[0] * x + 2.0 * C[1]) * x + C[2]
 
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Convert a B-spline to polyline with a fixed number of segments
 #
 # FIXME to become adaptive
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def spline2Polyline(xyz, degree, closed, segments, knots):
     # Check if last point coincide with the first one
     if (bmath.Vector(xyz[0]) - bmath.Vector(xyz[-1])).length2() < 1e-10:
@@ -253,15 +254,16 @@ def spline2Polyline(xyz, degree, closed, segments, knots):
     return x, y, z
 
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Subroutine to generate a B-spline open knot vector with multiplicity
 # equal to the order at the ends.
 #    c            = order of the basis function
 #    n            = the number of defining polygon vertices
-#    n+2          = index of x[] for the first occurence of the maximum knot vector value
+#    n+2          = index of x[] for the first occurence of the maximum knot
+#                   vector value
 #    n+order      = maximum value of the knot vector -- $n + c$
 #    x[]          = array containing the knot vector
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def _knot(n, order):
     x = [0.0] * (n + order + 1)
     for i in range(2, n + order + 1):
@@ -272,14 +274,14 @@ def _knot(n, order):
     return x
 
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Subroutine to generate a B-spline uniform (periodic) knot vector.
 #
 # order        = order of the basis function
 # n            = the number of defining polygon vertices
 # n+order      = maximum value of the knot vector -- $n + order$
 # x[]          = array containing the knot vector
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def _knotu(n, order):
     x = [0] * (n + order + 1)
     for i in range(2, n + order + 1):
@@ -287,7 +289,7 @@ def _knotu(n, order):
     return x
 
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Subroutine to generate rational B-spline basis functions--open knot vector
 
 # C code for An Introduction to NURBS
@@ -309,7 +311,7 @@ def _knotu(n, order):
 #   t        = parameter value
 #   temp[]   = temporary array
 #   x[]      = knot vector
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def _rbasis(c, t, npts, x, h, r):
     nplusc = npts + c
     temp = [0.0] * (nplusc + 1)
@@ -354,7 +356,7 @@ def _rbasis(c, t, npts, x, h, r):
             r[i] = 0
 
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Generates a rational B-spline curve using a uniform open knot vector.
 #
 # C code for An Introduction to NURBS
@@ -381,7 +383,7 @@ def _rbasis(c, t, npts, x, h, r):
 #    p1          = number of points to be calculated on the curve
 #    t           = parameter value 0 <= t <= npts - k + 1
 #    x[]         = array containing the knot vector
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def _rbspline(npts, k, p1, b, h, p, x):
     nplusc = npts + k
     nbasis = [0.0] * (npts + 1)  # zero and re-dimension the basis array
@@ -413,8 +415,9 @@ def _rbspline(npts, k, p1, b, h, p, x):
         t += step
 
 
-# ------------------------------------------------------------------------------
-# Subroutine to generate a rational B-spline curve using an uniform periodic knot vector
+# -----------------------------------------------------------------------------
+# Subroutine to generate a rational B-spline curve using an uniform periodic
+# knot vector
 #
 # C code for An Introduction to NURBS
 # by David F. Rogers. Copyright (C) 2000 David F. Rogers,
@@ -440,7 +443,7 @@ def _rbspline(npts, k, p1, b, h, p, x):
 #   p1          = number of points to be calculated on the curve
 #   t           = parameter value 0 <= t <= npts - k + 1
 #   x[]         = array containing the knot vector
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def _rbsplinu(npts, k, p1, b, h, p, x=None):
     nplusc = npts + k
     nbasis = [0.0] * (npts + 1)  # zero and re-dimension the basis array

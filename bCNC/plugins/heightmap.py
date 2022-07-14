@@ -24,19 +24,19 @@ __name__ = _("Heightmap")
 __version__ = "0.0.1"
 
 
-# ==============================================================================
+# =============================================================================
 # Heightmap class
-# ==============================================================================
+# =============================================================================
 class Heightmap:
     def __init__(self, name="Heightmap"):
         self.name = name
 
 
-# ==============================================================================
+# =============================================================================
 # Create heightmap
-# ==============================================================================
+# =============================================================================
 class Tool(Plugin):
-    __doc__ = _("Use a brightess map to create a variable Z path")
+    __doc__ = _("Use a brightness map to create a variable Z path")
 
     def __init__(self, master):
         Plugin.__init__(self, master, "Heightmap")
@@ -68,7 +68,8 @@ class Tool(Plugin):
         try:
             from PIL import Image
         except:
-            app.setStatus(_("Heightmap abort: This plugin requires PIL/Pillow"))
+            app.setStatus(
+                _("Heightmap abort: This plugin requires PIL/Pillow"))
             return
 
         # Try read image
@@ -158,7 +159,8 @@ class Tool(Plugin):
                 v_angle = float(tool["angle"])
             except:
                 app.setStatus(
-                    _("Heightmap abort: angle not defined for selected End Mill")
+                    _("Heightmap abort: angle not defined for selected "
+                      + "End Mill")
                 )
                 return
             TOOL = make_tool_shape(
@@ -180,7 +182,8 @@ class Tool(Plugin):
             columns_first = 1
 
         ######################################################
-        # Options are "Alternating", "Positive"   , "Negative",  "Up Mill", "Down Mill"
+        # Options are
+        # "Alternating", "Positive", "Negative",  "Up Mill", "Down Mill"
         converter = self["ScanDir"]
 
         if converter == "Positive":
@@ -229,11 +232,13 @@ class Tool(Plugin):
                 convert_cols = Reduce_Scan_Lace(convert_cols, slope, step + 1)
             if lace_bound_val == "Full":
                 if columns_first:
-                    convert_cols = Reduce_Scan_Lace(
-                        convert_cols, slope, step + 1)
+                    convert_cols = Reduce_Scan_Lace(convert_cols,
+                                                    slope,
+                                                    step + 1)
                 else:
-                    convert_rows = Reduce_Scan_Lace(
-                        convert_rows, slope, step + 1)
+                    convert_rows = Reduce_Scan_Lace(convert_rows,
+                                                    slope,
+                                                    step + 1)
 
         ######################################################
         #                START COMMON STUFF                  #
@@ -377,11 +382,9 @@ class Tool(Plugin):
         if not n or n == "default":
             n = "Heightmap"
         block = Block(n)
-        block.append("(Size: %d x %d x %d)" % (image_w, image_h, depth))
+        block.append(f"(Size: {int(image_w)} x {int(image_h)} x {int(depth)})")
         block.append(
-            "(Endmill shape: {} , Diameter: {:.3f})".format(
-                tool_shape, tool_diameter)
-        )
+            f"(Endmill shape: {tool_shape} , Diameter: {tool_diameter:.3f})")
         for line in gcode:
             block.append(line)
 
@@ -393,5 +396,6 @@ class Tool(Plugin):
         app.gcode.insBlocks(active, blocks, n)
         app.refresh()
         app.setStatus(
-            _("Generated Heightmap %d x %d x %d ") % (image_w, image_h, depth)
+            _(f"Generated Heightmap {int(image_w)} x {int(image_h)} x "
+              + f"{int(depth)}")
         )

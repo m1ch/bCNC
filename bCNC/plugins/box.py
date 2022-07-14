@@ -19,9 +19,9 @@ __email__ = "Vasilis.Vlachoudis@cern.ch"
 __name__ = _("Box")
 
 
-# ==============================================================================
+# =============================================================================
 # Create a box with finger joints
-# ==============================================================================
+# =============================================================================
 class Box:
     def __init__(self, dx=100.0, dy=50.0, dz=25.0):
         self.name = "Box"
@@ -185,10 +185,10 @@ class Box:
     # @param ex,ey		additional space for x and y not included in the sx/y calculation
     # ----------------------------------------------------------------------
     def _rectangle(self, block, x0, y0, dx, dy, nx, ny, ex=0.0, ey=0.0):
-        block.append("(  Location: {:g},{:g} )".format(x0, y0))
-        block.append("(  Dimensions: {:g},{:g} )".format(dx, dy))
-        block.append("(  Teeth: %d,%d )" % (nx, ny))
-        block.append("(  Tool diameter: %g )" % (self.tool))
+        block.append(f"(  Location: {x0:g},{y0:g} )")
+        block.append(f"(  Dimensions: {dx:g},{dy:g} )")
+        block.append(f"(  Teeth: {int(nx)},{int(ny)} )")
+        block.append(f"(  Tool diameter: {self.tool:g} )")
 
         # Start with full length
         sx = dx / abs(nx)
@@ -234,9 +234,14 @@ class Box:
             block.append("")
 
             # Right
-            pos = self.zigZagLine(
-                block, pos, sy, self.thick, -Vector.Y, Vector.X, ny, ey
-            )
+            pos = self.zigZagLine(block,
+                                  pos,
+                                  sy,
+                                  self.thick,
+                                  -Vector.Y,
+                                  Vector.X,
+                                  ny,
+                                  ey)
             block.append("")
             if last:
                 break
@@ -267,41 +272,69 @@ class Box:
             dz = self.dz
 
         blocks = []
-        block = Block("%s-Bottom" % (self.name))
-        block.append("(Box: {:g} x {:g} x {:g})".format(
-            self.dx, self.dy, self.dz))
-        block.append("(Fingers: %d x %d x %d)" % (self.nx, self.ny, self.nz))
+        block = Block(f"{self.name}-Bottom")
+        block.append(f"(Box: {self.dx:g} x {self.dy:g} x {self.dz:g})")
+        block.append(f"(Fingers: {(self.nx)} x {(self.ny)} x {(self.nz)})")
         self._rectangle(block, 0.0, -d, dx, dy, self.nx, -self.ny, 0, d)
         blocks.append(block)
 
-        block = Block("%s-Left" % (self.name))
-        self._rectangle(block, -(dz + 5 * d), -d, dz,
-                        dy, self.nz, self.ny, d, d)
+        block = Block(f"{self.name}-Left")
+        self._rectangle(block,
+                        -(dz + 5 * d),
+                        -d,
+                        dz,
+                        dy,
+                        self.nz,
+                        self.ny,
+                        d,
+                        d)
         blocks.append(block)
 
-        block = Block("%s-Right" % (self.name))
+        block = Block(f"{self.name}-Right")
         self._rectangle(block, dx + 3 * d, -d, dz, dy, self.nz, self.ny, d, d)
         blocks.append(block)
 
-        block = Block("%s-Front" % (self.name))
-        self._rectangle(block, 0, -(dz + 4 * d), dx,
-                        dz, -self.nx, -self.nz, 0, 0)
+        block = Block(f"{self.name}-Front")
+        self._rectangle(block,
+                        0,
+                        -(dz + 4 * d),
+                        dx,
+                        dz,
+                        -self.nx,
+                        -self.nz,
+                        0,
+                        0)
         blocks.append(block)
 
-        block = Block("%s-Back" % (self.name))
-        self._rectangle(block, 0, dy + 4 * d, dx, dz, -self.nx, -self.nz, 0, 0)
+        block = Block(f"{self.name}-Back")
+        self._rectangle(block,
+                        0,
+                        dy + 4 * d,
+                        dx,
+                        dz,
+                        -self.nx,
+                        -self.nz,
+                        0,
+                        0)
         blocks.append(block)
 
-        block = Block("%s-Top" % (self.name))
-        self._rectangle(block, dx + dz + 8 * d, -d, dx,
-                        dy, self.nx, -self.ny, 0, d)
+        block = Block(f"{self.name}-Top")
+        self._rectangle(block,
+                        dx + dz + 8 * d,
+                        -d,
+                        dx,
+                        dy,
+                        self.nx,
+                        -self.ny,
+                        0,
+                        d)
         blocks.append(block)
         return blocks
 
 
-# ==============================================================================
+# =============================================================================
 # Create a BOX
-# ==============================================================================
+# =============================================================================
 class Tool(Plugin):
     __doc__ = _("Generate a finger box")
 
@@ -362,7 +395,7 @@ class Tool(Plugin):
         app.setStatus(_("Generated: BOX with fingers"))
 
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 if __name__ == "__main__":
     import sys
 
@@ -392,15 +425,15 @@ if __name__ == "__main__":
 
     def dump(filename):
         try:
-            f = open(filename, "r")
+            f = open(filename)
         except Exception:
             return
         for line in f:
-            sys.stdout.write("%s\n" % (line))
+            sys.stdout.write(f"{line}\n")
         f.close()
 
     dump("header")
     for block in blocks:
         for line in block:
-            sys.stdout.write("%s\n" % (line))
+            sys.stdout.write(f"{line}\n")
     dump("footer")

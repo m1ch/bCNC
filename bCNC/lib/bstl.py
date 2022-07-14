@@ -110,8 +110,10 @@ def triangulate(vertices):
             for i in range(0, len(bottom) - 1):
                 self.add_facet([bottom[i], bottom[i + 1], top[i + 1], top[i]])
             self.add_facet(
-                [bottom[len(bottom) - 1], bottom[0],
-                 top[0], top[len(bottom) - 1]]
+                [bottom[len(bottom) - 1],
+                 bottom[0],
+                 top[0],
+                 top[len(bottom) - 1]]
             )
 
             self.add_facet(top)
@@ -168,8 +170,8 @@ class Binary_STL_Writer(ASCII_STL_Writer):
     def _write_header(self):
         self.fp.seek(0)
         self.fp.write(
-            struct.pack(BINARY_HEADER,
-                        b"Python Binary STL Writer", self.counter)
+            struct.pack(
+                BINARY_HEADER, b"Python Binary STL Writer", self.counter)
         )
 
     def _write(self, face):

@@ -23,9 +23,9 @@ except ImportError:
     Image = None
 
 
-# ==============================================================================
+# =============================================================================
 # Create Halftone
-# ==============================================================================
+# =============================================================================
 class Tool(Plugin):
     __doc__ = _("Create halftone pattern from a picture")
 
@@ -107,7 +107,8 @@ class Tool(Plugin):
     def execute(self, app):
         if Image is None:
             app.setStatus(
-                _("Halftone abort: This plugin requires PIL/Pillow to read image data")
+                _("Halftone abort: This plugin requires PIL/Pillow to read "
+                  + "image data")
             )
             return
 
@@ -129,12 +130,14 @@ class Tool(Plugin):
 
         # Check parameters
         if drawSize < 1:
-            app.setStatus(_("Halftone abort: Size too small to draw anything!"))
+            app.setStatus(
+                _("Halftone abort: Size too small to draw anything!"))
             return
 
         if dMin > dMax:
             app.setStatus(
-                _("Halftone abort: Minimum diameter must be minor then Maximum")
+                _("Halftone abort: Minimum diameter must be minor then "
+                  + "Maximum")
             )
             return
 
@@ -154,7 +157,8 @@ class Tool(Plugin):
                     v_angle = float(tool["angle"])
                 except Exception:
                     app.setStatus(
-                        _("Halftone abort: Angle in V-Cutting end mill is missing")
+                        _("Halftone abort: Angle in V-Cutting end mill is "
+                          + "missing")
                     )
                     return
             else:
@@ -170,7 +174,8 @@ class Tool(Plugin):
             app.setStatus(_("Halftone abort: Can't read image file"))
             return
 
-        # Create a scaled image to work faster with big image and better with small ones
+        # Create a scaled image to work faster with big image and better
+        # with small ones
         squareNorm = True
         if channel == "Blue(sqrt)":
             img = img.convert("RGB")
@@ -208,7 +213,7 @@ class Tool(Plugin):
 
         # Border block
         if drawBorder:
-            block = Block("%s-border" % (self.name))
+            block = Block(f"{self.name}-border")
             block.append(CNC.zsafe())
             block.append(CNC.grapid(0, 0))
             block.append(CNC.zenter(depth))
@@ -234,15 +239,11 @@ class Tool(Plugin):
             block.color = "#ff0000"
 
         block.append(
-            "(Halftone size W=%d x H=%d x D=%d ,Total points:%i)"
-            % (
-                self.imgWidth * self.ratio,
-                self.imgHeight * self.ratio,
-                depth,
-                len(circles),
-            )
+            f"(Halftone size W={int(self.imgWidth * self.ratio)} x "
+            + f"H={int(self.imgHeight * self.ratio)} x D={int(depth)}, "
+            + f"Total points:{len(circles)})"
         )
-        block.append("(Channel = %s)" % channel)
+        block.append(f"(Channel = {channel})")
 
         for c in circles:
             x, y, r = c
@@ -265,7 +266,7 @@ class Tool(Plugin):
         blocks.append(block)
 
         if conical:
-            blockCon = Block("%s-Conical" % (self.name))
+            blockCon = Block(f"{self.name}-Conical")
             for c in circles:
                 x, y, r = c
                 if r >= dMin / 2.0:
@@ -282,12 +283,8 @@ class Tool(Plugin):
         app.refresh()
         app.setStatus(
             _(
-                "Generated Halftone size W=%d x H=%d x D=%d ,Total points:%i"
-                % (
-                    self.imgWidth * self.ratio,
-                    self.imgHeight * self.ratio,
-                    depth,
-                    len(circles),
-                )
+                f"Generated Halftone size W={int(self.imgWidth * self.ratio)} "
+                + f"x H={int(self.imgHeight * self.ratio)} x D={int(depth)}, "
+                + f"Total points: {int(len(circles))}"
             )
         )

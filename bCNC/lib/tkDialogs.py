@@ -53,7 +53,7 @@ except ImportError:
     from tkinter import _cnfmerge
 
 
-# ===============================================================================
+# =============================================================================
 # Similar to the Dialog.py from Tk but transient to master
 #
 # This class displays a dialog box, waits for a button in the dialog
@@ -69,7 +69,7 @@ except ImportError:
 # 		(-1 means none).
 # args -	One or more strings to display in buttons across the
 # 		bottom of the dialog box.
-# ===============================================================================
+# =============================================================================
 class Dialog(Toplevel):
     def __init__(self, master=None, cnf={}, **kw):
         Toplevel.__init__(self, master, class_="Dialog", **kw)
@@ -95,7 +95,8 @@ class Dialog(Toplevel):
         # self.grid_anchor(CENTER)
 
         lbl = Label(
-            ftop, text=cnf["text"], wraplength="3i", font="TkCaptionFont", justify=LEFT
+            ftop, text=cnf["text"], wraplength="3i",
+            font="TkCaptionFont", justify=LEFT
         )
         lbl.pack(side=RIGHT, fill=BOTH, expand=YES, padx="3m", pady="3m")
 
@@ -144,13 +145,14 @@ class InputDialog(Toplevel):
     """
 
     def __init__(
-        self, master, title, message, input="", type_="str", from_=None, to_=None
+        self, master, title, message, input="",
+        type_="str", from_=None, to_=None
     ):
 
         Toplevel.__init__(self, master)
         self.transient(master)
-        Label(self, text=message, justify=LEFT).pack(
-            expand=YES, fill=BOTH, side=TOP)
+        Label(self, text=message,
+              justify=LEFT).pack(expand=YES, fill=BOTH, side=TOP)
 
         if type_ == "int":
             self.entry = tkExtra.IntegerEntry(self)
@@ -256,7 +258,8 @@ class FindReplaceDialog(Toplevel):
             self.title("Find")
 
         btn = Button(
-            bottom_frame, text="Close", underline=0, width=8, command=self._close
+            bottom_frame, text="Close", underline=0,
+            width=8, command=self._close
         )
         btn.pack(side=RIGHT)
 
@@ -281,7 +284,8 @@ class FindReplaceDialog(Toplevel):
             label.pack(side=LEFT)
 
             self.replaceString_entry = Entry(
-                replaceString_frame, background=tkExtra.GLOBAL_CONTROL_BACKGROUND
+                replaceString_frame,
+                background=tkExtra.GLOBAL_CONTROL_BACKGROUND
             )
             self.replaceString_entry.pack(side=RIGHT, fill=X, expand=YES)
 
@@ -335,7 +339,8 @@ class FindReplaceDialog(Toplevel):
         self.findString = self.findString_entry.get()
         self.replaceString = self.replaceString_entry.get()
         if self.objReplace:
-            self.objReplace(self.findString, self.replaceString,
+            self.objReplace(self.findString,
+                            self.replaceString,
                             self.caseVar.get())
 
     # --------------------------------------------------------------------
@@ -343,8 +348,9 @@ class FindReplaceDialog(Toplevel):
         self.findString = self.findString_entry.get()
         self.replaceString = self.replaceString_entry.get()
         if self.objReplaceAll:
-            self.objReplaceAll(
-                self.findString, self.replaceString, self.caseVar.get())
+            self.objReplaceAll(self.findString,
+                               self.replaceString,
+                               self.caseVar.get())
 
     # --------------------------------------------------------------------
     def _close(self, event=None):
@@ -495,7 +501,7 @@ class Printer(Toplevel):
         # On unix
         if sys.platform in ("linux", "linux2"):
             try:
-                f = open("/etc/printcap", "r")
+                f = open("/etc/printcap")
                 for line in f:
                     if len(line) == 0:
                         continue
@@ -506,7 +512,7 @@ class Printer(Toplevel):
                     if Printer.printer == "":
                         Printer.printer = field[0]
                 f.close()
-            except IOError:
+            except OSError:
                 pass
         else:
             raise Exception("Unknown operating system")
@@ -593,14 +599,14 @@ class Printer(Toplevel):
             printer = printer[:bar]
 
         if Printer.cmd.find("%p") == -1:
-            cmd = Printer.cmd + " -P %s" % (printer)
+            cmd = Printer.cmd + f" -P {printer}"
         else:
-            cmd = Printer.cmd.replace("%p", "%s") % (printer)
+            cmd = Printer.cmd.replace("%p", f"{printer}")
 
         if cmd.find("%#") == -1:
             cmd += " -# %d" % (Printer.copies)
         else:
-            cmd = cmd.replace("%#", "%d") % (Printer.copies)
+            cmd = cmd.replace("%#", f"{int(Printer.copies)}")
         # print "Printing command=\"%s\""%(cmd)
         return cmd
 
@@ -660,7 +666,7 @@ class ProgressDialog(Toplevel):
 
         x = master.winfo_rootx() + (master.winfo_width() - self.winfo_width()) / 2
         y = master.winfo_rooty() + (master.winfo_height() - self.winfo_height()) / 2
-        self.geometry("+%d+%d" % (x, y))
+        self.geometry(f"+{int(x)}+{int(y)}")
         self.lastTime = time.time()
         self.refreshInterval = 0.25
 

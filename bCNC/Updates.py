@@ -22,9 +22,9 @@ except ImportError:
     import http.client as http
     from tkinter import *
 
-# ===============================================================================
+# =============================================================================
 # Check for updates of bCNC
-# ===============================================================================
+# =============================================================================
 
 
 class CheckUpdateDialog(Toplevel):
@@ -38,7 +38,7 @@ class CheckUpdateDialog(Toplevel):
 
         # -----
         la = Label(self, image=Utils.icons["bCNC"],
-                  relief=RAISED, padx=0, pady=0)
+                   relief=RAISED, padx=0, pady=0)
         la.pack(side=TOP, fill=BOTH)
 
         # ----
@@ -57,8 +57,8 @@ class CheckUpdateDialog(Toplevel):
 
         self.webversion = Label(frame, anchor=W)
         self.webversion.grid(row=1, column=1, sticky=EW)
-        tkExtra.Balloon.set(self.webversion, _(
-            "Latest release version on github"))
+        tkExtra.Balloon.set(self.webversion,
+                            _("Latest release version on github"))
         la = Label(frame, text=_("Published at:"))
         la.grid(row=2, column=0, sticky=E, pady=1)
 
@@ -167,7 +167,8 @@ class CheckUpdateDialog(Toplevel):
             if self.isNewer(latest_version):
                 self.webversion.config(background="LightGreen")
                 self.checkButton.config(
-                    text=_("Download"), background="LightYellow", command=self.download
+                    text=_("Download"), background="LightYellow",
+                    command=self.download
                 )
                 tkExtra.Balloon.set(
                     self.checkButton, _("Open web browser to download bCNC")
@@ -201,17 +202,17 @@ class CheckUpdateDialog(Toplevel):
     def close(self, event=None):
         try:
             Utils.config.set(
-                Utils.__prg__, "checkinterval", str(
-                    int(self.checkInterval.get()))
+                Utils.__prg__, "checkinterval",
+                str(int(self.checkInterval.get()))
             )
         except TypeError:
             pass
         self.destroy()
 
 
-# -------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Check if interval has passed from last check
-# -------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def need2Check():
     lastCheck = Utils.getInt(Utils.__prg__, "lastcheck", 0)
     if lastCheck == 0:  # Unknown
@@ -224,7 +225,7 @@ def need2Check():
     return lastCheck + checkInt * 86400 < int(time.time())
 
 
-# ===============================================================================
+# =============================================================================
 if __name__ == "__main__":
     tk = Tk()
     Utils.loadIcons()

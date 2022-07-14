@@ -15,11 +15,11 @@
 # jepler@unpy.net
 
 
-#                                 image-to-gcode                                #
-#################################################################################
+#                                 image-to-gcode                              #
+###############################################################################
 from __future__ import absolute_import
 
-#################################################################################
+###############################################################################
 import math
 import operator
 import sys
@@ -256,7 +256,7 @@ class Reduce_Scan_Lace_new:
                     else:
                         if i - b < keep:
                             continue
-                        yield True, span[bos(a): eos(b + 1)]
+                        yield True, span[bos(a) : eos(b + 1)]
                         a = None
             if a is not None:
                 yield True, span[a:]
@@ -440,7 +440,9 @@ class Converter:
         try:
             return min(0, max(self.rd, self.cache[x, y]))
         except KeyError:
-            self.cache[x, y] = d = self.image.height_calc(x, y, self.tool_shape)
+            self.cache[x, y] = d = self.image.height_calc(x,
+                                                          y,
+                                                          self.tool_shape)
             return min(0.0, max(self.rd, d))
 
     def get_dz_dy(self, x, y):
@@ -645,12 +647,10 @@ class ArcEntryCut:
             conv.g.lastgcode = None
             if cx > 0:
                 # conv.g.write("G3 X%f Z%f R%f" % (p1[0], p1[2], radius)) #G3
-                conv.g.write("G3 X{:f} Z{:f} I{:f} K{:f}".format(
-                    p1[0], p1[2], I, K))
+                conv.g.write(f"G3 X{p1[0]:f} Z{p1[2]:f} I{I:f} K{K:f}")
             else:
                 # conv.g.write("G2 X%f Z%f R%f" % (p1[0], p1[2], radius)) #G2
-                conv.g.write("G2 X{:f} Z{:f} I{:f} K{:f}".format(
-                    p1[0], p1[2], I, K))
+                conv.g.write(f"G2 X{p1[0]:f} Z{p1[2]:f} I{I:f} K{K:f}")
 
             conv.g.lastx = p1[0]
             conv.g.lasty = p1[1]
@@ -687,12 +687,10 @@ class ArcEntryCut:
             conv.g.lastgcode = None
             if cy > 0:
                 # conv.g.write("G2 Y%f Z%f R%f" % (p1[1], p1[2], radius)) #G2
-                conv.g.write("G2 Y{:f} Z{:f} J{:f} K{:f}".format(
-                    p1[1], p1[2], J, K))
+                conv.g.write(f"G2 Y{p1[1]:f} Z{p1[2]:f} J{J:f} K{K:f}")
             else:
                 # conv.g.write("G3 Y%f Z%f R%f" % (p1[1], p1[2], radius)) #G3
-                conv.g.write("G3 Y{:f} Z{:f} J{:f} K{:f}".format(
-                    p1[1], p1[2], J, K))
+                conv.g.write(f"G3 Y{p1[1]:f} Z{p1[2]:f} J{J:f} K{K:f}")
             conv.g.lastx = p1[0]
             conv.g.lasty = p1[1]
             conv.g.lastz = p1[2]
@@ -893,27 +891,27 @@ class Image_Matrix_Numpy:
         for j in range(0, w1):
             for i in range(0, h1):
                 temp[j, i] = -1e1000000
-        temp[to: to + w, to: to + h] = self.matrix
+        temp[to : to + w, to : to + h] = self.matrix
         self.matrix = temp
 
     def height_calc(self, x, y, tool):
         to = self.t_offset
         ts = tool.width
         d = -1e100000
-        m1 = self.matrix[y: y + ts, x: x + ts]
+        m1 = self.matrix[y : y + ts, x : x + ts]
         d = (m1 - tool.matrix).max()
         return d
 
     def min(self):
         return self.matrix[
-            self.t_offset: self.t_offset + self.width,
-            self.t_offset: self.t_offset + self.height,
+            self.t_offset : self.t_offset + self.width,
+            self.t_offset : self.t_offset + self.height,
         ].min()
 
     def max(self):
         return self.matrix[
-            self.t_offset: self.t_offset + self.width,
-            self.t_offset: self.t_offset + self.height,
+            self.t_offset : self.t_offset + self.width,
+            self.t_offset : self.t_offset + self.height,
         ].max()
 
     def mult(self, val):
@@ -923,10 +921,10 @@ class Image_Matrix_Numpy:
         self.matrix = self.matrix - float(val)
 
 
-################################################################################
-#             Author.py                                                        #
-#             A component of emc2                                              #
-################################################################################
+###############################################################################
+#             Author.py                                                       #
+#             A component of emc2                                             #
+###############################################################################
 
 
 # Compute the 3D distance from the line segment l1..l2 to the point p.
@@ -949,8 +947,9 @@ def dist_lseg(l1, l2, p):
         t = 0
     if t > 1:
         t = 1
-    dist2 = (xi - x0 - t * dx) ** 2 + (yi - y0
-                                       - t * dy) ** 2 + (zi - z0 - t * dz) ** 2
+    dist2 = ((xi - x0 - t * dx) ** 2
+             + (yi - y0 - t * dy) ** 2
+             + (zi - z0 - t * dz) ** 2)
 
     return dist2**0.5
 
@@ -981,7 +980,7 @@ class Point:
         self.y = y
 
     def __str__(self):
-        return "<{:f},{:f}>".format(self.x, self.y)
+        return f"<{self.x:f},{self.y:f}>"
 
     def __sub__(self, other):
         return Point(self.x - other.x, self.y - other.y)
@@ -1123,23 +1122,24 @@ def arc_dir(plane, c, p1, p2, p3):
 def arc_fmt(plane, c1, c2, p1):
     x, y, z = p1
     if plane == 17:
-        return "I{:.4f} J{:.4f}".format(c1 - x, c2 - y)
+        return f"I{c1 - x:.4f} J{c2 - y:.4f}"
     if plane == 18:
-        return "I{:.4f} K{:.4f}".format(c1 - x, c2 - z)
+        return f"I{c1 - x:.4f} K{c2 - z:.4f}"
     if plane == 19:
-        return "J{:.4f} K{:.4f}".format(c1 - y, c2 - z)
+        return f"J{c1 - y:.4f} K{c2 - z:.4f}"
 
 
 # Perform Douglas-Peucker simplification on the path 'st' with the specified
 # tolerance.  The '_first' argument is for internal use only.
 #
-# The Douglas-Peucker simplification algorithm finds a subset of the input points
-# whose path is never more than 'tolerance' away from the original input path.
+# The Douglas-Peucker simplification algorithm finds a subset of the input
+# points whose path is never more than 'tolerance' away from the original
+# input path.
 #
-# If 'plane' is specified as 17, 18, or 19, it may find helical arcs in the given
-# plane in addition to lines.  Note that if there is movement in the plane
-# perpendicular to the arc, it will be distorted, so 'plane' should usually
-# be specified only when there is only movement on 2 axes
+# If 'plane' is specified as 17, 18, or 19, it may find helical arcs in the
+# given plane in addition to lines.  Note that if there is movement in the
+# plane perpendicular to the arc, it will be distorted, so 'plane' should
+# usually be specified only when there is only movement on 2 axes
 def douglas(st, tolerance=0.001, plane=None, _first=True):
     if len(st) == 1:
         yield "G1", st[0], None
@@ -1260,7 +1260,7 @@ class Gcode:
             assert p in (17, 18, 19)
             if p != self.plane:
                 self.plane = p
-                self.write("G%d" % p)
+                self.write(f"G{int(p)}")
 
     # This function write header and move to safety height
     def begin(self):
@@ -1271,25 +1271,26 @@ class Gcode:
 
         # self.safety()
         # self.rapid(z=self.safetyheight)
-        self.write("G0 Z%.4f" % (self.safetyheight))
+        self.write(f"G0 Z{self.safetyheight:.4f}")
         # ["G17 G40","G80 G90 G94 G91.1"]
 
-    # If any 'cut' moves are stored up, send them to the simplification algorithm
-    # and actually output them.
+    # If any 'cut' moves are stored up, send them to the simplification
+    # algorithm and actually output them.
     #
     # This function is usually used internally (e.g., when changing from a cut
     # to a rapid) but can be called manually as well.  For instance, when
-    # a contouring program reaches the end of a row, it may be desirable to enforce
-    # that the last 'cut' coordinate is actually in the output file, and it may
-    # give better performance because this means that the simplification algorithm
-    # will examine fewer points per run.
+    # a contouring program reaches the end of a row, it may be desirable to
+    # enforce that the last 'cut' coordinate is actually in the output file,
+    # and it may give better performance because this means that the
+    # simplification algorithm will examine fewer points per run.
     def flush(self):
         if not self.cuts:
             return
-        for move, (x, y, z), cent in douglas(self.cuts, self.tolerance, self.plane):
+        for move, (x, y, z), cent in douglas(self.cuts,
+                                             self.tolerance,
+                                             self.plane):
             if cent:
-                self.write("{} X{:.4f} Y{:.4f} Z{:.4f} {}".format(
-                    move, x, y, z, cent))
+                self.write(f"{move} X{x:.4f} Y{y:.4f} Z{z:.4f} {cent}")
                 self.lastgcode = None
                 self.lastx = x
                 self.lasty = y
@@ -1334,16 +1335,16 @@ class Gcode:
         if a == None:
             a = self.lasta
         if x != self.lastx:
-            xstring = " X%.4f" % (x)
+            xstring = f" X{x:.4f}"
             self.lastx = x
         if y != self.lasty:
-            ystring = " Y%.4f" % (y)
+            ystring = f" Y{y:.4f}"
             self.lasty = y
         if z != self.lastz:
-            zstring = " Z%.4f" % (z)
+            zstring = f" Z{z:.4f}"
             self.lastz = z
         if a != self.lasta:
-            astring = " A%.4f" % (a)
+            astring = f" A{a:.4f}"
             self.lasta = a
         if xstring == ystring == zstring == astring == "":
             return
@@ -1357,10 +1358,11 @@ class Gcode:
     def set_feed(self, feed):
         # "Set the feed rate to the given value"
         self.flush()
-        self.write("F%.4f" % feed)
+        self.write(f"F{feed:.4f}")
 
     def cut(self, x=None, y=None, z=None):
-        # "Perform a cutting move at the specified feed rate to the specified coordinates"
+        # "Perform a cutting move at the specified feed rate to the specified
+        # coordinates"
         if self.cuts:
             lastx, lasty, lastz = self.cuts[-1]
         else:

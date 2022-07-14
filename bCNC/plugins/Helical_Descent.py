@@ -32,9 +32,10 @@ from __future__ import absolute_import, print_function
 import math
 import os.path
 import re
-# ==============================================================================
+
+# =============================================================================
 # My plugin
-# ==============================================================================
+# =============================================================================
 from math import (
     acos,
     asin,
@@ -70,11 +71,15 @@ class Tool(Plugin):
 
     def __init__(self, master):
         Plugin.__init__(self, master, "Helical")
-        # Helical_Descent: is the name of the plugin show in the tool ribbon button
-        # <<< This is the name of file used as icon for the ribbon button. It will be search in the "icons" subfolder
+        # Helical_Descent: is the name of the plugin show in the tool
+        # ribbon button
+
+        # This is the name of file used as icon for the ribbon button.
+        # It will be search in the "icons" subfolder
         self.icon = "helical"
         self.group = "CAM"  # <<< This is the name of group that plugin belongs
-        # Here we are creating the widgets presented to the user inside the plugin
+        # Here we are creating the widgets presented to the user inside the
+        # plugin
         # Name, Type , Default value, Description
         self.variables = [  # <<< Define a list of components for the GUI
             (
@@ -95,7 +100,8 @@ class Tool(Plugin):
             ("Mult_Feed_Z", "float", 1.0, _("Z Feed Multiplier")),
             (
                 "HelicalCut",
-                "Helical Cut,Internal Right Thread,Internal Left Thread,External Right Thread,External Left Thread",
+                "Helical Cut,Internal Right Thread,Internal Left Thread,"
+                + "External Right Thread,External Left Thread",
                 "Helical Cut",
                 _("Helical Type"),
             ),
@@ -109,19 +115,21 @@ class Tool(Plugin):
             # 	("OpenFile", "file" ,     "", _("OpenFile description")),			#a file chooser widget
             # 	("ComboBox", "Item1,Item2,Item3" , "Item1", _("ComboBox description"))	#a multiple choice combo box
         ]
+
+        # This is the button added at bottom to call the execute method below
         self.buttons.append(
             "exe"
-        )  # <<< This is the button added at bottom to call the execute method below
+        )
 
     # Calc line length -----------------------------------------------------
     def calcSegmentLength(self, xyz):
         if xyz:
             p1 = xyz[0]
             p2 = xyz[1]
-            return math.sqrt(
-                (p2[0] - p1[0]) ** 2
-                + (p2[1] - p1[1]) ** 2 + (p2[2] - p1[2]) ** 2
-            )
+            return math.sqrt((p2[0] - p1[0]) ** 2
+                             + (p2[1] - p1[1]) ** 2
+                             + (p2[2] - p1[2]) ** 2
+                             )
         else:
             return 0
 
@@ -153,15 +161,18 @@ class Tool(Plugin):
                     if xyz:
                         # exclude if fast move or z only movement
                         G0 = ("g0" in cmd) or ("G0" in cmd)
-                        Zonly = xyz[0][0] == xyz[1][0] and xyz[0][1] == xyz[1][1]
+                        Zonly = (xyz[0][0] == xyz[1][0]
+                                 and xyz[0][1] == xyz[1][1])
                         exclude = G0 or Zonly
 
                         # save length for later use
                         segLenth = self.calcSegmentLength(xyz)
 
                         if len(xyz) < 3:
-                            bidSegments.append(
-                                [xyz[0], xyz[1], exclude, segLenth])
+                            bidSegments.append([xyz[0],
+                                                xyz[1],
+                                                exclude,
+                                                segLenth])
                         else:
                             for i in range(len(xyz) - 1):
                                 bidSegments.append(
@@ -246,7 +257,7 @@ class Tool(Plugin):
             turn = 3
             p = "ExtLeftThread "
 
-        # 		------------------------------------------------------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # Check inputs
         if sel_Blocks == 0:
             if x == "" or y == "":
@@ -259,9 +270,9 @@ class Tool(Plugin):
             return
 
         elif cutDiam < toolDiam or cutDiam == "":
-            app.setStatus(
-                _("Helical Abort: Helix diameter must be greater than the end mill")
-            )
+            app.setStatus(_("Helical Abort: Helix diameter must be greater "
+                            + "than the end mill")
+                          )
             return
 
         elif cutDiam <= 0:
@@ -273,8 +284,8 @@ class Tool(Plugin):
             return
 
         elif Mult_F_Z <= 0 or Mult_F_Z == "":
-            app.setStatus(
-                _("Helical Abort: Z Feed Multiplier must be greater than 0"))
+            app.setStatus(_("Helical Abort: Z Feed Multiplier must be "
+                            + "greater than 0"))
             return
 
         elif entry == "":
@@ -290,7 +301,7 @@ class Tool(Plugin):
         # 		elif clearanceExit < 0 or clearanceExit == "":
         # 			app.setStatus(_("Helical Abort: Exit Edge Clearence may be positive"))
         # 			return
-        # 		------------------------------------------------------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # Initialize blocks that will contain our gCode
         blocks = []
         # block = Block(name)
@@ -309,7 +320,7 @@ class Tool(Plugin):
         cutFeed = CNC.vars["cutfeedz"]
         # <<< Get cut feed XY for the current material
         cutFeedMax = CNC.vars["cutfeed"]
-        # 		------------------------------------------------------------------------------------------------------------------
+        # -------------------------------------------------------------------
         # Get selected blocks from editor
         selBlocks = app.editor.getSelectedBlocks()
         if not selBlocks:
@@ -320,7 +331,7 @@ class Tool(Plugin):
             if sel_Blocks == 1:
                 app.setStatus(_("Helical abort: Please select some path"))
                 return
-        # 		------------------------------------------------------------------------------------------------------------------
+        # -------------------------------------------------------------------
         # Get selected blocks from editor
         if sel_Blocks == 1:
             selBlocks = app.editor.getSelectedBlocks()
@@ -340,21 +351,22 @@ class Tool(Plugin):
                 bidHoles = []
                 for idx, anchor in enumerate(bidSegment):
                     if idx == 2:
-                        newHolePoint = (
-                            anchor[0][0], anchor[0][1], anchor[0][2])
+                        newHolePoint = (anchor[0][0],
+                                        anchor[0][1],
+                                        anchor[0][2])
                         bidHoles.append(newHolePoint)
 
                 # Add bidHoles to allHoles
                 allHoles.append(bidHoles)
 
-            # 		------------------------------------------------------------------------------------------------------------------
+            # -----------------------------------------------------------------
             holesCount = 0
             for bid in allHoles:
                 for xH, yH, zH in bid:
                     x = xH
                     y = yH
 
-        # 		------------------------------------------------------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # 		 Init: Adjust feed and rapid move to Z safe
 
         if Mult_F_Z == "":
@@ -406,16 +418,19 @@ class Tool(Plugin):
         # cutFeed = int(cutFeed)
         block.append(CNC.fmt("F", cutFeed))  # <<< Set cut feed
 
-        # -----------------------------------------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # 	Uncomment for first flat pass
         if helicalCut == "Helical Cut":
             block.append(
                 CNC.gcode(
-                    turn, [("X", x - Radio), ("Y", y),
-                           ("Z", z), ("I", Radio), ("J", 0)]
+                    turn, [("X", x - Radio),
+                           ("Y", y),
+                           ("Z", z),
+                           ("I", Radio),
+                           ("J", 0)]
                 )
             )
-        # -----------------------------------------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         if z < Depth:
             pitch = -pitch
 
@@ -423,9 +438,12 @@ class Tool(Plugin):
                 z = z - pitch
                 block.append(
                     CNC.gcode(
-                        turn,
-                        [("X", x - Radio), ("Y", y),
-                         ("Z", z), ("I", Radio), ("J", 0)],
+                        turn, [("X",
+                                x - Radio),
+                               ("Y", y),
+                               ("Z", z),
+                               ("I", Radio),
+                               ("J", 0)],
                     )
                 )
 
@@ -434,9 +452,11 @@ class Tool(Plugin):
                 z = z - pitch
                 block.append(
                     CNC.gcode(
-                        turn,
-                        [("X", x - Radio), ("Y", y),
-                         ("Z", z), ("I", Radio), ("J", 0)],
+                        turn, [("X", x - Radio),
+                               ("Y", y),
+                               ("Z", z),
+                               ("I", Radio),
+                               ("J", 0)],
                     )
                 )
 
@@ -457,15 +477,21 @@ class Tool(Plugin):
         if helicalCut == "Helical Cut":
             block.append(
                 CNC.gcode(
-                    turn, [("X", x - Radio), ("Y", y),
-                           ("Z", z), ("I", Radio), ("J", 0)]
+                    turn, [("X", x - Radio),
+                           ("Y", y),
+                           ("Z", z),
+                           ("I", Radio),
+                           ("J", 0)]
                 )
             )
             # Last flat pass
             block.append(
                 CNC.gcode(
-                    turn, [("X", x - Radio), ("Y", y),
-                           ("Z", z), ("I", Radio), ("J", 0)]
+                    turn, [("X", x - Radio),
+                           ("Y", y),
+                           ("Z", z),
+                           ("I", Radio),
+                           ("J", 0)]
                 )
             )
         elif (
@@ -477,17 +503,16 @@ class Tool(Plugin):
                     turn,
                     [
                         ("X", x - Radiox),
-                        ("Y", y - Radioy),
-                        ("Z", z),
-                        ("I", Radio),
+                           ("Y", y - Radioy),
+                           ("Z", z),
+                           ("I", Radio),
                         ("J", 0),
                     ],
                 )
             )
 
-        elif (
-            helicalCut == "Internal Left Thread" or helicalCut == "External Left Thread"
-        ):
+        elif (helicalCut == "Internal Left Thread"
+              or helicalCut == "External Left Thread"):
             block.append(
                 CNC.gcode(
                     turn,

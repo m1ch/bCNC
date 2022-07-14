@@ -76,15 +76,16 @@ STATECOLOR = {
 }
 
 
-# ==============================================================================
+# =============================================================================
 # bCNC Sender class
-# ==============================================================================
+# =============================================================================
 class Sender:
     # Messages types for log Queue
     MSG_BUFFER = 0  # write to buffer one command
     MSG_SEND = 1  # send message
     MSG_RECEIVE = 2  # receive message from controller
-    MSG_OK = 3  # ok response from controller, move top most command to terminal
+    # ok response from controller, move top most command to terminal
+    MSG_OK = 3
     MSG_ERROR = 4  # error message or exception
     MSG_RUNEND = 5  # run ended
     MSG_CLEAR = 6  # clear buffer
@@ -133,14 +134,14 @@ class Sender:
     # ----------------------------------------------------------------------
     def controllerLoad(self):
         # Find plugins in the controllers directory and load them
-        for f in glob.glob("%s/controllers/*.py" % (Utils.prgpath)):
+        for f in glob.glob(f"{Utils.prgpath}/controllers/*.py"):
             name, ext = os.path.splitext(os.path.basename(f))
             if name[0] == "_":
                 continue
             # print("Loaded motion controller plugin: %s"%(name))
             try:
-                exec("import %s" % (name))
-                self.controllers[name] = eval("%s.Controller(self)" % (name))
+                exec(f"import {name}")
+                self.controllers[name] = eval(f"{name}.Controller(self)")
             except (ImportError, AttributeError):
                 typ, val, tb = sys.exc_info()
                 traceback.print_exception(typ, val, tb)
@@ -180,7 +181,7 @@ class Sender:
     # ----------------------------------------------------------------------
     def loadHistory(self):
         try:
-            f = open(Utils.hisFile, "r")
+            f = open(Utils.hisFile)
         except Exception:
             return
         self.history = [x.strip() for x in f]
@@ -292,7 +293,7 @@ class Sender:
                 CNC.vars["safe"] = float(line[1])
             except Exception:
                 pass
-            self.statusbar["text"] = "Safe Z= %g" % (CNC.vars["safe"])
+            self.statusbar["text"] = f"Safe Z= {CNC.vars['safe']:g}"
 
         # SA*VE [filename]: save to filename or to default name
         elif rexx.abbrev("SAVE", cmd, 2):
@@ -417,8 +418,8 @@ class Sender:
             filename = self.gcode.filename
         Utils.setUtf("File", "dir", os.path.dirname(os.path.abspath(filename)))
         Utils.setUtf("File", "file", os.path.basename(filename))
-        Utils.setUtf("File", "probe", os.path.basename(
-            self.gcode.probe.filename))
+        Utils.setUtf(
+            "File", "probe", os.path.basename(self.gcode.probe.filename))
 
     # ----------------------------------------------------------------------
     # Load a file into editor
@@ -441,7 +442,9 @@ class Sender:
 
                 tkMessageBox.showinfo(
                     "Open 3D Mesh",
-                    "Importing of 3D mesh files in .STL and .PLY format is supported by SliceMesh plugin.\nYou can find it in CAM->SliceMesh.",
+                    "Importing of 3D mesh files in .STL and .PLY format is "
+                    + "supported by SliceMesh plugin.\n"
+                    + "You can find it in CAM->SliceMesh.",
                 )
             except Exception as e:
                 import tkinter
@@ -449,7 +452,9 @@ class Sender:
 
                 tkinter.messagebox.showinfo(
                     "Open 3D Mesh",
-                    "Importing of 3D mesh files in .STL and .PLY format is supported by SliceMesh plugin.\nYou can find it in CAM->SliceMesh.",
+                    "Importing of 3D mesh files in .STL and .PLY format is "
+                    + "supported by SliceMesh plugin.\nYou can find it in "
+                    + "CAM->SliceMesh.",
                 )
         elif ext == ".dxf":
             self.gcode.init()
@@ -534,7 +539,7 @@ class Sender:
         # Toggle DTR to reset Arduino
         try:
             self.serial.setDTR(0)
-        except IOError:
+        except OSError:
             pass
         time.sleep(1)
         CNC.vars["state"] = CONNECTED
@@ -546,7 +551,7 @@ class Sender:
         self.serial.flushInput()
         try:
             self.serial.setDTR(1)
-        except IOError:
+        except OSError:
             pass
         time.sleep(1)
         # 		self.serial_write(b"\n\n") # serial_write should be handling this
@@ -728,7 +733,7 @@ class Sender:
     # See https://github.com/vlachoudis/bCNC/issues/1035
     # ----------------------------------------------------------------------
     def jobDone(self):
-        print("Job done. Purging the controller. (Running: %s)" % (self.running))
+        print(f"Job done. Purging the controller. (Running: {self.running})")
         self.purgeController()
 
     # ----------------------------------------------------------------------
@@ -737,13 +742,15 @@ class Sender:
     # Right now the primary idea of this is to detect when job stopped running
     # ----------------------------------------------------------------------
     def controllerStateChange(self, state):
-        print("Controller state changed to: {} (Running: {})".format(
-            state, self.running))
+        print(
+            f"Controller state changed to: {state} (Running: {self.running})")
         if state in ("Idle"):
             self.mcontrol.viewParameters()
             self.mcontrol.viewState()
 
-        if self.cleanAfter is True and self.running is False and state in ("Idle"):
+        if (self.cleanAfter is True
+                and self.running is False
+                and state in ("Idle")):
             self.cleanAfter = False
             self.jobDone()
 
@@ -833,20 +840,20 @@ class Sender:
                     if pat is not None:
                         self._lastFeed = pat.group(2)
 
-                    # Modify sent g-code to reflect overrided feed for controllers without override support
+                    # Modify sent g-code to reflect overrided feed for
+                    # controllers without override support
                     if not self.mcontrol.has_override:
                         if CNC.vars["_OvChanged"]:
                             CNC.vars["_OvChanged"] = False
                             self._newFeed = (
-                                float(self._lastFeed)
-                                * CNC.vars["_OvFeed"] / 100.0
+                                float(self._lastFeed) * CNC.vars["_OvFeed"] / 100.0
                             )
                             if (
                                 pat is None
                                 and self._newFeed != 0
                                 and not tosend.startswith("$")
                             ):
-                                tosend = "f{:g}{}".format(self._newFeed, tosend)
+                                tosend = f"f{self._newFeed:g}{tosend}"
 
                         # Apply override Feed
                         if CNC.vars["_OvFeed"] != 100 and self._newFeed != 0:

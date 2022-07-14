@@ -233,8 +233,8 @@ class Event:
             self.detail.value = ord(str[1])
             str = str[2:]
 
-        elif channel_msg == voice.ProgramChange or channel_msg == voice.ChannelPressure:
-
+        elif (channel_msg == voice.ProgramChange
+              or channel_msg == voice.ChannelPressure):
             self.detail = EventAmount()
             self.detail.amount = ord(str[0])
             str = str[1:]
@@ -307,7 +307,8 @@ class Event:
             else:
                 has_meta = FALSE
 
-        elif meta_msg == meta.SystemExclusive or meta_msg == meta.SystemExclusivePacket:
+        elif (meta_msg == meta.SystemExclusive
+              or meta_msg == meta.SystemExclusivePacket):
             self.detail = MetaValues()
             self.detail.length, str = getVariableLengthNumber(str)
             self.detail.values = getValues(str, self.detail.length)

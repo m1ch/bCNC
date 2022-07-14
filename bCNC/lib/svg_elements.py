@@ -107,11 +107,12 @@ SVG_ATTR_DX = "dx"
 SVG_ATTR_DY = "dy"
 SVG_ATTR_TAG = "tag"
 SVG_ATTR_FONT = "font"
-# Serif, sans-serif, cursive, fantasy, monospace
+# font-family ... Serif, sans-serif, cursive, fantasy, monospace
 SVG_ATTR_FONT_FAMILY = "font-family"
 SVG_ATTR_FONT_FACE = "font-face"
 SVG_ATTR_FONT_SIZE = "font-size"
-SVG_ATTR_FONT_WEIGHT = "font-weight"  # normal, bold, bolder, lighter, 100-900
+# font-weight ... normal, bold, bolder, lighter, 100-900
+SVG_ATTR_FONT_WEIGHT = "font-weight"
 SVG_ATTR_TEXT_ANCHOR = "text-anchor"
 SVG_ATTR_PATTERN_CONTENT_UNITS = "patternContentUnits"
 SVG_ATTR_PATTERN_TRANSFORM = "patternTransform"
@@ -182,13 +183,12 @@ PATTERN_TRANSFORM_UNITS = (
 REGEX_IRI = re.compile(r"url\(#?(.*)\)")
 REGEX_FLOAT = re.compile(PATTERN_FLOAT)
 REGEX_COORD_PAIR = re.compile(
-    "({}){}({})".format(PATTERN_FLOAT, PATTERN_COMMA, PATTERN_FLOAT)
-)
+    f"({PATTERN_FLOAT}){PATTERN_COMMA}({PATTERN_FLOAT})")
 REGEX_TRANSFORM_TEMPLATE = re.compile(
     r"(?u)({}){}\(([^)]+)\)".format(PATTERN_TRANSFORM, PATTERN_WS)
 )
 REGEX_TRANSFORM_PARAMETER = re.compile(
-    "({}){}({})?".format(PATTERN_FLOAT, PATTERN_WS, PATTERN_TRANSFORM_UNITS)
+    f"({PATTERN_FLOAT}){PATTERN_WS}({PATTERN_TRANSFORM_UNITS})?"
 )
 REGEX_COLOR_HEX = re.compile(r"^#?([0-9A-Fa-f]{3,8})$")
 REGEX_COLOR_RGB = re.compile(
@@ -206,19 +206,21 @@ REGEX_COLOR_HSL = re.compile(
         PATTERN_FLOAT, PATTERN_FLOAT, PATTERN_FLOAT, PATTERN_FLOAT
     )
 )
-REGEX_LENGTH = re.compile("(%s)([A-Za-z%%]*)" % PATTERN_FLOAT)
+REGEX_LENGTH = re.compile(f"({PATTERN_FLOAT})([A-Za-z%]*)")
 REGEX_CSS_STYLE = re.compile(r"([^{]+)\s*\{\s*([^}]+)\s*\}")
 REGEX_CSS_FONT = re.compile(
     r"(?:(normal|italic|oblique)\s|(normal|small-caps)\s|(normal|bold|bolder|lighter|\d{3})\s|(normal|ultra-condensed|extra-condensed|condensed|semi-condensed|semi-expanded|expanded|extra-expanded|ultra-expanded)\s)*\s*(xx-small|x-small|small|medium|large|x-large|xx-large|larger|smaller|\d+(?:em|pt|pc|px|%))(?:/(xx-small|x-small|small|medium|large|x-large|xx-large|larger|smaller|\d+(?:em|pt|pc|px|%)))?\s*(.*),?\s+(serif|sans-serif|cursive|fantasy|monospace);?"
 )
 
-svg_parse = [("COMMAND", r"[MmZzLlHhVvCcSsQqTtAa]"), ("SKIP", PATTERN_COMMAWSP)]
-svg_re = re.compile("|".join("(?P<%s>%s)" % pair for pair in svg_parse))
-num_parse = [("FLOAT", PATTERN_FLOAT), ("CLOSE", r"[Zz]"),
+svg_parse = [("COMMAND", r"[MmZzLlHhVvCcSsQqTtAa]"),
              ("SKIP", PATTERN_COMMAWSP)]
-num_re = re.compile("|".join("(?P<%s>%s)" % pair for pair in num_parse))
+svg_re = re.compile("|".join(f"(?P<{p[0]}>{p[1]})" for p in svg_parse))
+num_parse = [("FLOAT", PATTERN_FLOAT),
+             ("CLOSE", r"[Zz]"),
+             ("SKIP", PATTERN_COMMAWSP)]
+num_re = re.compile("|".join(f"(?P<{p[0]}>{p[1]})" for p in num_parse))
 flag_parse = [("FLAG", r"[01]"), ("SKIP", PATTERN_COMMAWSP)]
-flag_re = re.compile("|".join("(?P<%s>%s)" % pair for pair in flag_parse))
+flag_re = re.compile("|".join(f"(?P<{p[0]}>{p[1]})" for p in flag_parse))
 
 
 class SVGLexicalParser:
@@ -525,8 +527,8 @@ class SVGLexicalParser:
                         coord = self.inline_close
                         if coord is None:
                             raise ValueError
-                    self.parser.arc(rx, ry, rotation, arc,
-                                    sweep, coord, relative=False)
+                    self.parser.arc(rx, ry, rotation, arc, sweep,
+                                    coord, relative=False)
         self.parser.end()
 
 
@@ -661,7 +663,7 @@ class Length(object):
             else:
                 raise ValueError
             return self
-        raise ValueError("%s units were not determined." % self.units)
+        raise ValueError(f"{self.units} units were not determined.")
 
     def __abs__(self):
         c = self.__copy__()
@@ -791,12 +793,12 @@ class Length(object):
     __rmul__ = __mul__
 
     def __repr__(self):
-        return "Length('%s')" % (str(self))
+        return f"Length('{str(self)}')"
 
     def __str__(self):
         if self.amount is None:
             return SVG_VALUE_NONE
-        return "{}{}".format(Length.str(self.amount), self.units)
+        return f"{Length.str(self.amount)}{self.units}"
 
     def __eq__(self, other):
         if other is None:
@@ -860,7 +862,7 @@ class Length(object):
             viewbox=viewbox,
         )
         v = value / (ppi * 0.0393701)
-        return Length("%smm" % (Length.str(v)))
+        return Length(f"{Length.str(v)}mm")
 
     def to_cm(
         self,
@@ -878,7 +880,7 @@ class Length(object):
             viewbox=viewbox,
         )
         v = value / (ppi * 0.393701)
-        return Length("%scm" % (Length.str(v)))
+        return Length(f"{Length.str(v)}cm")
 
     def to_inch(
         self,
@@ -896,7 +898,7 @@ class Length(object):
             viewbox=viewbox,
         )
         v = value / ppi
-        return Length("%sin" % (Length.str(v)))
+        return Length(f"{Length.str(v)}in")
 
     def value(
         self,
@@ -905,7 +907,7 @@ class Length(object):
         font_size=None,
         font_height=None,
         viewbox=None,
-        **kwargs
+        **kwargs,
     ):
         if self.amount is None:
             return None
@@ -987,12 +989,12 @@ class Length(object):
             if s.units == "":
                 s = s.amount
             else:
-                a = "%.12f" % (s.amount)
+                a = f"{s.amount:.12f}"
                 if "." in a:
                     a = a.rstrip("0").rstrip(".")
-                return "'{}{}'".format(a, s.units)
+                return f"'{a}{s.units}'"
         try:
-            s = "%.12f" % (s)
+            s = f"{s:.12f}"
         except TypeError:
             return str(s)
         if "." in s:
@@ -1059,8 +1061,8 @@ class Color(object):
 
     def __repr__(self):
         if self.value is None:
-            return "Color('%s')" % (self.value)
-        return "Color('%s')" % (self.hex)
+            return f"Color('{self.value}')"
+        return f"Color('{self.hex}')"
 
     def __eq__(self, other):
         if self is other:
@@ -1439,7 +1441,7 @@ class Color(object):
         if size == 8:
             return int(h[:8], 16)
         elif size == 6:
-            s = "{}".format(h[:6])
+            s = f"{h[:6]}"
             q = ~int(s, 16) & 0xFFFFFF
             v = -1 ^ q
             return v
@@ -1561,18 +1563,20 @@ class Color(object):
 
     @property
     def hexa(self):
-        return "#{:02x}{:02x}{:02x}{:02x}".format(
-            self.alpha, self.red, self.green, self.blue
-        )
+        return "".join([
+            f"#{self.alpha:02x}{self.red:02x}",
+            f"{self.green:02x}{self.blue:02x}",
+        ])
 
     @property
     def hex(self):
         if self.alpha == 0xFF:
-            return "#{:02x}{:02x}{:02x}".format(self.red, self.green, self.blue)
+            return f"#{self.red:02x}{self.green:02x}{self.blue:02x}"
         else:
-            return "#{:02x}{:02x}{:02x}{:02x}".format(
-                self.alpha, self.red, self.green, self.blue
-            )
+            return "".join([
+                f"#{self.alpha:02x}{self.red:02x}",
+                f"{self.green:02x}{self.blue:02x}",
+            ])
 
     @property
     def hue(self):
@@ -1862,7 +1866,8 @@ class Point:
         except Exception:
             return NotImplemented
 
-        return abs(self.x - other.x) <= ERROR and abs(self.y - other.y) <= ERROR
+        return (abs(self.x - other.x) <= ERROR
+                and abs(self.y - other.y) <= ERROR)
 
     def __ne__(self, other):
         return not self == other
@@ -1889,22 +1894,22 @@ class Point:
     def __repr__(self):
         x_str = Length.str(self.x)
         y_str = Length.str(self.y)
-        return "Point({},{})".format(x_str, y_str)
+        return f"Point({x_str},{y_str})"
 
     def __copy__(self):
         return Point(self.x, self.y)
 
     def __str__(self):
         try:
-            x_str = "%.12G" % (self.x)
+            x_str = f"{self.x:.12G}"
         except TypeError:
             return self.__repr__()
         if "." in x_str:
             x_str = x_str.rstrip("0").rstrip(".")
-        y_str = "%.12G" % (self.y)
+        y_str = f"{self.y:.12G}"
         if "." in y_str:
             y_str = y_str.rstrip("0").rstrip(".")
-        return "{},{}".format(x_str, y_str)
+        return f"{x_str},{y_str}"
 
     def __imul__(self, other):
         if isinstance(other, str):
@@ -2147,7 +2152,8 @@ class Point:
 
     @staticmethod
     def orientation(p, q, r):
-        """Determine the clockwise, linear, or counterclockwise orientation of the given points"""
+        """Determine the clockwise, linear, or counterclockwise
+        orientation of the given points"""
         val = (q[1] - p[1]) * (r[0] - q[0]) - (q[0] - p[0]) * (r[1] - q[1])
         if val == 0:
             return 0
@@ -2205,7 +2211,7 @@ class Angle(float):
     """CSS Angle defines as used in SVG/CSS"""
 
     def __repr__(self):
-        return "Angle(%.12f)" % self
+        return f"Angle({self:.12f})"
 
     def __copy__(self):
         return Angle(self)
@@ -2545,7 +2551,7 @@ class Matrix:
         font_size=None,
         font_height=None,
         viewbox=None,
-        **kwargs
+        **kwargs,
     ):
         """
         Provides values to turn trans_x and trans_y values into user units floats rather
@@ -3038,7 +3044,7 @@ class Viewbox:
             if scale_x == 1 and scale_y == 1:
                 return ""  # Nothing happens.
             else:
-                return "scale({}, {})".format(Length.str(scale_x), Length.str(scale_y))
+                return f"scale({Length.str(scale_x)}, {Length.str(scale_y)})"
         else:
             if scale_x == 1 and scale_y == 1:
                 return "translate({}, {})".format(
@@ -3557,17 +3563,17 @@ class Shape(SVGElement, GraphicObject, Transformable):
         Generic pieces of repr shape.
         """
         if not self.transform.is_identity():
-            values.append("transform=%s" % repr(self.transform))
+            values.append(f"transform={repr(self.transform)}")
         if self.stroke is not None:
-            values.append("stroke='%s'" % self.stroke)
+            values.append(f"stroke='{self.stroke}'")
         if self.fill is not None:
-            values.append("fill='%s'" % self.fill)
+            values.append(f"fill='{self.fill}'")
         if self.stroke_width is not None and self.stroke_width != 1.0:
-            values.append("stroke_width='%s'" % str(self.stroke_width))
+            values.append(f"stroke_width='{str(self.stroke_width)}'")
         if self.apply is not None and not self.apply:
-            values.append("apply=%s" % self.apply)
+            values.append(f"apply={self.apply}")
         if self.id is not None:
-            values.append("id='%s'" % self.id)
+            values.append(f"id='{self.id}'")
 
     def _name(self):
         return self.__class__.__name__
@@ -3635,9 +3641,9 @@ class PathSegment:
         d = self.d()
         if self.start is not None:
             if self.relative:
-                return "m {} {}".format(self.start, d)
+                return f"m {self.start} {d}"
             else:
-                return "M {} {}".format(self.start, d)
+                return f"M {self.start} {d}"
         return d
 
     def __iter__(self):
@@ -3810,9 +3816,9 @@ class Move(PathSegment):
 
     def __repr__(self):
         if self.start is None:
-            return "Move(end=%s)" % repr(self.end)
+            return f"Move(end={repr(self.end)})"
         else:
-            return "Move(start={}, end={})".format(repr(self.start), repr(self.end))
+            return f"Move(start={repr(self.start)}, end={repr(self.end)})"
 
     def __copy__(self):
         return Move(self.start, self.end, relative=self.relative)
@@ -3844,8 +3850,8 @@ class Move(PathSegment):
             or (relative is None and self.relative)
             or (relative is not None and not relative)
         ):
-            return "M %s" % self.end
-        return "m %s" % (self.end - current_point)
+            return f"M {self.end}"
+        return f"m {self.end - current_point}"
 
 
 class Curve(PathSegment):
@@ -3955,7 +3961,7 @@ class Close(Linear):
         e = self.end
         if e is not None:
             e = repr(e)
-        return "Close(start={}, end={})".format(s, e)
+        return f"Close(start={s}, end={e})"
 
     def d(self, current_point=None, relative=None, smooth=None):
         if (
@@ -3973,8 +3979,8 @@ class Line(Linear):
 
     def __repr__(self):
         if self.start is None:
-            return "Line(end=%s)" % (repr(self.end))
-        return "Line(start={}, end={})".format(repr(self.start), repr(self.end))
+            return f"Line(end={repr(self.end)})"
+        return f"Line(start={repr(self.start)}, end={repr(self.end)})"
 
     def d(self, current_point=None, relative=None, smooth=None):
         if (
@@ -3982,9 +3988,9 @@ class Line(Linear):
             or (relative is None and self.relative)
             or (relative is not None and not relative)
         ):
-            return "L %s" % self.end
+            return f"L {self.end}"
         else:
-            return "l %s" % (self.end - current_point)
+            return f"l {self.end - current_point}"
 
 
 class QuadraticBezier(Curve):
@@ -4150,20 +4156,18 @@ class QuadraticBezier(Curve):
                 or (relative is None and self.relative)
                 or (relative is not None and not relative)
             ):
-                return "T %s" % self.end
+                return f"T {self.end}"
             else:
-                return "t %s" % (self.end - current_point)
+                return f"t {self.end - current_point}"
         else:
             if (
                 current_point is None
                 or (relative is None and self.relative)
                 or (relative is not None and not relative)
             ):
-                return "Q {} {}".format(self.control, self.end)
+                return f"Q {self.control} {self.end}"
             else:
-                return "q {} {}".format(
-                    self.control - current_point, self.end - current_point
-                )
+                return f"q {self.control - current_point} {self.end - current_point}"
 
 
 class CubicBezier(Curve):
@@ -4175,10 +4179,12 @@ class CubicBezier(Curve):
         self.control2 = Point(control2) if control1 is not None else None
 
     def __repr__(self):
-        return "CubicBezier(start={}, control1={}, control2={}, end={})".format(
-            repr(self.start), repr(self.control1), repr(
-                self.control2), repr(self.end)
-        )
+        return ", ".join([
+            f"CubicBezier(start={repr(self.start)}",
+            f"control1={repr(self.control1)}",
+            f"control2={repr(self.control2)}",
+            f"end={repr(self.end)})",
+        ])
 
     def __copy__(self):
         return CubicBezier(
@@ -4348,18 +4354,16 @@ class CubicBezier(Curve):
                 or (relative is None and self.relative)
                 or (relative is not None and not relative)
             ):
-                return "S {} {}".format(self.control2, self.end)
+                return f"S {self.control2} {self.end}"
             else:
-                return "s {} {}".format(
-                    self.control2 - current_point, self.end - current_point
-                )
+                return f"s {self.control2 - current_point} {self.end - current_point}"
         else:
             if (
                 current_point is None
                 or (relative is None and self.relative)
                 or (relative is not None and not relative)
             ):
-                return "C {} {} {}".format(self.control1, self.control2, self.end)
+                return f"C {self.control1} {self.control2} {self.end}"
             else:
                 return "c {} {} {}".format(
                     self.control1 - current_point,
@@ -5170,23 +5174,19 @@ class Arc(Curve):
             or (relative is None and self.relative)
             or (relative is not None and not relative)
         ):
-            return "A %G,%G %G %d,%d %s" % (
-                self.rx,
-                self.ry,
-                self.get_rotation().as_degrees,
-                int(abs(self.sweep) > (tau / 2.0)),
-                int(self.sweep >= 0),
-                self.end,
-            )
+            return "".join([
+                f"A {self.rx:G},{self.ry:G} ",
+                f"{self.get_rotation().as_degrees:G} ",
+                f"{int(abs(self.sweep) > (tau / 2.0))},",
+                f"{int(self.sweep >= 0)} {self.end}",
+            ])
         else:
-            return "a %G,%G %G %d,%d %s" % (
-                self.rx,
-                self.ry,
-                self.get_rotation().as_degrees,
-                int(abs(self.sweep) > (tau / 2.0)),
-                int(self.sweep >= 0),
-                self.end - current_point,
-            )
+            return "".join([
+                f"A {self.rx:G},{self.ry:G} ",
+                f"{self.get_rotation().as_degrees:G} ",
+                f"{int(abs(self.sweep) > (tau / 2.0))},",
+                f"{int(self.sweep >= 0)} {self.end - current_point}",
+            ])
 
 
 class Path(Shape, MutableSequence):
@@ -5284,8 +5284,7 @@ class Path(Shape, MutableSequence):
                 self._segments[index].end = Point(segment.end)
                 return
         self._segments[index].end = (
-            Point(
-                self._segments[0].end) if self._segments[0].end is not None else None
+            Point(self._segments[0].end) if self._segments[0].end is not None else None
         )
         # If move is never found, just the end point of the first element. Unless that's not a thing.
 
@@ -5392,7 +5391,7 @@ class Path(Shape, MutableSequence):
         self._repr_shape(values)
         params = ", ".join(values)
         name = self._name()
-        return "{}({})".format(name, params)
+        return f"{name}({params})"
 
     def __eq__(self, other):
         if isinstance(other, str):
@@ -5490,8 +5489,7 @@ class Path(Shape, MutableSequence):
         if self._segments[0].start is not None:
             return Point(self._segments[0].start)
         return (
-            Point(
-                self._segments[0].end) if self._segments[0].end is not None else None
+            Point(self._segments[0].end) if self._segments[0].end is not None else None
         )
 
     @property
@@ -6019,20 +6017,20 @@ class Rect(Shape):
     def __repr__(self):
         values = []
         if self.x != 0:
-            values.append("x=%s" % Length.str(self.x))
+            values.append(f"x={Length.str(self.x)}")
         if self.y != 0:
-            values.append("y=%s" % Length.str(self.y))
+            values.append(f"y={Length.str(self.y)}")
         if self.width != 0:
-            values.append("width=%s" % Length.str(self.width))
+            values.append(f"width={Length.str(self.width)}")
         if self.height != 0:
-            values.append("height=%s" % Length.str(self.height))
+            values.append(f"height={Length.str(self.height)}")
         if self.rx != 0:
-            values.append("rx=%s" % Length.str(self.rx))
+            values.append(f"rx={Length.str(self.rx)}")
         if self.ry != 0:
-            values.append("ry=%s" % Length.str(self.ry))
+            values.append(f"ry={Length.str(self.ry)}")
         self._repr_shape(values)
         params = ", ".join(values)
-        return "Rect(%s)" % params
+        return f"Rect({params})"
 
     def __copy__(self):
         return Rect(self)
@@ -6278,18 +6276,18 @@ class _RoundShape(Shape):
     def __repr__(self):
         values = []
         if self.cx is not None:
-            values.append("cx=%s" % Length.str(self.cx))
+            values.append(f"cx={Length.str(self.cx)}")
         if self.cy is not None:
-            values.append("cy=%s" % Length.str(self.cy))
+            values.append(f"cy={Length.str(self.cy)}")
         if self.rx == self.ry or self.ry is None:
-            values.append("r=%s" % Length.str(self.rx))
+            values.append(f"r={Length.str(self.rx)}")
         else:
-            values.append("rx=%s" % Length.str(self.rx))
-            values.append("ry=%s" % Length.str(self.ry))
+            values.append(f"rx={Length.str(self.rx)}")
+            values.append(f"ry={Length.str(self.ry)}")
         self._repr_shape(values)
         params = ", ".join(values)
         name = self._name()
-        return "{}({})".format(name, params)
+        return f"{name}({params})"
 
     @property
     def implicit_rx(self):
@@ -6644,16 +6642,16 @@ class SimpleLine(Shape):
     def __repr__(self):
         values = []
         if self.x1 is not None:
-            values.append("x1=%s" % repr(self.x1))
+            values.append(f"x1={repr(self.x1)}")
         if self.y1 is not None:
-            values.append("y1=%s" % repr(self.y1))
+            values.append(f"y1={repr(self.y1)}")
         if self.x2 is not None:
-            values.append("x2=%s" % repr(self.x2))
+            values.append(f"x2={repr(self.x2)}")
         if self.y2 is not None:
-            values.append("y2=%s" % repr(self.y2))
+            values.append(f"y2={repr(self.y2)}")
         self._repr_shape(values)
         params = ", ".join(values)
-        return "SimpleLine(%s)" % params
+        return f"SimpleLine({params})"
 
     def __copy__(self):
         return SimpleLine(self)
@@ -6794,11 +6792,11 @@ class _Polyshape(Shape):
         values = []
         if self.points is not None:
             s = ", ".join(map(str, self.points))
-            values.append("points=(%s)" % repr(s))
+            values.append(f"points=({repr(s)})")
         self._repr_shape(values)
         params = ", ".join(values)
         name = self._name()
-        return "{}({})".format(name, params)
+        return f"{name}({params})"
 
     def __len__(self):
         return len(self.points)
@@ -6913,10 +6911,10 @@ class Subpath:
     def __iadd__(self, other):
         if isinstance(other, str):
             p = Path(other)
-            self._path[self._end: self._end] = p
+            self._path[self._end : self._end] = p
         elif isinstance(other, Path):
             p = copy(other)
-            self._path[self._end: self._end] = p
+            self._path[self._end : self._end] = p
         elif isinstance(other, PathSegment):
             self._path.insert(self._end, other)
         else:
@@ -6985,7 +6983,7 @@ class Subpath:
         return self.d()
 
     def __repr__(self):
-        return "Path(%s)" % (", ".join(repr(x) for x in self))
+        return f"Path({', '.join(repr(x) for x in self)})"
 
     def __eq__(self, other):
         if isinstance(other, str):
@@ -7008,9 +7006,9 @@ class Subpath:
         path = self._path
         if transformed:
             return [
-                s * path.transform for s in path._segments[self._start: self._end + 1]
+                s * path.transform for s in path._segments[self._start : self._end + 1]
             ]
-        return path._segments[self._start: self._end + 1]
+        return path._segments[self._start : self._end + 1]
 
     def _numeric_index(self, index):
         if index < 0:
@@ -7034,7 +7032,7 @@ class Subpath:
 
     def bbox(self):
         """returns a bounding box for the input Path"""
-        segments = self._path._segments[self._start: self._end + 1]
+        segments = self._path._segments[self._start : self._end + 1]
         bbs = [seg.bbox() for seg in segments if not isinstance(Close, Move)]
         try:
             xmins, ymins, xmaxs, ymaxs = to_zip(*bbs)
@@ -7047,7 +7045,7 @@ class Subpath:
         return xmin, ymin, xmax, ymax
 
     def d(self, relative=None, smooth=None):
-        segments = self._path._segments[self._start: self._end + 1]
+        segments = self._path._segments[self._start : self._end + 1]
         return Path.svg_d(segments, relative=relative, smooth=None)
 
     def _reverse_segments(self, start, end):
@@ -7137,8 +7135,7 @@ class Group(SVGElement, Transformable, list):
                 continue
             yield subitem
             if isinstance(subitem, Group):
-                for s in subitem.select(conditional):
-                    yield s
+                yield from subitem.select(conditional)
 
     def reify(self):
         pass
@@ -7285,21 +7282,21 @@ class SVGText(SVGElement, GraphicObject, Transformable):
 
     def __str__(self):
         parts = list()
-        parts.append("'%s'" % self.text)
-        parts.append("font_family=%s" % self.font_family)
-        parts.append("anchor=%s" % self.anchor)
-        parts.append("font_size=%d" % self.font_size)
-        parts.append("font_weight=%s" % str(self.font_weight))
-        return "Text(%s)" % (", ".join(parts))
+        parts.append(f"'{self.text}'")
+        parts.append(f"font_family={self.font_family}")
+        parts.append(f"anchor={self.anchor}")
+        parts.append(f"font_size={int(self.font_size)}")
+        parts.append(f"font_weight={str(self.font_weight)}")
+        return f"Text({', '.join(parts)})"
 
     def __repr__(self):
         parts = list()
-        parts.append("%s" % self.text)
-        parts.append("font_family=%s" % self.font_family)
-        parts.append("anchor=%s" % self.anchor)
-        parts.append("font_size=%d" % self.font_size)
-        parts.append("font_weight=%s" % str(self.font_weight))
-        return "Text(%s)" % (", ".join(parts))
+        parts.append(f"{self.text}")
+        parts.append(f"font_family={self.font_family}")
+        parts.append(f"anchor={self.anchor}")
+        parts.append(f"font_size={int(self.font_size)}")
+        parts.append(f"font_weight={str(self.font_weight)}")
+        return f"Text({', '.join(parts)})"
 
     def property_by_object(self, s):
         Transformable.property_by_object(self, s)
@@ -7588,14 +7585,14 @@ class SVGImage(SVGElement, GraphicObject, Transformable):
             if self.url is not None:
                 try:
                     self.image = Image.open(self.url)
-                except IOError:
+                except OSError:
                     try:
                         if directory is not None:
                             from os.path import join
 
                             relpath = join(directory, self.url)
                             self.image = Image.open(relpath)
-                    except IOError:
+                    except OSError:
                         return
         except ImportError:
             # PIL/Pillow not found, decoding data is most we can do.
@@ -7607,7 +7604,7 @@ class SVGImage(SVGElement, GraphicObject, Transformable):
         self.image_width = self.image.width
         self.image_height = self.image.height
         self.viewbox = Viewbox(
-            "0 0 %d %d" % (self.image_width, self.image_height),
+            f"0 0 {int(self.image_width)} {int(self.image_height)}",
             self.preserve_aspect_ratio,
         )
         self.render(width=self.image_width, height=self.image_height)
@@ -7733,8 +7730,7 @@ class SVG(Group):
 
     def elements(self, conditional=None):
         yield self
-        for q in self.select(conditional):
-            yield q
+        yield from self.select(conditional)
 
     @property
     def viewbox_transform(self):
@@ -7747,8 +7743,7 @@ class SVG(Group):
         yield tag, "start", elem
         try:
             for t, e, c in children:
-                for shadow_tag, shadow_event, shadow_elem in SVG._shadow_iter(t, e, c):
-                    yield shadow_tag, shadow_event, shadow_elem
+                yield from SVG._shadow_iter(t, e, c)
         except ValueError:
             """
             Strictly speaking it is possible to reference use from other use objects. If this is an infinite loop
@@ -7827,8 +7822,7 @@ class SVG(Group):
                             children.append(
                                 shadow_node
                             )  # Shadow children are children of the use.
-                            for n in SVG._shadow_iter(*shadow_node):
-                                yield n
+                            yield from SVG._shadow_iter(*shadow_node)
                         except KeyError:
                             pass  # Failed to find link.
                 else:
@@ -7918,21 +7912,19 @@ class SVG(Group):
                     style += styles[tag]
                 if SVG_ATTR_ID in attributes:  # Selector id #id
                     svg_id = attributes[SVG_ATTR_ID]
-                    css_tag = "#%s" % svg_id
+                    css_tag = f"#{svg_id}"
                     if css_tag in styles:
                         if len(style) != 0:
                             style += ";"
                         style += styles[css_tag]
                 if SVG_ATTR_CLASS in attributes:  # Selector class .class
                     for svg_class in attributes[SVG_ATTR_CLASS].split(" "):
-                        css_tag = ".%s" % svg_class
+                        css_tag = f".{svg_class}"
                         if css_tag in styles:
                             if len(style) != 0:
                                 style += ";"
                             style += styles[css_tag]
-                        css_tag = "{}.{}".format(
-                            tag, svg_class
-                        )  # Selector type/class type.class
+                        css_tag = f"{tag}.{svg_class}"  # Selector type/class type.class
                         if css_tag in styles:
                             if len(style) != 0:
                                 style += ";"

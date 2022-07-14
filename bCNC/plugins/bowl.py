@@ -15,9 +15,9 @@ __email__ = ""
 __name__ = _("Bowl")
 
 
-# ==============================================================================
+# =============================================================================
 # Bowl class
-# ==============================================================================
+# =============================================================================
 class Bowl:
     def __init__(self, name):
         self.name = name
@@ -86,7 +86,8 @@ class Bowl:
         while angle > currAngle + angleInc:
             currAngle += angleInc
             radius = r * math.cos(-currAngle)
-            # Removes vertical offset (centers the ball tool in Z=0, rather than the tip)
+            # Removes vertical offset (centers the ball tool in Z=0,
+            # rather than the tip)
             depth = r * math.sin(-currAngle) - toolRadius
             currDepth = addCircle(radius, depth, currDepth)
         if angle - currAngle > 0:
@@ -98,9 +99,9 @@ class Bowl:
         return blocks
 
 
-# ==============================================================================
+# =============================================================================
 # Create a simple Bowl
-# ==============================================================================
+# =============================================================================
 class Tool(Plugin):
     __doc__ = _("Generate a bowl cavity")
 
@@ -122,8 +123,9 @@ class Tool(Plugin):
         if not n or n == "default":
             n = "Bowl"
         bowl = Bowl(n)
-        blocks = bowl.calc(self.fromMm("D"), math.radians(
-            self["res"]), self["pocket"])
+        blocks = bowl.calc(self.fromMm("D"),
+                           math.radians(self["res"]),
+                           self["pocket"])
         if len(blocks) > 0:
             active = app.activeBlock()
             if active == 0:

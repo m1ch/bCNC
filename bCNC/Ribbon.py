@@ -43,9 +43,9 @@ RIBBON_SHOWN = 1  # Displayed
 RIBBON_TEMP = -1  # Show temporarily
 
 
-# ===============================================================================
+# =============================================================================
 # Frame Group with a button at bottom
-# ===============================================================================
+# =============================================================================
 class LabelGroup(Frame):
     def __init__(self, master, name, command=None, **kw):
         Frame.__init__(self, master, **kw)
@@ -55,8 +55,8 @@ class LabelGroup(Frame):
         )
 
         # right frame as a separator
-        f = Frame(self, borderwidth=2, relief=GROOVE,
-                  background=_BACKGROUND_DISABLE)
+        f = Frame(self, borderwidth=2,
+                  relief=GROOVE, background=_BACKGROUND_DISABLE)
         f.pack(side=RIGHT, fill=Y, padx=0, pady=0)
 
         # frame to insert the buttons
@@ -70,7 +70,7 @@ class LabelGroup(Frame):
         self.frame.pack(side=TOP, expand=TRUE, fill=BOTH, padx=0, pady=0)
 
         if command:
-            self.label = LabelButton(self, self, "<<%s>>" % (name), text=name)
+            self.label = LabelButton(self, self, f"<<{name}>>", text=name)
             self.label.config(
                 command=command,
                 image=Utils.icons["triangle_down"],
@@ -104,7 +104,7 @@ class LabelGroup(Frame):
         self.frame.grid_rowconfigure(2, weight=1)
 
 
-# ===============================================================================
+# =============================================================================
 class _KeyboardFocus:
     # -----------------------------------------------------------------------
     def _bind(self):
@@ -126,9 +126,9 @@ class _KeyboardFocus:
         self.invoke()
 
 
-# ===============================================================================
+# =============================================================================
 # Button with Label that generates a Virtual Event or calls a command
-# ===============================================================================
+# =============================================================================
 class LabelButton(Button, _KeyboardFocus):
     def __init__(self, master, recipient=None, event=None, **kw):
         Button.__init__(self, master, **kw)
@@ -155,7 +155,7 @@ class LabelButton(Button, _KeyboardFocus):
         self._recipient.event_generate(self._event)
 
 
-# ===============================================================================
+# =============================================================================
 class LabelCheckbutton(Checkbutton, _KeyboardFocus):
     def __init__(self, master, **kw):
         Checkbutton.__init__(self, master, **kw)
@@ -174,7 +174,7 @@ class LabelCheckbutton(Checkbutton, _KeyboardFocus):
         _KeyboardFocus._bind(self)
 
 
-# ===============================================================================
+# =============================================================================
 class LabelRadiobutton(Radiobutton, _KeyboardFocus):
     def __init__(self, master, **kw):
         Radiobutton.__init__(self, master, **kw)
@@ -191,7 +191,7 @@ class LabelRadiobutton(Radiobutton, _KeyboardFocus):
         _KeyboardFocus._bind(self)
 
 
-# ===============================================================================
+# =============================================================================
 class LabelCombobox(tkExtra.Combobox, _KeyboardFocus):
     def __init__(self, master, **kw):
         tkExtra.Combobox.__init__(self, master, **kw)
@@ -205,9 +205,9 @@ class LabelCombobox(tkExtra.Combobox, _KeyboardFocus):
         Frame.config(self, background=_BACKGROUND)  # self.__backgroundColor)
 
 
-# ===============================================================================
+# =============================================================================
 # Button with Label that popup a menu
-# ===============================================================================
+# =============================================================================
 class MenuButton(Button, _KeyboardFocus):
     def __init__(self, master, menulist, **kw):
         Button.__init__(self, master, **kw)
@@ -249,8 +249,8 @@ class MenuButton(Button, _KeyboardFocus):
     # -----------------------------------------------------------------------
     @staticmethod
     def createMenuFromList(master, menulist):
-        mainmenu = menu = Menu(
-            master, tearoff=0, activebackground=_ACTIVE_COLOR)
+        mainmenu = menu = Menu(master,
+                               tearoff=0, activebackground=_ACTIVE_COLOR)
         for item in menulist:
             if item is None:
                 menu.add_separator()
@@ -267,9 +267,9 @@ class MenuButton(Button, _KeyboardFocus):
         return menu
 
 
-# ===============================================================================
+# =============================================================================
 # A label group with a drop down menu
-# ===============================================================================
+# =============================================================================
 class MenuGroup(LabelGroup):
     def __init__(self, master, name, menulist=None, **kw):
         LabelGroup.__init__(self, master, name, command=self._showMenu, **kw)
@@ -290,17 +290,17 @@ class MenuGroup(LabelGroup):
                           self.winfo_rooty() + self.winfo_height())
 
 
-# ===============================================================================
+# =============================================================================
 # Context group for a specific item in the Ribbon
-# ===============================================================================
+# =============================================================================
 # class ContextGroup(LabelGroup):
 # 	def __init__(self, master, name, **kw):
 # 		LabelGroup.__init__(self, master, name, **kw)
 
 
-# ===============================================================================
+# =============================================================================
 # Page Tab buttons
-# ===============================================================================
+# =============================================================================
 class TabButton(Radiobutton):
     def __init__(self, master, **kw):
         Radiobutton.__init__(self, master, **kw)
@@ -342,9 +342,9 @@ class TabButton(Radiobutton):
         self.config(selectcolor=_BACKGROUND)
 
 
-# ===============================================================================
+# =============================================================================
 # Page
-# ===============================================================================
+# =============================================================================
 class Page:  # <--- should be possible to be a toplevel as well
     _motionClasses = (
         LabelButton,
@@ -528,9 +528,9 @@ class Page:  # <--- should be possible to be a toplevel as well
             closest.focus_set()
 
 
-# ===============================================================================
+# =============================================================================
 # TabRibbonFrame
-# ===============================================================================
+# =============================================================================
 class TabRibbonFrame(Frame):
     def __init__(self, master, **kw):
         Frame.__init__(self, master, kw)
@@ -607,7 +607,8 @@ class TabRibbonFrame(Frame):
         b.pack(side=LEFT)
         self.tool["redo"] = b
 
-        Label(frame, image=Utils.icons["sep"], background=_BACKGROUND_DISABLE).pack(
+        Label(frame, image=Utils.icons["sep"],
+              background=_BACKGROUND_DISABLE).pack(
             side=LEFT, padx=3
         )
 
@@ -622,7 +623,8 @@ class TabRibbonFrame(Frame):
         tkExtra.Balloon.set(b, _("Help [F1]"))
         b.pack(side=RIGHT, padx=2)
 
-        Label(frame, image=Utils.icons["sep"], background=_BACKGROUND_DISABLE).pack(
+        Label(frame, image=Utils.icons["sep"],
+              background=_BACKGROUND_DISABLE).pack(
             side=RIGHT, padx=3
         )
 
@@ -631,8 +633,8 @@ class TabRibbonFrame(Frame):
         self._tabFrame.pack(side=LEFT, fill=BOTH, expand=YES)
 
         # ==== Ribbon Frame ====
-        self._ribbonFrame = Frame(
-            self, background=_BACKGROUND, pady=0, relief=RAISED)
+        self._ribbonFrame = Frame(self, background=_BACKGROUND,
+                                  pady=0, relief=RAISED)
         self._ribbonFrame.pack(fill=BOTH, expand=YES, padx=0, pady=0)
 
         self.setPageFrame(None)

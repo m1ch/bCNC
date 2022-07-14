@@ -14,18 +14,21 @@ from CNC import CNC, Block
 from ToolsPage import Plugin
 
 
-# ==============================================================================
+# =============================================================================
 # Manual drillmark plugin
-# ==============================================================================
+# =============================================================================
 class Tool(Plugin):
     __doc__ = _(
-        """This plugin is for creating drilling marks with a laser engraver for manual drilling"""
+        """This plugin is for creating drilling marks with a laser engraver
+        for manual drilling"""
     )  # <<< This comment will be show as tooltip for the ribbon button
 
     def __init__(self, master):
         Plugin.__init__(self, master, "Marker for manual drilling")
         self.icon = "crosshair"
         self.group = "Generator"
+
+        # a variable that will be converted in mm/inch based on bCNC settting
         self.variables = [
             (
                 "name",
@@ -38,7 +41,7 @@ class Tool(Plugin):
                 "mm",
                 10.0,
                 _("Drill mark size"),
-            ),  # a variable that will be converted in mm/inch based on bCNC settting
+            ),
             ("PosX", "mm", 0, _("Mark X center")),  # an integer variable
             ("PosY", "mm", 0, _("Mark Y center")),  # a float value variable
             ("Burn time", "float", 4.0, _("Burn time for drillmark")),
@@ -46,17 +49,21 @@ class Tool(Plugin):
             ("Mark power", "float", 400.0, _("Mark drawing power")),
             (
                 "Mark type",
-                "Point,Cross,Cross45,Star,Spikes,Spikes45,SpikesStar,SpikesStar45",
+                "Point,Cross,Cross45,Star,Spikes,Spikes45,SpikesStar,"
+                + "SpikesStar45",
                 "Cross",
                 _("Type of the mark"),
             ),  # a multiple choice combo box
             ("Draw ring", "bool", True, _("Ring mark (d/2)")),
         ]
         self.sin45 = math.sqrt(0.5)
+
+        # <<< This is the button added at bottom to call the execute method below
         self.buttons.append(
             "exe"
-        )  # <<< This is the button added at bottom to call the execute method below
-        self.help = "This plugin is for creating drilling marks with a laser engraver for manual drilling"
+        )
+        self.help = "This plugin is for creating drilling marks with a laser "
+        + "engraver for manual drilling"
 
     def appendBurn(self, app, block):
         x0 = self.fromMm("PosX")
@@ -65,8 +72,8 @@ class Tool(Plugin):
         burntime = self["Burn time"]
         burnpower = self["Burn power"]
         block.append(CNC.grapid(x=x0, y=y0))
-        block.append("g1 m3 %s" % (CNC.fmt("s", burnpower)))
-        block.append("g4 %s" % (CNC.fmt("p", burntime)))
+        block.append(f"g1 m3 {CNC.fmt('s', burnpower)}")
+        block.append(f"g4 {CNC.fmt('p', burntime)}")
         block.append("m5")
 
     def getPowerLine(self, app):
@@ -75,7 +82,7 @@ class Tool(Plugin):
         else:
             pwrcode = "m3"
         markpower = self["Mark power"]
-        return "{} {}".format(pwrcode, CNC.fmt("s", markpower))
+        return f"{pwrcode} {CNC.fmt('s', markpower)}"
 
     def appendMark(self, app, block):
         def appendCross(block):
@@ -249,8 +256,8 @@ class Tool(Plugin):
             block.append(CNC.gline(x=x0, y=y0, f=drawfeed))
             block.append("m5")
             block.append(
-                CNC.grapid(x=x0 + marksizehalf / 2, y=y0
-                           + marksizehalf / 2, f=movefeed)
+                CNC.grapid(x=x0 + marksizehalf / 2,
+                           y=y0 + marksizehalf / 2, f=movefeed)
             )
             block.append(self.getPowerLine(app))
             block.append(CNC.gline(x=x0 - marksizehalf / 2, f=drawfeed))
@@ -301,8 +308,7 @@ class Tool(Plugin):
         x0 = self.fromMm("PosX")
         y0 = self.fromMm("PosY")
         marktype = self["Mark type"]
-        block = Block(
-            name + " {} diameter {}".format(marktype, CNC.fmt("", marksize)))
+        block = Block(name + f" {marktype} diameter {CNC.fmt('', marksize)}")
         self.appendBurn(app, block)
         self.appendMark(app, block)
         active = app.activeBlock()

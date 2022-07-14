@@ -18,17 +18,17 @@ __name__ = "Midi2CNC"
 __version__ = "0.0.1"
 
 
-# ==============================================================================
+# =============================================================================
 # Midi2CNC class
-# ==============================================================================
+# =============================================================================
 class Midi2CNC:
     def __init__(self, name="Midi2CNC"):
         self.name = name
 
 
-# ==============================================================================
+# =============================================================================
 # Create pyrograph
-# ==============================================================================
+# =============================================================================
 class Tool(Plugin):
     __doc__ = _("Sound your machine from a midi file")
 
@@ -65,7 +65,10 @@ class Tool(Plugin):
             ("max_X", "int", 50, _("Maximum X travel")),
             ("max_Y", "int", 50, _("Maximum Y travel")),
             ("max_Z", "int", 20, _("Maximum Z travel")),
-            ("AxisUsed", ",".join(self.axes_dict.keys()), "XYZ", _("Axis to be used")),
+            ("AxisUsed",
+             ",".join(self.axes_dict.keys()),
+             "XYZ",
+             _("Axis to be used")),
             ("File", "file", "", _("Midi to process")),
         ]
         self.buttons.append("exe")
@@ -170,7 +173,9 @@ class Tool(Plugin):
                     if event.channel not in channels:
                         channels.add(event.channel)
 
-                    # NB: looks like some use "note on (vel 0)" as equivalent to note off, so check for vel=0 here and treat it as a note-off.
+                    # NB: looks like some use "note on (vel 0)" as equivalent
+                    # to note off, so check for vel=0 here and treat it
+                    # as a note-off.
                     if event.detail.velocity > 0:
                         noteEventList.append(
                             [
@@ -195,10 +200,11 @@ class Tool(Plugin):
                 ):
                     if event.channel not in channels:
                         channels.add(event.channel)
-                    noteEventList.append(
-                        [event.absolute, 0, event.detail.note_no,
-                            event.detail.velocity]
-                    )
+                    noteEventList.append([event.absolute,
+                                          0,
+                                          event.detail.note_no,
+                                          event.detail.velocity]
+                                         )
 
             # Finished with this track
             if len(channels) > 0:
@@ -209,25 +215,28 @@ class Tool(Plugin):
         # List all channels encountered
         if len(all_channels) > 0:
             msg = ", ".join(["%2d" % ch for ch in sorted(all_channels)])
-            # print 'The file as a whole contains channels numbered: [%s ]' % msg
+            # print 'The file as a whole contains channels numbered:
+            #   [%s ]' % msg
 
         # We now have entire file's notes with abs time from all channels
-        # We don't care which channel/voice is which, but we do care about having all the notes in order
-        # so sort event list by abstime to dechannelify
+        # We don't care which channel/voice is which, but we do care about
+        # having all the notes in order so sort event list by abstime
+        # to dechannelify
 
         noteEventList.sort()
         # print noteEventList
         # print len(noteEventList)
 
         last_time = -0
-        active_notes = {}  # make this a dict so we can add and remove notes by name
+        # make this a dict so we can add and remove notes by name
+        active_notes = {}
 
         # Start the output
         # Init blocks
         blocks = []
         block = Block(self.name)
         block.append("(Midi2CNC)")
-        block.append("(Midi:%s)" % fileName)
+        block.append(f"(Midi:{fileName})")
         block.append(CNC.zsafe())
         block.append(CNC.grapid(0, 0))
         block.append(CNC.zenter(0))
@@ -247,7 +256,8 @@ class Tool(Plugin):
                 # E.g. only look for the first few active notes to play despite what
                 # is going on in the actual score.
 
-                for i in range(0, min(len(active_notes.values()), active_axes)):
+                for i in range(0, min(len(active_notes.values()),
+                                      active_axes)):
 
                     # Which axis are should we be writing to?
                     #
@@ -256,7 +266,8 @@ class Tool(Plugin):
                     # Debug
                     # print"Axes %s: item %d is %d" % (axes_dict.get(args.axes), i, j)
 
-                    # Sound higher pitched notes first by sorting by pitch then indexing by axis
+                    # Sound higher pitched notes first by sorting by pitch
+                    # then indexing by axis
                     #
                     nownote = sorted(active_notes.values(), reverse=True)[i]
 
@@ -277,7 +288,8 @@ class Tool(Plugin):
 
                     feed_xyz[j] = (freq_xyz[j] * 60.0) / ppu[j]
 
-                    # Get the duration in seconds from the MIDI values in divisions, at the given tempo
+                    # Get the duration in seconds from the MIDI values in
+                    # divisions, at the given tempo
                     duration = (
                         ((note[0] - last_time) + 0.0)
                         / (midi.division + 0.0)
@@ -287,8 +299,9 @@ class Tool(Plugin):
                     # Get the actual relative distance travelled per axis in mm
                     distance_xyz[j] = (feed_xyz[j] * duration) / 60.0
 
-                # Now that axes can be addressed in any order, need to make sure
-                # that all of them are silent before declaring a rest is due.
+                # Now that axes can be addressed in any order, need to make
+                # sure that all of them are silent before declaring a rest
+                # is due.
                 if distance_xyz[0] + distance_xyz[1] + distance_xyz[2] > 0:
                     # At least one axis is playing, so process the note into
                     # movements

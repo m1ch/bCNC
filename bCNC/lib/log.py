@@ -41,7 +41,7 @@ __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"
 
 
-# -------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 _log = None
 
 
@@ -56,7 +56,7 @@ def say(*kw):
     if _log:
         _log(txt)
     else:
-        sys.stdout.write("%s\n" % (txt))
+        sys.stdout.write(f"{txt}\n")
 
 
 def null(*kw):

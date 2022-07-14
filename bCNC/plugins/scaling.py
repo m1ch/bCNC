@@ -29,7 +29,6 @@ from math import (
     tan,
 )
 
-from bmath import pi
 from CNC import CNC, Block
 from ToolsPage import Plugin
 
@@ -40,9 +39,9 @@ __name__ = _("Scaling")
 __version__ = "0.6"
 
 
-# ==============================================================================
+# =============================================================================
 # Scaling selected block
-# ==============================================================================
+# =============================================================================
 class Tool(Plugin):
     __doc__ = _("Scaling the selected block")
 
@@ -121,18 +120,21 @@ class Tool(Plugin):
                     app.cnc.motionEnd()
                     if xyz:
                         # coment its?
-                        # -----------------------------------------------------------------------------------------
+                        # -----------------------------------------------------
                         # exclude if fast move or z only movement
                         G0 = ("g0" in cmd) or ("G0" in cmd)
-                        Zonly = xyz[0][0] == xyz[1][0] and xyz[0][1] == xyz[1][1]
+                        Zonly = (xyz[0][0] == xyz[1][0]
+                                 and xyz[0][1] == xyz[1][1])
                         exclude = Zonly
-                        # -----------------------------------------------------------------------------------------
+                        # -----------------------------------------------------
 
                         # save length for later use
                         segLength = self.calcSegmentLength(xyz)
                         if len(xyz) < 3:
-                            bidSegments.append(
-                                [xyz[0], xyz[1], exclude, segLength])
+                            bidSegments.append([xyz[0],
+                                                xyz[1],
+                                                exclude,
+                                                segLength])
                         else:
                             for i in range(len(xyz) - 1):
                                 bidSegments.append(
@@ -226,8 +228,8 @@ class Tool(Plugin):
             bid_block = Block(n)
 
             for idx, segm in enumerate(bidSegment):
-                # 			if idx >= 0:
-                # 			bid_block.append("(idx "+str(idx)+" -------------- )")
+                # if idx >= 0:
+                # bid_block.append("(idx "+str(idx)+" -------------- )")
                 info = self.scaling(segm, center, xscale, yscale, zscale)
                 if idx == 0:
                     bid_block.append(
@@ -239,16 +241,19 @@ class Tool(Plugin):
                         + str(zscale)
                         + " : 1.0) ---- )"
                     )
-                    bid_block.append(
-                        "(center " + str(center[0])
-                        + " ," + str(center[1]) + " )"
-                    )
+                    bid_block.append("(center "
+                                     + str(center[0])
+                                     + " ,"
+                                     + str(center[1])
+                                     + " )")
                     bid_block.append("M03")
                     bid_block.append("S " + str(rpm))
                     bid_block.append(CNC.zsafe())
                     bid_block.append("F " + str(zfeed))
-                    bid_block.append(
-                        "g0 x " + str(info[0]) + " y " + str(info[1]))
+                    bid_block.append("g0 x "
+                                     + str(info[0])
+                                     + " y "
+                                     + str(info[1]))
                     currentfeed = oldfeed = zfeed
                 else:
                     # 	if B[5]>=0: #<< zsign
@@ -287,7 +292,7 @@ class Tool(Plugin):
                 CNC.zsafe()
             )  # <<< Move rapid Z axis to the safe height in Stock Material
             all_blocks.append(bid_block)
-        # 			print "bid", bid_block.name(), bid_block,"*****************"
+        # 	print "bid", bid_block.name(), bid_block,"*****************"
         self.finish_blocks(app, all_blocks, elements)
 
     # --------------------------------------------------------------

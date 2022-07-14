@@ -22,17 +22,17 @@ __name__ = _("Driller")
 __version__ = "0.0.10"
 
 
-# ==============================================================================
+# =============================================================================
 # Driller class
-# ==============================================================================
+# =============================================================================
 class Driller:
     def __init__(self, name="Driller"):
         self.name = name
 
 
-# ==============================================================================
+# =============================================================================
 # Create holes along selected blocks
-# ==============================================================================
+# =============================================================================
 class Tool(Plugin):
     __doc__ = _("Create holes along selected blocks")
 
@@ -96,7 +96,7 @@ class Tool(Plugin):
 
     # Excellon Import
     def excellonimport(self, filename, app):
-        fo = open(filename, "r")
+        fo = open(filename)
         header = None
         current_tool = None
         incrementcoord = False
@@ -111,10 +111,11 @@ class Tool(Plugin):
                     if line == "M48":
                         header = True
                     if header == True:
-                        if line.startswith("INCH") or line.startswith("METRIC"):
+                        if (line.startswith("INCH")
+                                or line.startswith("METRIC")):
                             unitinch = line.startswith("INCH")
                             decimals = 0.1 ** len(
-                                line[line.index("."): -1]
+                                line[line.index(".") : -1]
                             )  # calculates the multiplier for decimal places
                         if line == "M95" or line == "%":
                             header = False
@@ -134,16 +135,16 @@ class Tool(Plugin):
                             m = re.match(r"X([\d\.-]+)Y([\d\.-]+)", line)
                             # Convert to system
                             x = self.convunit(
-                                self.coord2float(
-                                    m.group(1), unitinch, decimals),
+                                self.coord2float(m.group(1),
+                                                 unitinch, decimals),
                                 unitinch,
                             )
                             y = self.convunit(
-                                self.coord2float(
-                                    m.group(2), unitinch, decimals),
+                                self.coord2float(m.group(2),
+                                                 unitinch, decimals),
                                 unitinch,
                             )
-                            if incrementcoord == True:
+                            if incrementcoord is True:
                                 if len(data["tools"][current_tool]["holes"]) == 0:
                                     prevx = 0
                                     prevy = 0
@@ -227,8 +228,7 @@ class Tool(Plugin):
                         segLenth = self.calcSegmentLength(xyz)
 
                         if len(xyz) < 3:
-                            bidSegments.append(
-                                [xyz[0], xyz[1], exclude, segLenth])
+                            bidSegments.append([xyz[0], xyz[1], exclude, segLenth])
                         else:
                             for i in range(len(xyz) - 1):
                                 bidSegments.append(
@@ -329,8 +329,7 @@ class Tool(Plugin):
                                 )
                                 bidHoles.append(newHolePoint)
                         else:
-                            newHolePoint = (
-                                anchor[0][0], anchor[0][1], anchor[0][2])
+                            newHolePoint = (anchor[0][0], anchor[0][1], anchor[0][2])
                             bidHoles.append(newHolePoint)
             else:
                 # Sum all path length
@@ -411,8 +410,7 @@ class Tool(Plugin):
                 holesCount += 1
 
                 if self.useCustom:
-                    block.append(CNC.grapid(x=xH, y=yH)
-                                 + CNC.fmt(" F", self.rFeed))
+                    block.append(CNC.grapid(x=xH, y=yH) + CNC.fmt(" F", self.rFeed))
                 else:
                     # block.append(CNC.zsafe()) # Moved up
                     block.append(CNC.grapid(xH, yH))
@@ -431,7 +429,7 @@ class Tool(Plugin):
                             block.append(CNC.zsafe())
 
                 if self.useCustom:
-                    block.append("G1 S%s" % (self.spinMax))
+                    block.append(f"G1 S{self.spinMax}")
                     block.append(CNC.gline(x=xH, y=yH))
                 else:
                     block.append(CNC.zenter(targetDepth))
@@ -441,7 +439,7 @@ class Tool(Plugin):
                     block.append(CNC.gcode(4, [("P", dwell)]))
 
                 if self.useCustom:
-                    block.append("G1 S%s" % (self.spinMin))
+                    block.append(f"G1 S{self.spinMin}")
                 else:
                     block.append(CNC.zsafe())
 

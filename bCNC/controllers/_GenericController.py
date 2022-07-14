@@ -18,6 +18,8 @@ STATUSPAT = re.compile(
 POSPAT = re.compile(
     r"^\[(...):([+\-]?\d*\.\d*),([+\-]?\d*\.\d*),([+\-]?\d*\.\d*)(?:,[+\-]?\d*\.\d*)?(?:,[+\-]?\d*\.\d*)?(?:,[+\-]?\d*\.\d*)?(:(\d*))?\]$"
 )
+# FIXME: add example for strings this regexes shall convert
+
 TLOPAT = re.compile(r"^\[(...):([+\-]?\d*\.\d*)\]$")
 DOLLARPAT = re.compile(r"^\[G\d* .*\]$")
 
@@ -107,25 +109,25 @@ class _GenericController:
     # ----------------------------------------------------------------------
     def jog(self, dir):
         # print("jog",dir)
-        self.master.sendGCode("G91G0%s" % (dir))
+        self.master.sendGCode(f"G91G0{dir}")
         self.master.sendGCode("G90")
 
     # ----------------------------------------------------------------------
     def goto(self, x=None, y=None, z=None, a=None, b=None, c=None):
         cmd = "G90G0"
         if x is not None:
-            cmd += "X%g" % (x)
+            cmd += f"X{x:g}"
         if y is not None:
-            cmd += "Y%g" % (y)
+            cmd += f"Y{y:g}"
         if z is not None:
-            cmd += "Z%g" % (z)
+            cmd += f"Z{z:g}"
         if a is not None:
-            cmd += "A%g" % (a)
+            cmd += f"A{a:g}"
         if b is not None:
-            cmd += "B%g" % (b)
+            cmd += f"B{b:g}"
         if c is not None:
-            cmd += "C%g" % (c)
-        self.master.sendGCode("%s" % (cmd))
+            cmd += f"C{c:g}"
+        self.master.sendGCode(f"{cmd}")
 
     # ----------------------------------------------------------------------
     def _wcsSet(self, x, y, z, a=None, b=None, c=None):
@@ -211,7 +213,7 @@ class _GenericController:
         self.master.stopProbe()
         if G:
             self.master.sendGCode(G)  # restore $G
-        self.master.sendGCode("G43.1Z%s" % (TLO))  # restore TLO
+        self.master.sendGCode(f"G43.1Z{TLO}")  # restore TLO
         self.viewState()
 
     # ----------------------------------------------------------------------
@@ -219,11 +221,13 @@ class _GenericController:
         state = state.strip()
 
         # Do not show g-code errors, when machine is already in alarm state
-        if CNC.vars["state"].startswith("ALARM:") and state.startswith("error:"):
-            print("Supressed: %s" % (state))
+        if (CNC.vars["state"].startswith("ALARM:")
+                and state.startswith("error:")):
+            print(f"Supressed: {state}")
             return
 
-        # Do not show alarm without number when we already display alarm with number
+        # Do not show alarm without number when we already
+        # display alarm with number
         if state == "Alarm" and CNC.vars["state"].startswith("ALARM:"):
             return
 
@@ -276,7 +280,7 @@ class _GenericController:
             self.master.log.put((self.master.MSG_RECEIVE, line))
             pat = VARPAT.match(line)
             if pat:
-                CNC.vars["grbl_%s" % (pat.group(1))] = pat.group(2)
+                CNC.vars[f"grbl_{pat.group(1)}"] = pat.group(2)
 
         # and self.running:
         elif line[:4] == "Grbl" or line[:13] == "CarbideMotion":

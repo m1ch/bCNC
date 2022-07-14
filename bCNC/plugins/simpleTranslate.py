@@ -6,6 +6,8 @@
 from __future__ import absolute_import, print_function
 
 import math
+import tkinter
+import tkinter.messagebox as tkMessageBox
 
 from bmath import Vector
 from CNC import CNC, CW, Block
@@ -16,17 +18,9 @@ __author__ = "DodoLaSaumure"
 __email__ = ""
 
 
-try:
-    import Tkinter
-    import tkMessageBox
-except ImportError:
-    import tkinter
-    import tkinter.messagebox as tkMessageBox
-
-
-# ==============================================================================
+# =============================================================================
 # Create a simple Translate
-# ==============================================================================
+# =============================================================================
 class Tool(Plugin):
     __doc__ = _("Translates a block to a new position")
 
@@ -56,8 +50,8 @@ class Tool(Plugin):
             app.editor.selectAll()
             blocks = app.editor.getSelectedBlocks()
         if not blocks:
-            tkMessageBox.showerror(
-                _("Tile error"), _("No g-code blocks selected"))
+            tkMessageBox.showerror(_("Tile error"),
+                                   _("No g-code blocks selected"))
             return
         pos = blocks[-1]  # insert position
         y = dy
