@@ -3,20 +3,31 @@
 # Author: vvlachoudis@gmail.com
 # Date: 18-Jun-2015
 
-from __future__ import absolute_import, print_function
+from tkinter import (
+    YES,
+    W,
+    NS,
+    NSEW,
+    BOTH,
+    LEFT,
+    TOP,
+    VERTICAL,
+    END,
+    NORMAL,
+    DISABLED,
+    EXTENDED,
+    Listbox,
+    Scrollbar,
+)
 
 import CNCRibbon
 import Ribbon
 import tkExtra
 import Utils
+from Helpers import _, N_
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "vvlachoudis@gmail.com"
-
-try:
-    from Tkinter import *
-except ImportError:
-    from tkinter import *
 
 
 # =============================================================================

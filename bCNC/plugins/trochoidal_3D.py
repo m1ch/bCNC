@@ -7,36 +7,28 @@
 # This plugin is based on a variation
 # of yours Driller plugin and My_Plugin example.
 
+import math
+from math import (
+    atan2,
+    ceil,
+    cos,
+    degrees,
+    pi,
+    radians,
+    sin,
+    sqrt,
+)
+from tkinter import EXCEPTION
+
+from CNC import CNC, Block
+from ToolsPage import Plugin
+from Helpers import _
+
 __author__ = "Mario S Basz"
 __email__ = "mariob_1960@yaho.com.ar"
 
 __name__ = _("Trochoidcut")
 __version__ = "1.3"
-
-import math
-import os.path
-import re
-from collections import OrderedDict
-from math import (
-    acos,
-    asin,
-    atan2,
-    ceil,
-    copysign,
-    cos,
-    degrees,
-    fmod,
-    hypot,
-    pi,
-    radians,
-    sin,
-    sqrt,
-    tan,
-)
-
-from bmath import pi
-from CNC import CNC, Block
-from ToolsPage import Plugin
 
 
 # =============================================================================
@@ -150,11 +142,8 @@ class Tool(Plugin):
 
     # ----------------------------------------------------------------------
     def came_back(self, current, old):
-        A = current[0]
         B = current[1]
         oldA = old[0]
-        oldB = old[1]
-        # 	if A[0]==oldB[0] and A[1]==oldB[1] and A[2]==oldB[2] \
         if B[0] == oldA[0] and B[1] == oldA[1] and B[2] == oldA[2]:
             control = 1
         else:
@@ -223,7 +212,7 @@ class Tool(Plugin):
                     cmd = app.cnc.breakLine(
                         app.gcode.evaluate(app.cnc.compileLine(line))
                     )
-                except:
+                except EXCEPTION:
                     cmd = None
 
                 if cmd:
@@ -233,7 +222,6 @@ class Tool(Plugin):
 
                     if xyz:
                         # exclude if fast move or z only movement
-                        G0 = ("g0" in cmd) or ("G0" in cmd)
                         Zonly = (xyz[0][0] == xyz[1][0]
                                  and xyz[0][1] == xyz[1][1])
                         exclude = Zonly
@@ -454,10 +442,8 @@ class Tool(Plugin):
             if idx >= 0:
                 if cw:
                     u = 1
-                    arc = "G2"
                 else:
                     u = -1
-                    arc = "G3"
                 # ////////////-------------------------------------------------
                 # information: ------------------------------------------------
                 segLength = self.calcSegmentLength(segm)
@@ -1062,8 +1048,6 @@ class Tool(Plugin):
         # 		phi = atan2(B[1]-A[1], B[0]-A[0])
         # 		step = sqrt((A[0]-B[0])**2+(A[1]-B[1])**2)
 
-        l = self.pol2car(radius, phi + radians(90 * u))
-        r = self.pol2car(radius, phi + radians(-90 * u))
         al = self.pol2car(oldradius, phi + radians(90 * u), A)
         ar = self.pol2car(oldradius, phi + radians(-90 * u), A)
         bl = self.pol2car(radius, phi + radians(90 * u), B)
@@ -1075,7 +1059,6 @@ class Tool(Plugin):
         # 		old_r = self.pol2car(oldradius, oldphi+radians(-90*u))
 
         # 		infinite radius
-        inf_radius = 1
         # 		inf_l = self.pol2car(500*radius, phi+radians(90*u))
         # 		inf_r = self.pol2car(500*radius, phi+radians(-90*u))
         # 		inf_Cl = self.pol2car(inf_radius*radius, phi+radians(-90*u), B)
@@ -1355,7 +1338,7 @@ class Tool(Plugin):
 
     # --------------------------------------------------------------
     def splice_generator(
-        self, C1, C2, r1, r2, phi1, phi2, alpha_1, alpha_2, u, steps):
+            self, C1, C2, r1, r2, phi1, phi2, alpha_1, alpha_2, u, steps):
         block = []
         # 		steps=self["splicesteps"]/(2*pi)
         # 			when "Soft Arc" splice from AR to BL

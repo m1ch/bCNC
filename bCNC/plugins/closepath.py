@@ -1,28 +1,9 @@
 # Author: @harvie Tomas Mudrunka
 # Date: 7 july 2018
 
-from __future__ import absolute_import, print_function
-
-import math
-import os.path
-import re
-from math import (
-    acos,
-    asin,
-    atan2,
-    copysign,
-    cos,
-    degrees,
-    fmod,
-    hypot,
-    pi,
-    radians,
-    sin,
-    sqrt,
-)
-
-from CNC import CNC, Block, Segment
+from CNC import Block, Segment
 from ToolsPage import Plugin
+from Helpers import _
 
 __author__ = "@harvie Tomas Mudrunka"
 # __email__  = ""
@@ -53,7 +34,6 @@ class Tool(Plugin):
     # This method is executed when user presses the plugin execute button
     # ----------------------------------------------------------------------
     def execute(self, app):
-        blocks = []
         for bid in app.editor.getSelectedBlocks():
             if len(app.gcode.toPath(bid)) < 1:
                 continue

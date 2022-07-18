@@ -5,9 +5,6 @@
 # Author: Vasilis.Vlachoudis@cern.ch
 # Date:   15-May-2004
 
-
-from __future__ import absolute_import
-
 import random
 from math import (
     acos,
@@ -114,13 +111,13 @@ def d2s(ang, fmt=""):
 
 
 # -----------------------------------------------------------------------------
-def format(number, length=10, useExp=False, useD=False):
+def format__(number, length=10, useExp=False, useD=False):
     """Format a number to fit in the minimum space given by length"""
 
     _MAXLEN = 22
 
     # Convert number to string
-    # XXX str cuts at 12 digits, repr shows everything but
+    # XXX: str cuts at 12 digits, repr shows everything but
     # numbers like e.g 9.2 will be converted to 9.1999999999999
     # What should I do
     # Fields also in the CardWidget are converted with str and
@@ -204,7 +201,7 @@ def format(number, length=10, useExp=False, useD=False):
     # ... and trailing
     for p in range(len(integer) - 1, 0, -1):
         if integer[p] != "0":
-            integer = integer[0 : p + 1]
+            integer = integer[0:(p + 1)]
             break
 
     exponent += point
@@ -286,7 +283,7 @@ def format(number, length=10, useExp=False, useD=False):
         # Remove trailing zeros
         for p in range(len(integer) - 1, -1, -1):
             if integer[p] != "0":
-                integer = integer[0 : p + 1]
+                integer = integer[0:(p + 1)]
                 break
         else:
             if useExp:
@@ -369,7 +366,7 @@ class Vector(list):
 
     # ----------------------------------------------------------------------
     def __str__(self):
-        return f"[{', '.join([(f"{x:15g}").strip() for x in self])}]"
+        return "[" + ', '.join([(f"{x:15g}").strip() for x in self]) + "]"
 
     # ----------------------------------------------------------------------
     def eq(self, v, acc=_accuracy):
@@ -517,7 +514,7 @@ class Vector(list):
         if le > 0.0:
             invlen = 1.0 / le
             for _i in range(len(self)):
-                self[i] *= invlen
+                self[_i] *= invlen
         return le
 
     normalize = norm
@@ -690,9 +687,9 @@ class Matrix(list):
     """Matrix 4x4 used for vector transformations"""
 
     # ----------------------------------------------------------------------
-    def __init__(self, rows=4, cols=-1, type=0):
+    def __init__(self, rows=4, cols=-1, type_=0):
         """
-        Matrix(rows=4, cols=-1, type=0|1)
+        Matrix(rows=4, cols=-1, type_=0|1)
         if rows is integer then
                 Create a matrix rows x cols either
                 zero(type=0) or unary(type=1)
@@ -731,7 +728,7 @@ class Matrix(list):
     # ----------------------------------------------------------------------
     @staticmethod
     def diagonal(lst):
-        m = Matrix(len(lst), type=0)
+        m = Matrix(len(lst), type_=0)
         i = 0
         for item in lst:
             m[i][i] = item
@@ -750,7 +747,7 @@ class Matrix(list):
     def translate(x, y=0.0, z=0.0):
         """m = Matrix.translate(x,y,z|vector)
         @return a translation matrix"""
-        m = Matrix(4, type=1)
+        m = Matrix(4, type_=1)
         if isinstance(x, (list, tuple)):
             m[0][3] = x[0]
             m[1][3] = x[1]
@@ -766,7 +763,7 @@ class Matrix(list):
     def scale(sx, sy=None, sz=None):
         """m = Matrix.scale(scale|vector)
         @return a scaling matrix"""
-        m = Matrix(4, type=1)
+        m = Matrix(4, type_=1)
         if sy is None:
             sy = sx
         if sz is None:
@@ -946,7 +943,7 @@ class Matrix(list):
     @staticmethod
     def rotX(angle):
         """m = Matrix.rotX(angle) - Return a rotation matrix around X"""
-        m = Matrix(4, type=1)
+        m = Matrix(4, type_=1)
         m.rotate(angle, 0)
         return m
 
@@ -954,7 +951,7 @@ class Matrix(list):
     @staticmethod
     def rotY(angle):
         """m = Matrix.rotY(angle) - Return a rotation matrix arround Y"""
-        m = Matrix(4, type=1)
+        m = Matrix(4, type_=1)
         m.rotate(angle, 1)
         return m
 
@@ -962,7 +959,7 @@ class Matrix(list):
     @staticmethod
     def rotZ(angle):
         """m = Matrix.rotZ(angle) - Return a rotation matrix arround Z"""
-        m = Matrix(4, type=1)
+        m = Matrix(4, type_=1)
         m.rotate(angle, 2)
         return m
 
@@ -989,7 +986,7 @@ class Matrix(list):
     def eulerRotation(rx, ry, rz):
         """return a rotation matrix based on the Euler rotation
         ROTX(x) * ROTY(y) * ROTZ(z)"""
-        m = Matrix(4, type=1)
+        m = Matrix(4, type_=1)
         cx = cos(rx)
         cy = cos(ry)
         cz = cos(rz)
@@ -1262,8 +1259,8 @@ class Matrix(list):
 # -----------------------------------------------------------------------------
 # Basic Matrices
 # -----------------------------------------------------------------------------
-Matrix.O = Matrix(4, type=0)
-Matrix.U = Matrix(4, type=1)
+Matrix.O = Matrix(4, type_=0)
+Matrix.U = Matrix(4, type_=1)
 
 
 # -----------------------------------------------------------------------------
@@ -1347,7 +1344,7 @@ class Quaternion(list):
     # ----------------------------------------------------------------------
     def matrix(self):
         """return rotation matrix"""
-        m = Matrix(4, type=1)
+        m = Matrix(4, type_=1)
         m[0][0] = 1.0 - 2.0 * (self[1] * self[1] + self[2] * self[2])
         m[0][1] = 2.0 * (self[0] * self[1] - self[2] * self[3])
         m[0][2] = 2.0 * (self[2] * self[0] + self[1] * self[3])
@@ -1542,9 +1539,9 @@ def eigenvalues(M, eps=_accuracy, check=False):
 
     # Allocate arrays
     A = M.clone()
-    R = Matrix(n, type=0)
-    RT = Matrix(n, type=0)
-    ZW = Matrix(n, type=0)
+    R = Matrix(n, type_=0)
+    RT = Matrix(n, type_=0)
+    ZW = Matrix(n, type_=0)
     V = None
 
     # kavovika 8a prepei meta apo merikes prospa8eies va tov aporiptei
@@ -1692,7 +1689,7 @@ def xcombinations(items, n):
         yield []
     else:
         for i in range(len(items)):
-            for cc in xcombinations(items[:i] + items[i + 1 :], n - 1):
+            for cc in xcombinations(items[:i] + items[i + 1:], n - 1):
                 yield [items[i]] + cc
 
 
@@ -1702,7 +1699,7 @@ def xuniqueCombinations(items, n):
         yield []
     else:
         for i in range(len(items)):
-            for cc in xuniqueCombinations(items[i + 1 :], n - 1):
+            for cc in xuniqueCombinations(items[i + 1:], n - 1):
                 yield [items[i]] + cc
 
 

@@ -1,10 +1,5 @@
 # GRBL 1.0+ motion controller plugin
 
-from __future__ import absolute_import, print_function
-
-import time
-
-import Utils
 from _GenericController import SPLITPAT
 from _GenericGRBL import _GenericGRBL
 from CNC import CNC
@@ -38,8 +33,8 @@ class Controller(_GenericGRBL):
         self.master = master
         # print("grbl1 loaded")
 
-    def jog(self, dir):
-        self.master.sendGCode(f"$J=G91 {dir} F100000")
+    def jog(self, direction):
+        self.master.sendGCode(f"$J=G91 {direction} F100000")
         # XXX is F100000 correct?
 
     def overrideSet(self):

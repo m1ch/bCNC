@@ -9,13 +9,30 @@
 #              Author.py(linuxcnc) 2007 Jeff Epler  jepler@unpythonic.net
 #              dmap2gcode G-Code Generator 2015  @schorchworks
 
-from __future__ import absolute_import, print_function
-
 import math
+import importlib
 
 from CNC import CNC, Block
-from imageToGcode import *
+from imageToGcode import (
+    Image_Matrix_Numpy,
+    Image_Matrix_List,
+    Convert_Scan_Increasing,
+    Convert_Scan_Decreasing,
+    Convert_Scan_Alternating,
+    Convert_Scan_Upmill,
+    Convert_Scan_Downmill,
+    Reduce_Scan_Lace,
+    Reduce_Scan_Lace_new,
+    ArcEntryCut,
+    SimpleEntryCut,
+    convert,
+    make_tool_shape,
+    endmill,
+    vee_common,
+    ball_tool,
+)
 from ToolsPage import Plugin
+from Helpers import _
 
 __author__ = "Filippo Rivato"
 __email__ = "f.rivato@gmail.com"
@@ -67,7 +84,7 @@ class Tool(Plugin):
         # Try import PIL
         try:
             from PIL import Image
-        except:
+        except Exception:
             app.setStatus(
                 _("Heightmap abort: This plugin requires PIL/Pillow"))
             return
@@ -77,7 +94,7 @@ class Tool(Plugin):
         try:
             img = Image.open(fileName)
             img = img.convert("L")  # Luminance
-        except:
+        except Exception:
             app.setStatus(_("Heightmap abort: Can't read image file"))
             return
 
@@ -85,15 +102,8 @@ class Tool(Plugin):
             app.setStatus(_("Heightmap abort: depth must be < 0"))
             return
 
-        # Define type of matrix manipulation
-        NUMPY = True
-        if NUMPY == True:
-            try:
-                import numpy
-            except:
-                NUMPY = False
-
-        if NUMPY == True:
+        NUMPY = importlib.util.find_spec("numpy") is not None
+        if NUMPY:
             Image_Matrix = Image_Matrix_Numpy
         else:
             Image_Matrix = Image_Matrix_List
@@ -139,7 +149,6 @@ class Tool(Plugin):
         zStep = CNC.vars["stepz"]
         if self["SinglePass"]:
             zStep = 0.0
-        rough_offset = 0.0
         rough_feed = CNC.vars["cutfeed"]
 
         plunge_feed = CNC.vars["cutfeedz"]
@@ -157,7 +166,7 @@ class Tool(Plugin):
         elif tool_shape == "V-cutting":
             try:
                 v_angle = float(tool["angle"])
-            except:
+            except Exception:
                 app.setStatus(
                     _("Heightmap abort: angle not defined for selected "
                       + "End Mill")

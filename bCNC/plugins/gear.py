@@ -3,13 +3,12 @@
 # Author:	Vasilis.Vlachoudis@cern.ch
 # Date:	20-Aug-2015
 
-from __future__ import absolute_import, print_function
-
 import math
 
 from bmath import Vector
 from CNC import CNC, CW, Block
 from ToolsPage import Plugin
+from Helpers import _
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"
@@ -55,15 +54,6 @@ class Gear:
 
         # Outside Circle
         Ro = R + a
-        Do = 2.0 * Ro
-
-        # Tooth thickness
-        T = math.pi * D / (2 * N)
-
-        # undercut?
-        U = 2.0 / (math.sin(phi) * (math.sin(phi)))
-        needs_undercut = N < U
-        # sys.stderr.write("N:%s R:%s Rb:%s\n" % (N,R,Rb))
 
         # Clearance
         c = 0.0
@@ -72,7 +62,6 @@ class Gear:
 
         # Root Circle
         Rr = R - b
-        Dr = 2.0 * Rr
 
         two_pi = 2.0 * math.pi
         half_thick_angle = two_pi / (4.0 * N)

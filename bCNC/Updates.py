@@ -3,30 +3,42 @@
 # Author: vvlachoudis@gmail.com
 # Date:	5-Apr-2007
 
-from __future__ import absolute_import, print_function
-
 import json
 import time
+import http.client as http
+from tkinter import (
+    W,
+    E,
+    EW,
+    X,
+    BOTH,
+    LEFT,
+    TOP,
+    RIGHT,
+    BOTTOM,
+    RAISED,
+    DISABLED,
+    IntVar,
+    Tk,
+    Toplevel,
+    Button,
+    Frame,
+    Label,
+    Spinbox,
+    LabelFrame,
+)
 
 import tkExtra
 import Utils
+from Helpers import _
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "vvlachoudis@gmail.com"
 
 
-try:
-    import httplib as http
-    from Tkinter import *
-except ImportError:
-    import http.client as http
-    from tkinter import *
-
 # =============================================================================
 # Check for updates of bCNC
 # =============================================================================
-
-
 class CheckUpdateDialog(Toplevel):
     def __init__(self, master, version):
         Toplevel.__init__(self, master)

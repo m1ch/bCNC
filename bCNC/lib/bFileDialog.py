@@ -33,31 +33,54 @@
 # Author:	Vasilis.Vlachoudis@cern.ch
 # Date:	29-Nov-2009
 
-from __future__ import absolute_import
-
 import fnmatch
 import os
 import time
-from stat import *
+from stat import (
+    ST_MODE,
+    ST_SIZE,
+    ST_MTIME,
+    S_ISDIR,
+    S_ISLNK,
+)
+from tkinter import (
+    TclError,
+    E,
+    EW,
+    NSEW,
+    X,
+    Y,
+    YES,
+    BOTH,
+    LEFT,
+    TOP,
+    RIGHT,
+    BOTTOM,
+    RAISED,
+    SUNKEN,
+    VERTICAL,
+    END,
+    ACTIVE,
+    BROWSE,
+    EXTENDED,
+    Tk,
+    Toplevel,
+    Button,
+    Entry,
+    Frame,
+    Label,
+    Listbox,
+    Scrollbar,
+    PhotoImage,
+)
+import tkinter.messagebox as messagebox
 
 from lib import tkExtra
+from Helpers import _
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"
 
-
-if "_" not in dir():
-
-    def _(x):
-        return x
-
-
-try:
-    from Tkinter import *
-    import tkMessageBox as messagebox
-except ImportError:
-    from tkinter import *
-    import tkinter.messagebox as messagebox
 
 _DIR_TYPE = " <DIR>"
 _FILE_TYPE = "-file-"
@@ -457,7 +480,7 @@ class FileDialog(Toplevel):
 
     # ----------------------------------------------------------------------
     def button(self, b):
-        path = [x["text"] for x in self.buttons[0 : b + 1]]
+        path = [x["text"] for x in self.buttons[0:b + 1]]
         if path[0] == os.sep:
             path = os.sep + os.sep.join(path[1:])
         else:
@@ -705,7 +728,7 @@ class FileDialog(Toplevel):
             global _history
             # Delete all temporary directories and keep only the last one
             if len(_history) > self._historyOldLen:
-                del _history[self._historyOldLen :]
+                del _history[self._historyOldLen:]
             append2History(self.path)
             self.close()
 

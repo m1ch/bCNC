@@ -33,8 +33,6 @@
 # Author:	Vasilis.Vlachoudis@cern.ch
 # Date:	10-Oct-2014
 
-from __future__ import absolute_import
-
 import sys
 
 __author__ = "Vasilis Vlachoudis"
@@ -45,7 +43,7 @@ __email__ = "Vasilis.Vlachoudis@cern.ch"
 _log = None
 
 
-def set(li):
+def set_(li):
     global _log
     _log = li
 

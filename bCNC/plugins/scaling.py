@@ -7,30 +7,14 @@
 # This plugin is based on a variation
 # of yours Driller plugin and My_Plugin example.
 
-from __future__ import absolute_import, print_function
-
 import math
-import os.path
-import re
-from collections import OrderedDict
 from math import (
-    acos,
-    asin,
-    atan2,
-    copysign,
-    cos,
-    degrees,
-    fmod,
-    hypot,
-    pi,
-    radians,
-    sin,
     sqrt,
-    tan,
 )
 
 from CNC import CNC, Block
 from ToolsPage import Plugin
+from Helpers import _
 
 __author__ = "Mario S Basz"
 __email__ = "mariob_1960@yaho.com.ar"
@@ -111,7 +95,7 @@ class Tool(Plugin):
                     cmd = app.cnc.breakLine(
                         app.gcode.evaluate(app.cnc.compileLine(line))
                     )
-                except:
+                except Exception:
                     cmd = None
 
                 if cmd:
@@ -122,7 +106,6 @@ class Tool(Plugin):
                         # coment its?
                         # -----------------------------------------------------
                         # exclude if fast move or z only movement
-                        G0 = ("g0" in cmd) or ("G0" in cmd)
                         Zonly = (xyz[0][0] == xyz[1][0]
                                  and xyz[0][1] == xyz[1][1])
                         exclude = Zonly

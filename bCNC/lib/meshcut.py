@@ -1,7 +1,6 @@
 """
 Functions to slice a mesh. For now, computes planar cross-section
 """
-from __future__ import absolute_import
 
 import collections
 
@@ -10,7 +9,6 @@ import numpy.linalg as la
 
 try:
     import scipy.spatial.distance as spdist
-
     USE_SCIPY = True
 except ImportError:
     USE_SCIPY = False

@@ -2,19 +2,37 @@
 # Author: vvlachoudis@gmail.com
 # Date: 18-Jun-2015
 
-from __future__ import absolute_import, print_function
-
 from lib import tkExtra
 import Utils
+from tkinter import (
+    FALSE,
+    YES,
+    TRUE,
+    X,
+    Y,
+    BOTH,
+    LEFT,
+    TOP,
+    RIGHT,
+    BOTTOM,
+    RAISED,
+    FLAT,
+    GROOVE,
+    NORMAL,
+    DISABLED,
+    StringVar,
+    Button,
+    Checkbutton,
+    Frame,
+    Label,
+    Menu,
+    Radiobutton,
+)
+
+from Helpers import _
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "vvlachoudis@gmail.com"
-
-try:
-    from Tkinter import *
-except ImportError:
-    from tkinter import *
-
 
 _TABFONT = ("Sans", "-14", "bold")
 _FONT = ("Sans", "-11")

@@ -9,15 +9,10 @@
 # of yours plugin Driller and My_Plugin example.
 # To correct: Thats why the first point starts,
 
-from __future__ import absolute_import, print_function
 
-import math
-
-from bmath import Vector
-
-# import CNC					 # <<
-from CNC import CNC, Block  # << without this error it does not find CNC.vars
+from CNC import CNC  # , Block  # << without this error it does not find CNC.vars
 from ToolsPage import Plugin
+from Helpers import _
 
 __author__ = "Mario Basz"
 __email__ = "mariob_1960@yahoo.com.ar"

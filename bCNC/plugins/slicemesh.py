@@ -1,16 +1,10 @@
 # Author: @harvie Tomas Mudrunka
 # Date: 11 july 2018
 
-from __future__ import absolute_import, print_function
-
 import os
 
-# import math
 import os.path
 
-# import numpy.linalg as la
-# import itertools
-# import utils
 import meshcut
 import numpy as np
 
@@ -19,9 +13,9 @@ import numpy as np
 import ply
 import stl  # FIXME: write smaller STL parser
 
-# import re
-from CNC import CNC, Block
+from CNC import Block
 from ToolsPage import Plugin
+from Helpers import _
 
 __author__ = "@harvie Tomas Mudrunka"
 # __email__  = ""
@@ -29,7 +23,6 @@ __author__ = "@harvie Tomas Mudrunka"
 __name__ = _("slicemesh")
 __version__ = "0.0.6"
 
-# from math import pi, sqrt, sin, cos, asin, acos, atan2, hypot, degrees, radians, copysign, fmod
 
 # FIXME: not sure how to force bCNC to prefer importing from bCNC/lib to importing from system
 # 	if having conflicts with system libs, you can try this. It helped for me:
@@ -176,7 +169,8 @@ Also note you can export resulting slices to DXF and SVG if needed.
                 # cut only single layer if zstep <= 0
                 zmax = zmin
                 zstep = 1
-            zmin, zmax = min(zmin, zmax), max(zmin, zmax) # make sure zmin<zmax
+            # make sure zmin<zmax
+            zmin, zmax = min(zmin, zmax), max(zmin, zmax)
             # loop over multiple layers if zstep > 0
             z = zmax
             while z >= zmin:

@@ -3,8 +3,6 @@
 # Author: Gonzalo Cobos Bergillos
 # Date:	15-Nov-2017
 
-from __future__ import absolute_import, print_function
-
 import copy
 import math
 import random
@@ -12,6 +10,7 @@ import time
 
 from CNC import CCW, CNC, CW, Block
 from ToolsPage import Plugin
+from Helpers import _
 
 __author__ = "Gonzalo Cobos Bergillos"
 __email__ = "gcobos@gmail.com"
@@ -93,7 +92,6 @@ class Jigsaw:
     @staticmethod
     def calculate_piece_size(board_width, board_height, number_of_pieces):
 
-        board_area = float(board_width * board_height)
         board_ratio = board_width / board_height
 
         vertical_pieces = int(round(math.sqrt(number_of_pieces / board_ratio)))

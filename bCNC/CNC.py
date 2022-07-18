@@ -3,27 +3,27 @@
 # Author: vvlachoudis@gmail.com
 # Date: 24-Aug-2014
 
-from __future__ import absolute_import, print_function
-
-import json
 import math
 import os
-import pickle
 import re
 import types
-from copy import deepcopy
 
 import undo
 import Unicode
-from bmath import *
-from bpath import Path, Segment, eq
+from bmath import (
+    solveOverDetermined,
+    sqrt,
+    atan2,
+    cos,
+    sin,
+    Matrix,
+    Vector,
+)
+from bpath import Path, Segment
 from bstl import Binary_STL_Writer
 from dxf import DXF
 from svgcode import SVGcode
-from Utils import to_zip
-
-# import binascii
-
+from Helpers import to_zip
 
 IDPAT = re.compile(r".*\bid:\s*(.*?)\)")
 PARENPAT = re.compile(r"(\(.*?\))")
@@ -1047,7 +1047,7 @@ class CNC:
         # I guess it's vital idea to round them rather than truncate anyway!
         v = round(v, d)
         return ("%s%*f" % (c, d, v)).rstrip("0").rstrip(".")
-        #FIXME: I don't know how the returned string should look exactly
+        # FIXME: I don't know how the returned string should look exactly
         #       The following f-string might work:
         # return (f"{c}{v:>{d}.3f}").rstrip("0").rstrip(".")
 
@@ -1056,7 +1056,7 @@ class CNC:
     def gcode(g, pairs):
         s = f"g{int(g)}"
         for c, v in pairs:
-            s += f" {c:c}{round(v, CNC.digits):g}"
+            s += f" {c[0]}{round(v, CNC.digits):g}"
         return s
 
     # ----------------------------------------------------------------------
@@ -1330,7 +1330,7 @@ class CNC:
             elif ch == ";":
                 # Skip everything after the semicolon on normal lines
                 if not inComment and paren == 0 and braket == 0:
-                    CNC.comment += line[i + 1 :]
+                    CNC.comment += line[i + 1:]
                     break
                 else:
                     expr += ch
@@ -1901,8 +1901,8 @@ class CNC:
             if CNC.vars["fastprbfeed"]:
                 prb_reverse = {"2": "4", "3": "5", "4": "2", "5": "3"}
                 CNC.vars["prbcmdreverse"] = (
-                    CNC.vars["prbcmd"][:-1] +
-                    prb_reverse[CNC.vars["prbcmd"][-1]]
+                    CNC.vars["prbcmd"][:-1]
+                    + prb_reverse[CNC.vars["prbcmd"][-1]]
                 )
                 currentFeedrate = CNC.vars["fastprbfeed"]
                 while currentFeedrate > CNC.vars["prbfeed"]:
@@ -2197,7 +2197,6 @@ class Block(list):
     # Add a new operation to the block's name
     # ----------------------------------------------------------------------
     def addOperation(self, operation, remove=None):
-        n = self.name()
         self._name = Block.operationName(self.name(), operation, remove)
 
     # ----------------------------------------------------------------------
@@ -2408,7 +2407,7 @@ class GCode:
             return "".join(line)
 
         elif isinstance(line, types.CodeType):
-            import traceback
+            import traceback  # noqa: F401
 
             # traceback.print_stack()
             v = self.vars
@@ -2781,8 +2780,8 @@ class GCode:
         )
         # svg.write('\t<path d="M %s %s L %s %s" stroke="%s" stroke-width="%s" fill="none" />\n'%(minx*scale, -miny*scale, maxx*scale, -maxy*scale, "pink", 2)) #Bounding box debug
 
-        def svgLine(scale, px, py, type="L"):
-            return f"\t{type} {px * scale} {py * scale}\n"
+        def svgLine(scale, px, py, type_="L"):
+            return f"\t{type_} {px * scale} {py * scale}\n"
 
         def svgArc(scale, gcode, r, ax, ay, bx, by, cx, cy):
             sphi = math.atan2(ay - yc, ax - xc)
@@ -2995,7 +2994,7 @@ class GCode:
         z=None,
         retract=True,
         entry=False,
-        exit=True,
+        exit_=True,
         zstart=None,
         ramp=None,
         comments=True,
@@ -3013,7 +3012,7 @@ class GCode:
                         z,
                         retract,
                         entry,
-                        exit,
+                        exit_,
                         zstart,
                         ramp,
                         comments,
@@ -3202,7 +3201,7 @@ class GCode:
                         break
 
             # Exit toolpath
-            if exit:
+            if exit_:
                 if comments:
                     block.append("(exiting)")
                 if exitpoint is not None:
@@ -3390,7 +3389,6 @@ class GCode:
     # Delete a whole block
     # ----------------------------------------------------------------------
     def delBlockUndo(self, bid):
-        lines = [x for x in self.blocks[bid]]
         block = self.blocks.pop(bid)
         undoinfo = (self.addBlockUndo, bid, block)
         return undoinfo
@@ -3585,7 +3583,6 @@ class GCode:
         new = []
         autolevel = not self.probe.isEmpty()
         for line in block:
-            newcmd = []
             cmds = CNC.compileLine(line)
             if cmds is None:
                 new.append(line)
@@ -3948,7 +3945,7 @@ class GCode:
         closed = path.isClosed()
         zigzag = True  # FIXME: Add UI to set this?
         entry = True
-        exit = False
+        exit_ = False
 
         # Calculate ramp
         if ramp > 0:
@@ -3988,7 +3985,7 @@ class GCode:
 
             # Detect last pass of loop
             if abs(z - depth) < 1e-7 and not appendix:
-                exit = True
+                exit_ = True
 
             # Flat cuts:
             if not helix:
@@ -4000,7 +3997,7 @@ class GCode:
                         z,
                         retract,
                         True,
-                        exit,
+                        exit_,
                         exitpoint=exitpoint
                     )
                     if not closed:
@@ -4012,14 +4009,14 @@ class GCode:
                         z,
                         True,
                         True,
-                        exit,
+                        exit_,
                         exitpoint=exitpoint
                     )
 
             # Helical/Ramp cuts:
             else:
                 if helixBottom:
-                    exit = False
+                    exit_ = False
 
                 if closed:
                     newblock.append(
@@ -4030,7 +4027,7 @@ class GCode:
                         z,
                         retract,
                         entry,
-                        exit,
+                        exit_,
                         z + stepz,
                         ramp,
                         exitpoint=exitpoint,
@@ -4058,7 +4055,7 @@ class GCode:
                         z,
                         False,
                         False,
-                        exit,
+                        exit_,
                         z + stepz / 2,
                         ramp,
                         exitpoint=exitpoint,
@@ -4217,7 +4214,6 @@ class GCode:
             if block.name() in ("Header", "Footer"):
                 continue
             block.enable = True
-            newpath = []
             newblock = Block(block.name())
 
             # Do not apply islands on islands:
@@ -4490,7 +4486,6 @@ class GCode:
     # return XXX
     # ----------------------------------------------------------------------
     def info(self, bid):
-        block = self.blocks[bid]
         paths = self.toPath(bid)
         if not paths:
             return None, 1
@@ -4584,6 +4579,8 @@ class GCode:
     # Generate a pocket path
     # ----------------------------------------------------------------------
     def _pocket(self, path, diameter, stepover, depth):
+        # FIXME: recursions are slow and shall be avoided! Replace recursion via a loop!
+
         # print "_pocket",depth
 
         # python's internal recursion limit hit us before bCNC's
@@ -4952,10 +4949,10 @@ class GCode:
             self.cnc.motionStart(cmds)
             self.cnc.motionEnd()
 
-        # FIXME doesn't work
+        # FIXME: doesn't work; lid not defined
 
         # New lines to append
-        pos = lid + 1
+        pos = 1  # pos = lid + 1
         block.insert(pos, f"g0 {self.fmt('x', self.cnc.x + radius)}")
         pos += 1
         block.insert(pos, f"g1 {self.fmt('z', -0.001)}")
@@ -5201,7 +5198,6 @@ class GCode:
     # FIXME needs re-working...
     # ----------------------------------------------------------------------
     def inkscapeLines(self):
-        undoinfo = []
 
         # Loop over all blocks
         self.initPath()
@@ -5222,7 +5218,6 @@ class GCode:
                 newlines.append(line)
                 continue
             self.cnc.motionStart(cmd)
-            xyz = self.cnc.motionPath()
             if self.cnc.dx == 0.0 and self.cnc.dy == 0.0:
                 if self.cnc.z > 0.0 and self.cnc.dz > 0.0:
                     last = len(newlines)
@@ -5360,8 +5355,8 @@ class GCode:
                 else:
                     # either CodeType or tuple, list[] append at it as is
                     # lines.append(cmds)
-                    if (isinstance(cmds, types.CodeType) or
-                            isinstance(cmds, int)):
+                    if (isinstance(cmds, types.CodeType)
+                            or isinstance(cmds, int)):
                         add(cmds, None)
                     else:
                         add(cmds, (i, j))
@@ -5382,8 +5377,8 @@ class GCode:
                         cmds.append(
                             self.fmt("F", self.cnc.feed / self.cnc.unit))
 
-                if (autolevel and self.cnc.gcode in (0, 1, 2, 3) and
-                        self.cnc.mval == 0):
+                if (autolevel and self.cnc.gcode in (0, 1, 2, 3)
+                        and self.cnc.mval == 0):
                     xyz = self.cnc.motionPath()
                     if not xyz:
                         # while auto-levelling, do not ignore non-movement

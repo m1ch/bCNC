@@ -1,9 +1,5 @@
 # GRBL <=0.9 motion controller plugin
 
-from __future__ import absolute_import, print_function
-
-import time
-
 from _GenericController import DOLLARPAT, POSPAT, STATUSPAT, TLOPAT
 from _GenericGRBL import _GenericGRBL
 from CNC import CNC

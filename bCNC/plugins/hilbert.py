@@ -4,11 +4,10 @@
 # Date:	11 March 2016
 # Done in Annonay at Hotel "Du midi" after a business trip and 10 hours of work.
 
-from __future__ import absolute_import, print_function
-
 from CNC import CNC, Block
 from ToolsPage import Plugin
-from Utils import to_zip
+from Helpers import to_zip
+from Helpers import _
 
 __author__ = "Filippo Rivato"
 __email__ = "f.rivato@gmail.com"

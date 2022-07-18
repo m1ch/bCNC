@@ -4,8 +4,6 @@
 #  Email: vvlachoudis@gmail.com
 #   Date: 17-Jun-2015
 
-from __future__ import absolute_import, print_function
-
 import glob
 import os
 import re
@@ -15,30 +13,25 @@ import time
 import traceback
 import webbrowser
 from datetime import datetime
+from tkinter import messagebox
+from queue import (
+    Empty,
+    Queue,
+)
 
 import Pendant
 import rexx
 import Utils
-from _GenericGRBL import ERROR_CODES
-from CNC import CNC, MSG, UPDATE, WAIT, WCS, GCode
+from Helpers import _
+from CNC import CNC, MSG, UPDATE, WAIT, GCode
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "vvlachoudis@gmail.com"
-
 
 try:
     import serial
 except ImportError:
     serial = None
-try:
-    from Queue import *
-except ImportError:
-    from queue import *
-try:
-    import tkMessageBox
-except ImportError:
-    import tkinter.messagebox as tkMessageBox
-
 
 WIKI = "https://github.com/vlachoudis/bCNC/wiki"
 
@@ -436,26 +429,13 @@ class Sender:
             # save orientation file
             self.gcode.orient.load(filename)
         elif ext == ".stl" or ext == ".ply":
-            # FIXME: implements solid import???
-            try:
-                import tkMessageBox
+            messagebox.showinfo(
+                "Open 3D Mesh",
+                "Importing of 3D mesh files in .STL and .PLY format is "
+                + "supported by SliceMesh plugin.\n"
+                + "You can find it in CAM->SliceMesh.",
+            )
 
-                tkMessageBox.showinfo(
-                    "Open 3D Mesh",
-                    "Importing of 3D mesh files in .STL and .PLY format is "
-                    + "supported by SliceMesh plugin.\n"
-                    + "You can find it in CAM->SliceMesh.",
-                )
-            except Exception as e:
-                import tkinter
-                import tkinter.messagebox
-
-                tkinter.messagebox.showinfo(
-                    "Open 3D Mesh",
-                    "Importing of 3D mesh files in .STL and .PLY format is "
-                    + "supported by SliceMesh plugin.\nYou can find it in "
-                    + "CAM->SliceMesh.",
-                )
         elif ext == ".dxf":
             self.gcode.init()
             self.gcode.importDXF(filename)

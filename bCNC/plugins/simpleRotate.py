@@ -3,15 +3,10 @@
 # Author:	DodoLaSaumure
 # Date:	30-Dec-2019
 
-from __future__ import absolute_import, print_function
+from tkinter import messagebox
 
-import math
-import tkinter.messagebox as tkMessageBox
-
-from bmath import Vector
-from CNC import CNC, CW, Block
-from CNCRibbon import Page
 from ToolsPage import Plugin
+from Helpers import _
 
 __author__ = "DodoLaSaumure"
 __email__ = ""
@@ -38,7 +33,6 @@ class Tool(Plugin):
 
     # ----------------------------------------------------------------------
     def execute(self, app):
-        n = self["name"]
         xcenter = self["xcenter"]
         ycenter = self["ycenter"]
         alpha = self["alpha"]
@@ -51,8 +45,8 @@ class Tool(Plugin):
             app.editor.selectAll()
             blocks = app.editor.getSelectedBlocks()
         if not blocks:
-            tkMessageBox.showerror(_("Tile error"),
-                                   _("No g-code blocks selected"))
+            messagebox.showerror(_("Tile error"),
+                                 _("No g-code blocks selected"))
             return
         pos = blocks[-1]  # insert position
         alpha_current = alpha

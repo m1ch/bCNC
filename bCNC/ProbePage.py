@@ -4,11 +4,44 @@
 #  Email: vvlachoudis@gmail.com
 #   Date: 18-Jun-2015
 
-from __future__ import absolute_import, print_function
-
 # import time
 import math
 import sys
+from tkinter import (
+    YES,
+    N,
+    S,
+    W,
+    E,
+    NW,
+    SW,
+    NE,
+    SE,
+    EW,
+    NSEW,
+    CENTER,
+    NONE,
+    X,
+    BOTH,
+    LEFT,
+    TOP,
+    RIGHT,
+    BOTTOM,
+    HORIZONTAL,
+    END,
+    NORMAL,
+    DISABLED,
+    StringVar,
+    IntVar,
+    BooleanVar,
+    Button,
+    Checkbutton,
+    Label,
+    Scale,
+    Spinbox,
+    LabelFrame,
+    messagebox,
+)
 
 import Camera
 import CNCRibbon
@@ -16,19 +49,11 @@ import Ribbon
 import tkExtra
 import Utils
 from CNC import CNC, Block
-from Utils import to_unicode
+
+from Helpers import _, N_
 
 __author__ = Utils.__author__
 __email__ = Utils.__email__
-
-
-try:
-    from Tkinter import *
-    import tkMessageBox
-except ImportError:
-    from tkinter import *
-    import tkinter.messagebox as tkMessageBox
-
 
 PROBE_CMD = [
     _("G38.2 stop on contact else error"),
@@ -873,7 +898,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
     # -----------------------------------------------------------------------
     def warnMessage(self):
         if self.warn:
-            ans = tkMessageBox.askquestion(
+            ans = messagebox.askquestion(
                 _("Probe connected?"),
                 _(
                     "Please verify that the probe is connected.\n\n"
@@ -893,7 +918,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
             self.probeautogotonext = True
 
         if ProbeCommonFrame.probeUpdate():
-            tkMessageBox.showerror(
+            messagebox.showerror(
                 _("Probe Error"),
                 _("Invalid probe feed rate"),
                 parent=self.winfo_toplevel(),
@@ -926,7 +951,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
         if ok:
             self.sendGCode(cmd)
         else:
-            tkMessageBox.showerror(
+            messagebox.showerror(
                 _("Probe Error"),
                 _("At least one probe direction should be specified")
             )
@@ -958,7 +983,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
             diameter = 0.0
 
         if diameter < 0.001:
-            tkMessageBox.showerror(
+            messagebox.showerror(
                 _("Probe Center Error"),
                 _("Invalid diameter entered"),
                 parent=self.winfo_toplevel(),
@@ -1032,12 +1057,12 @@ class ProbeFrame(CNCRibbon.PageFrame):
     def orientClear(self, event=None):
         if self.scale_orient.cget("to") == 0:
             return
-        ans = tkMessageBox.askquestion(
+        ans = messagebox.askquestion(
             _("Delete all markers"),
             _("Do you want to delete all orientation markers?"),
             parent=self.winfo_toplevel(),
         )
-        if ans != tkMessageBox.YES:
+        if ans != messagebox.YES:
             return
         self.app.gcode.orient.clear()
         self.orientUpdateScale()
@@ -1382,7 +1407,7 @@ class AutolevelFrame(CNCRibbon.PageFrame):
         except ValueError:
             self.probeXstep["text"] = ""
             if verbose:
-                tkMessageBox.showerror(
+                messagebox.showerror(
                     _("Probe Error"),
                     _("Invalid X probing region"),
                     parent=self.winfo_toplevel(),
@@ -1391,7 +1416,7 @@ class AutolevelFrame(CNCRibbon.PageFrame):
 
         if probe.xmin >= probe.xmax:
             if verbose:
-                tkMessageBox.showerror(
+                messagebox.showerror(
                     _("Probe Error"),
                     _("Invalid X range [xmin>=xmax]"),
                     parent=self.winfo_toplevel(),
@@ -1406,7 +1431,7 @@ class AutolevelFrame(CNCRibbon.PageFrame):
         except ValueError:
             self.probeYstep["text"] = ""
             if verbose:
-                tkMessageBox.showerror(
+                messagebox.showerror(
                     _("Probe Error"),
                     _("Invalid Y probing region"),
                     parent=self.winfo_toplevel(),
@@ -1415,7 +1440,7 @@ class AutolevelFrame(CNCRibbon.PageFrame):
 
         if probe.ymin >= probe.ymax:
             if verbose:
-                tkMessageBox.showerror(
+                messagebox.showerror(
                     _("Probe Error"),
                     _("Invalid Y range [ymin>=ymax]"),
                     parent=self.winfo_toplevel(),
@@ -1427,7 +1452,7 @@ class AutolevelFrame(CNCRibbon.PageFrame):
             probe.zmax = float(self.probeZmax.get())
         except ValueError:
             if verbose:
-                tkMessageBox.showerror(
+                messagebox.showerror(
                     _("Probe Error"),
                     _("Invalid Z probing region"),
                     parent=self.winfo_toplevel(),
@@ -1436,7 +1461,7 @@ class AutolevelFrame(CNCRibbon.PageFrame):
 
         if probe.zmin >= probe.zmax:
             if verbose:
-                tkMessageBox.showerror(
+                messagebox.showerror(
                     _("Probe Error"),
                     _("Invalid Z range [zmin>=zmax]"),
                     parent=self.winfo_toplevel(),
@@ -1445,7 +1470,7 @@ class AutolevelFrame(CNCRibbon.PageFrame):
 
         if ProbeCommonFrame.probeUpdate():
             if verbose:
-                tkMessageBox.showerror(
+                messagebox.showerror(
                     _("Probe Error"),
                     _("Invalid probe feed rate"),
                     parent=self.winfo_toplevel(),
@@ -1468,12 +1493,12 @@ class AutolevelFrame(CNCRibbon.PageFrame):
 
     # -----------------------------------------------------------------------
     def clear(self, event=None):
-        ans = tkMessageBox.askquestion(
+        ans = messagebox.askquestion(
             _("Delete autolevel information"),
             _("Do you want to delete all autolevel in formation?"),
             parent=self.winfo_toplevel(),
         )
-        if ans != tkMessageBox.YES:
+        if ans != messagebox.YES:
             return
         self.app.gcode.probe.clear()
         self.draw()
@@ -1825,7 +1850,7 @@ class CameraFrame(CNCRibbon.PageFrame):
     # -----------------------------------------------------------------------
     def registerCamera(self):
         if self.spindleX is None:
-            tkMessageBox.showwarning(
+            messagebox.showwarning(
                 _("Spindle position is not registered"),
                 _("Spindle position must be registered before camera"),
                 parent=self,
@@ -2123,11 +2148,11 @@ class ToolFrame(CNCRibbon.PageFrame):
         # 		Utils.setInt(  "Probe", "toolwait",    TOOL_WAIT.index(self.toolWait.get()))
         Utils.setInt(
             "Probe", "toolpolicy",
-            TOOL_POLICY.index(to_unicode(self.toolPolicy.get()))
+            TOOL_POLICY.index(self.toolPolicy.get())
         )
         Utils.setInt(
             "Probe", "toolwait",
-            TOOL_WAIT.index(to_unicode(self.toolWait.get()))
+            TOOL_WAIT.index(self.toolWait.get())
         )
 
         Utils.setFloat("Probe", "toolchangex", self.changeX.get())
@@ -2169,7 +2194,7 @@ class ToolFrame(CNCRibbon.PageFrame):
             CNC.vars["toolchangey"] = float(self.changeY.get())
             CNC.vars["toolchangez"] = float(self.changeZ.get())
         except Exception:
-            tkMessageBox.showerror(
+            messagebox.showerror(
                 _("Probe Tool Change Error"),
                 _("Invalid tool change position"),
                 parent=self.winfo_toplevel(),
@@ -2181,7 +2206,7 @@ class ToolFrame(CNCRibbon.PageFrame):
             CNC.vars["toolprobey"] = float(self.probeY.get())
             CNC.vars["toolprobez"] = float(self.probeZ.get())
         except Exception:
-            tkMessageBox.showerror(
+            messagebox.showerror(
                 _("Probe Tool Change Error"),
                 _("Invalid tool probe location"),
                 parent=self.winfo_toplevel(),
@@ -2191,7 +2216,7 @@ class ToolFrame(CNCRibbon.PageFrame):
         try:
             CNC.vars["tooldistance"] = abs(float(self.probeDistance.get()))
         except Exception:
-            tkMessageBox.showerror(
+            messagebox.showerror(
                 _("Probe Tool Change Error"),
                 _("Invalid tool scanning distance entered"),
                 parent=self.winfo_toplevel(),
@@ -2201,7 +2226,7 @@ class ToolFrame(CNCRibbon.PageFrame):
         try:
             CNC.vars["toolheight"] = float(self.toolHeight.get())
         except Exception:
-            tkMessageBox.showerror(
+            messagebox.showerror(
                 _("Probe Tool Change Error"),
                 _("Invalid tool height or not calibrated"),
                 parent=self.winfo_toplevel(),
@@ -2211,7 +2236,7 @@ class ToolFrame(CNCRibbon.PageFrame):
     # -----------------------------------------------------------------------
     def check4Errors(self):
         if CNC.vars["tooldistance"] <= 0.0:
-            tkMessageBox.showerror(
+            messagebox.showerror(
                 _("Probe Tool Change Error"),
                 _("Invalid tool scanning distance entered"),
                 parent=self.winfo_toplevel(),
@@ -2222,13 +2247,13 @@ class ToolFrame(CNCRibbon.PageFrame):
     # -----------------------------------------------------------------------
     def policyChange(self):
         # 		CNC.toolPolicy = int(TOOL_POLICY.index(self.toolPolicy.get()))
-        b = to_unicode(self.toolPolicy.get())
+        b = self.toolPolicy.get()
         CNC.toolPolicy = int(TOOL_POLICY.index(b))
 
     # -----------------------------------------------------------------------
     def waitChange(self):
         # 		CNC.toolWaitAfterProbe = int(TOOL_WAIT.index(self.toolWait.get()))
-        b = to_unicode(self.toolWait.get())
+        b = self.toolWait.get()
         CNC.toolWaitAfterProbe = int(TOOL_WAIT.index(b))
 
     # -----------------------------------------------------------------------

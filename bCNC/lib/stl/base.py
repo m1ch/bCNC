@@ -1,8 +1,3 @@
-from __future__ import (absolute_import,
-                        division,
-                        print_function,
-                        unicode_literals)
-
 import logging
 
 # import enum
@@ -550,7 +545,7 @@ class BaseMesh(logger.Logged, Mapping):
         self.y += matrix[1, 3]
         self.z += matrix[2, 3]
 
-    def _get_or_update(key):
+    def _get_or_update(key):  # noqa: N805
         def _get(self):
             if not hasattr(self, f"_{key}"):
                 getattr(self, f"update_{key}")()
@@ -558,7 +553,7 @@ class BaseMesh(logger.Logged, Mapping):
 
         return _get
 
-    def _set(key):
+    def _set(key):  # noqa N805
         def _set(self, value):
             setattr(self, f"_{key}", value)
 

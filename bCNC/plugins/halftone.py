@@ -3,12 +3,11 @@
 # Author:	Filippo Rivato
 # Date: 14 Febbruary 2016
 
-from __future__ import absolute_import, print_function
-
 import math
 
 from CNC import CNC, CW, Block
 from ToolsPage import Plugin
+from Helpers import _
 
 __author__ = "Filippo Rivato"
 __email__ = "f.rivato@gmail.com"

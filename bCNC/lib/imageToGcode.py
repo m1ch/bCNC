@@ -17,9 +17,7 @@
 
 #                                 image-to-gcode                              #
 ###############################################################################
-from __future__ import absolute_import
 
-###############################################################################
 import math
 import operator
 import sys
@@ -200,7 +198,6 @@ class Reduce_Scan_Lace:
             return j + keep - j % keep
 
         for i, (flag, span) in enumerate(self.converter(primary, items)):
-            subspan = []
             a = None
             for i, si in enumerate(span):
                 ki = si[idx]
@@ -242,7 +239,6 @@ class Reduce_Scan_Lace_new:
             return j + keep - j % keep
 
         for i, (flag, span) in enumerate(self.converter(primary, items)):
-            subspan = []
             a = None
             for i, si in enumerate(span):
                 ki = si[1]  # This is (x,y,z)
@@ -256,7 +252,7 @@ class Reduce_Scan_Lace_new:
                     else:
                         if i - b < keep:
                             continue
-                        yield True, span[bos(a) : eos(b + 1)]
+                        yield True, span[bos(a):eos(b + 1)]
                         a = None
             if a is not None:
                 yield True, span[a:]
@@ -372,7 +368,7 @@ class Converter:
 
         g.safety()
 
-        ## mill border ##
+        # mill border
         if self.convert_cols:
             self.convert_cols.reset()
         if self.convert_rows:
@@ -607,6 +603,9 @@ class ArcEntryCut:
         x, y, z = p1
 
         pixelsize = conv.pixelsize
+
+        def cmp(a, b):
+            return (float(a) > float(b)) - (float(a) < float(b))
 
         cx = cmp(p1[0], p2[0])
         cy = cmp(p1[1], p2[1])
@@ -891,27 +890,27 @@ class Image_Matrix_Numpy:
         for j in range(0, w1):
             for i in range(0, h1):
                 temp[j, i] = -1e1000000
-        temp[to : to + w, to : to + h] = self.matrix
+        temp[to:to + w, to:to + h] = self.matrix
         self.matrix = temp
 
     def height_calc(self, x, y, tool):
-        to = self.t_offset
+        # to = self.t_offset
         ts = tool.width
         d = -1e100000
-        m1 = self.matrix[y : y + ts, x : x + ts]
+        m1 = self.matrix[y:y + ts, x:x + ts]
         d = (m1 - tool.matrix).max()
         return d
 
     def min(self):
         return self.matrix[
-            self.t_offset : self.t_offset + self.width,
-            self.t_offset : self.t_offset + self.height,
+            self.t_offset:self.t_offset + self.width,
+            self.t_offset:self.t_offset + self.height,
         ].min()
 
     def max(self):
         return self.matrix[
-            self.t_offset : self.t_offset + self.width,
-            self.t_offset : self.t_offset + self.height,
+            self.t_offset:self.t_offset + self.width,
+            self.t_offset:self.t_offset + self.height,
         ].max()
 
     def mult(self, val):
@@ -1326,13 +1325,13 @@ class Gcode:
     def move_common(self, x=None, y=None, z=None, a=None, gcode="G0"):
         # "An internal function used for G0 and G1 moves"
         gcodestring = xstring = ystring = zstring = astring = ""
-        if x == None:
+        if x is None:
             x = self.lastx
-        if y == None:
+        if y is None:
             y = self.lasty
-        if z == None:
+        if z is None:
             z = self.lastz
-        if a == None:
+        if a is None:
             a = self.lasta
         if x != self.lastx:
             xstring = f" X{x:.4f}"

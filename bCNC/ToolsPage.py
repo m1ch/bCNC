@@ -3,14 +3,38 @@
 # Author:       vvlachoudis@gmail.com
 # Date: 24-Aug-2014
 
-from __future__ import absolute_import, print_function
-
 import glob
 import os
 import sys
 import time
 import traceback
 from operator import attrgetter
+from tkinter import (
+    TclError,
+    YES,
+    W,
+    NSEW,
+    X,
+    Y,
+    BOTH,
+    LEFT,
+    TOP,
+    RIGHT,
+    VERTICAL,
+    END,
+    NORMAL,
+    DISABLED,
+    ACTIVE,
+    StringVar,
+    Button,
+    Frame,
+    Label,
+    Menu,
+    Scrollbar,
+    Text,
+    PanedWindow,
+    messagebox,
+)
 
 import CNCRibbon
 import Ribbon
@@ -18,17 +42,10 @@ import tkExtra
 import Unicode
 import Utils
 from CNC import CNC
+from Helpers import _, N_
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"
-
-try:
-    from Tkinter import *
-    import tkMessageBox
-except ImportError:
-    from tkinter import *
-    import tkinter.messagebox as tkMessageBox
-
 
 _EXE_FONT = ("Helvetica", 12, "bold")
 
@@ -412,7 +429,7 @@ class _Base:
         else:
             for var in self.variables:
                 n, t, d, lp = var[:4]
-                val = Utils.to_unicode(self.values.get(n, d))
+                val = self.values.get(n, d)
                 Utils.setStr(self.name, n, str(val))
 
     # ----------------------------------------------------------------------
@@ -1088,7 +1105,7 @@ class Tabs(DataBase):
             ("z", "mm", -3.0, _("Height")),
         ]
         self.buttons.append("exe")
-        self.help = "\n".jon([
+        self.help = "\n".join([
             "Create tabs, which will be left uncut to hold the part in place "
             + "after cutting.",
             "",
@@ -1111,7 +1128,7 @@ class Tabs(DataBase):
             + "If you want to modify individual tabs, you have to first use "
             + "\"Split\" feature to break the block into individual tabs. "
             + "After moving them, you can \"Join\" them back together.",
-])
+        ])
 
     # ----------------------------------------------------------------------
     def execute(self, app):
@@ -1132,7 +1149,7 @@ class Tabs(DataBase):
             dtabs = 0
 
         if ntabs == 0 and dtabs == 0:
-            tkMessageBox.showerror(
+            messagebox.showerror(
                 _("Tabs error"),
                 _("You cannot have both the number of tabs or distance equal "
                   + "to zero"),
@@ -1890,7 +1907,7 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
                     return
                 Utils.language = a
                 Utils.setStr(Utils.__prg__, "language", Utils.language)
-                tkMessageBox.showinfo(
+                messagebox.showinfo(
                     _("Language change"),
                     _("Please restart the program."),
                     parent=self.winfo_toplevel(),
@@ -2014,7 +2031,7 @@ class ToolsFrame(CNCRibbon.PageFrame):
     def help(self, event=None, rename=False):
         # lb = self.master.listbox.listbox(1)
         # print("help",item)
-        # tkMessageBox.showinfo("Help for "+item, "Help for "+item)
+        # messagebox.showinfo("Help for "+item, "Help for "+item)
         item = self.toolList.get(self.toolList.curselection())[0]
         for var in self.tools.getActive().variables:
             if var[3] == item or _(var[3]) == item:
@@ -2024,7 +2041,7 @@ class ToolsFrame(CNCRibbon.PageFrame):
                     helptext = var[4]
                 else:
                     helptext = f"{helpname}:\nnot available yet!"
-                tkMessageBox.showinfo(helpname, helptext)
+                messagebox.showinfo(helpname, helptext)
 
     # ----------------------------------------------------------------------
     # Edit tool listbox

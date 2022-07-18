@@ -3,31 +3,21 @@
 # Author:       vvlachoudis@gmail.com
 # Date: 24-Aug-2014
 
-from __future__ import absolute_import, print_function
-
 import json
 import re
+from tkinter import (
+    TclError,
+    END,
+    ACTIVE,
+    Listbox,
+)
+import tkinter.font as tkfont
 
 import tkExtra
 from CNC import CNC, Block
-from CNCCanvas import TAB_COLOR
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
-try:
-    from Tkinter import *
-    import tkFont
-except ImportError:
-    from tkinter import *
-    import tkinter.font as tkFont
+from Helpers import _
 
-# import tkDialogs
 
 BLOCK_COLOR = "LightYellow"
 COMMENT_COLOR = "Blue"
@@ -74,7 +64,7 @@ class CNCListbox(Listbox):
         self._items = []  # each listbox lien which item (bid,lid) shows
         self.app = app
         self.gcode = app.gcode
-        self.font = tkFont.nametofont(self.cget("font"))
+        self.font = tkfont.nametofont(self.cget("font"))
         self._ystart = 0
         self._double = False  # double clicked handled
         self._hadfocus = False
@@ -220,7 +210,7 @@ class CNCListbox(Listbox):
 
         try:
             objs = json.loads(clipboard)
-        except Exception as e:
+        except Exception:
             objs = [clipboard]
         for obj in objs:
             if isinstance(obj, list):
@@ -700,7 +690,6 @@ class CNCListbox(Listbox):
     def joinBlocks(self, event=None):
         if not self._items:
             return
-        all_items = self._items
         sel_items = list(map(int, self.curselection()))
         change = True
         bl = Block(self.gcode[sel_items[0]].name())
@@ -721,10 +710,8 @@ class CNCListbox(Listbox):
     def splitBlocks(self, event=None):
         if not self._items:
             return
-        all_items = self._items
         sel_items = list(map(int, self.curselection()))
         change = True
-        newblocks = []
         for bid in sel_items:
             bl = Block(self.gcode[bid].name())
             for line in self.gcode[bid]:

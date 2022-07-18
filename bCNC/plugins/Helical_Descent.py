@@ -26,33 +26,21 @@
 # mariob_1960@yahoo.com.ar
 # Date: 10 may 2018
 
-from __future__ import absolute_import, print_function
-
 # Here import the libraries you need, these are necessary to modify the code
 import math
-import os.path
-import re
 
 # =============================================================================
 # My plugin
 # =============================================================================
 from math import (
-    acos,
-    asin,
-    atan2,
-    copysign,
     cos,
-    degrees,
-    fmod,
-    hypot,
-    pi,
-    radians,
     sin,
-    sqrt,
+    pi,
 )
 
 from CNC import CNC, Block
 from ToolsPage import Plugin
+from Helpers import _
 
 __author__ = "Mario Basz"
 __email__ = "mariob_1960@yahoo.com.ar"
@@ -150,7 +138,7 @@ class Tool(Plugin):
                     cmd = app.cnc.breakLine(
                         app.gcode.evaluate(app.cnc.compileLine(line))
                     )
-                except:
+                except Exception:
                     cmd = None
 
                 if cmd:
@@ -360,7 +348,6 @@ class Tool(Plugin):
                 allHoles.append(bidHoles)
 
             # -----------------------------------------------------------------
-            holesCount = 0
             for bid in allHoles:
                 for xH, yH, zH in bid:
                     x = xH
@@ -503,9 +490,9 @@ class Tool(Plugin):
                     turn,
                     [
                         ("X", x - Radiox),
-                           ("Y", y - Radioy),
-                           ("Z", z),
-                           ("I", Radio),
+                        ("Y", y - Radioy),
+                        ("Z", z),
+                        ("I", Radio),
                         ("J", 0),
                     ],
                 )

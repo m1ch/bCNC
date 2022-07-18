@@ -1,30 +1,17 @@
 # Author: @harvie Tomas Mudrunka
 # Date: 25 sept 2018
 
-from __future__ import absolute_import, print_function
-
-import math
-import os.path
-import re
 from math import (
     acos,
-    asin,
-    atan2,
-    copysign,
-    cos,
     degrees,
-    fmod,
-    hypot,
-    pi,
-    radians,
-    sin,
     sqrt,
 )
 
 from bmath import Vector
 from bpath import Path, Segment, eq
-from CNC import CNC, Block
+from CNC import CNC
 from ToolsPage import Plugin
+from Helpers import _
 
 __author__ = "@harvie Tomas Mudrunka"
 # __email__  = ""
@@ -127,16 +114,16 @@ This fact introduces the need for preprocessing the g-code to account with that 
         simulate = self["simulate"]
         simpreci = self["simpreci"]
 
-        def initPoint(P, dir, offset):
+        def initPoint(P, direction, offset):
             P = Vector(P[0], P[1])
 
-            if dir == "X+":
+            if direction == "X+":
                 P[0] += offset
-            elif dir == "X-":
+            elif direction == "X-":
                 P[0] -= offset
-            elif dir == "Y+":
+            elif direction == "Y+":
                 P[1] += offset
-            elif dir == "Y-":
+            elif direction == "Y-":
                 P[1] -= offset
             return P
 

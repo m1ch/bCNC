@@ -2,12 +2,10 @@
 # Author: vvlachoudis@gmail.com
 # Date: 20-Oct-2015
 
-from __future__ import absolute_import
-
 import sys
 
 import bmath
-from Utils import to_zip
+from Helpers import to_zip
 
 
 # =============================================================================
@@ -180,9 +178,6 @@ class CubicSpline:
     # Return evaluated derivative at x using coefficients C
     # -----------------------------------------------------------------------
     def derivative(self, C, x):
-        a = 3.0 * C[0]  # derivative coefficients
-        b = 2.0 * C[1]  # ... for sampling with rejection
-        c = C[2]
         return (3.0 * C[0] * x + 2.0 * C[1]) * x + C[2]
 
 

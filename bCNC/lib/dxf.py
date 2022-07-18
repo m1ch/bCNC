@@ -31,14 +31,13 @@
 
 # Author:	Vasilis.Vlachoudis@cern.ch
 # Date:	10-Mar-2015
-from __future__ import absolute_import
 
 import math
 import sys
 
 import spline
 from bmath import Vector
-from Utils import to_zip
+from Helpers import to_zip
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"
@@ -403,7 +402,7 @@ class Entity(dict):
     def color(self):
         try:
             return Entity.COLORS[self.get(62, 0)]
-        except:
+        except Exception:
             return None
 
     # ----------------------------------------------------------------------
@@ -459,7 +458,7 @@ class Entity(dict):
         elif self.type in ("POINT", "ELLIPSE", "DIMENSION", "@START"):
             self._start = self._end = self.point()
         else:
-            error(f"Cannot handle entity type: "
+            error("Cannot handle entity type: "
                   + f"{self.type} in layer: {self.name}\n")
             # import traceback; traceback.print_stack()
             self._start = self._end = self.point()
@@ -545,10 +544,6 @@ class Entity(dict):
             xyz = to_zip(self[10], self[20], self[30])
             flag = int(self.get(70, 0))
             closed = bool(flag & Entity.CLOSED)
-            periodic = bool(flag & Entity.PERIODIC)
-            rational = bool(flag & Entity.RATIONAL)
-            planar = bool(flag & Entity.PLANAR)
-            linear = bool(flag & Entity.LINEAR)
             # 			print "\nSPLINE"
             # 			print "closed=",closed
             # 			print "periodic=",periodic
@@ -695,7 +690,7 @@ class Layer:
     def color(self):
         try:
             return Entity.COLORS[self.table.get(62, 0)]
-        except:
+        except Exception:
             return None
 
     # ----------------------------------------------------------------------
@@ -1016,7 +1011,7 @@ class DXF:
             return None, None
         try:
             tag = int(line.strip())
-        except:
+        except Exception:
             error(f"Error reading line {line}, tag was expected\n")
             return None, None
 
@@ -1033,7 +1028,7 @@ class DXF:
         ):
             try:
                 value = float(value)
-            except:
+            except Exception:
                 error(f"Error reading line '{line}', tag={int(tag)}, "
                       + f"floating point expected found \"{value}\"\n")
                 return None, None
@@ -1050,7 +1045,7 @@ class DXF:
         ):
             try:
                 value = int(value)
-            except:
+            except Exception:
                 error(f"Error reading line '{line}', tag={int(tag)}, "
                       + f"integer expected found \"{value}\"\n")
                 return None, None

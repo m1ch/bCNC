@@ -3,18 +3,18 @@
 # Author: vvlachoudis@gmail.com
 # Date: 18-Jun-2015
 
-from __future__ import absolute_import, print_function
+from tkinter import (BOTH,
+                     LEFT,
+                     TOP,
+                     Frame,
+                     LabelFrame,
+                     )
 
 import Ribbon
 import tkExtra
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "vvlachoudis@gmail.com"
-
-try:
-    from Tkinter import *
-except ImportError:
-    from tkinter import *
 
 
 # =============================================================================

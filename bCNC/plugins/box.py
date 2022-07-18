@@ -3,15 +3,15 @@
 # Author:	Vasilis.Vlachoudis@cern.ch
 # Date:	20-Aug-2015
 
-from __future__ import absolute_import, print_function
-
 import math
 
-from bmath import *
+from bmath import (
+    sqrt,
+    Vector,
+)
 from CNC import CNC, Block
 from ToolsPage import Plugin
-
-# from Utils import to_zip
+from Helpers import _
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"

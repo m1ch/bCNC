@@ -12,10 +12,22 @@ and the Arc can do exact arc calculations if scipy is installed.
 
 import re
 from copy import copy
-from math import *
+from math import (
+    pi,
+    sqrt,
+    hypot,
+    log,
+    ceil,
+    cos,
+    sin,
+    tan,
+    acos,
+    atan,
+    atan2,
+)
 from xml.etree.ElementTree import iterparse
 
-from Utils import to_zip
+from Helpers import to_zip
 
 try:
     from collections.abc import MutableSequence  # noqa
@@ -1101,10 +1113,10 @@ class Color(object):
         return c
 
     @staticmethod
-    def hsl_to_int(h, s, l, opacity=1.0):
+    def hsl_to_int(h, s, el, opacity=1.0):
         c = Color()
         c.opacity = opacity
-        c.hsl = h, s, l
+        c.hsl = h, s, el
         return c.value
 
     @staticmethod
@@ -1605,8 +1617,8 @@ class Color(object):
 
     @hue.setter
     def hue(self, v):
-        h, s, l = self.hsl
-        self.hsl = v, s, l
+        _, s, el = self.hsl
+        self.hsl = v, s, el
 
     @property
     def saturation(self):
@@ -1625,8 +1637,8 @@ class Color(object):
 
     @saturation.setter
     def saturation(self, v):
-        h, s, l = self.hsl
-        self.hsl = h, v, l
+        h, _, el = self.hsl
+        self.hsl = h, v, el
 
     @property
     def lightness(self):
@@ -1639,7 +1651,7 @@ class Color(object):
 
     @lightness.setter
     def lightness(self, v):
-        h, s, l = self.hsl
+        h, s, _ = self.hsl
         self.hsl = h, s, v
 
     @property
@@ -1765,7 +1777,7 @@ class Color(object):
     def hsl(self, value):
         if not isinstance(value, tuple):
             return
-        h, s, l = value
+        h, s, el = value
 
         def hue_2_rgb(v1, v2, vh):
             if vh < 0:
@@ -1781,15 +1793,15 @@ class Color(object):
             return v1
 
         if s == 0.0:
-            r = 255.0 * l
-            g = 255.0 * l
-            b = 255.0 * l
+            r = 255.0 * el
+            g = 255.0 * el
+            b = 255.0 * el
         else:
-            if l < 0.5:
-                v2 = l * (1.0 + s)
+            if el < 0.5:
+                v2 = el * (1.0 + s)
             else:
-                v2 = (l + s) - (s * l)
-            v1 = 2 * l - v2
+                v2 = (el + s) - (s * el)
+            v1 = 2 * el - v2
             r = 255.0 * hue_2_rgb(v1, v2, h + (1.0 / 3.0))
             g = 255.0 * hue_2_rgb(v1, v2, h)
             b = 255.0 * hue_2_rgb(v1, v2, h - (1.0 / 3.0))
@@ -4848,8 +4860,8 @@ class Arc(Curve):
             self.pry = Point(start)
             self.center = Point(start)
             return
-        cosr = cos(radians(rotation))
-        sinr = sin(radians(rotation))
+        cosr = cos(self.radians(rotation))
+        sinr = sin(self.radians(rotation))
         dx = (start.real - end.real) / 2
         dy = (start.imag - end.imag) / 2
         x1prim = cosr * dx + sinr * dy
@@ -4888,7 +4900,7 @@ class Arc(Curve):
         vy = (-y1prim - cyprim) / ry
         n = sqrt(ux * ux + uy * uy)
         p = ux
-        theta = degrees(acos(p / n))
+        theta = self.degrees(acos(p / n))
         if uy < 0:
             theta = -theta
         theta = theta % 360
@@ -4902,7 +4914,7 @@ class Arc(Curve):
             d = 1.0
         elif d < -1.0:
             d = -1.0
-        delta = degrees(acos(d))
+        delta = self.degrees(acos(d))
         if (ux * vy - uy * vx) < 0:
             delta = -delta
         delta = delta % 360
@@ -6911,10 +6923,10 @@ class Subpath:
     def __iadd__(self, other):
         if isinstance(other, str):
             p = Path(other)
-            self._path[self._end : self._end] = p
+            self._path[self._end:self._end] = p
         elif isinstance(other, Path):
             p = copy(other)
-            self._path[self._end : self._end] = p
+            self._path[self._end:self._end] = p
         elif isinstance(other, PathSegment):
             self._path.insert(self._end, other)
         else:
@@ -7006,9 +7018,9 @@ class Subpath:
         path = self._path
         if transformed:
             return [
-                s * path.transform for s in path._segments[self._start : self._end + 1]
+                s * path.transform for s in path._segments[self._start: self._end + 1]
             ]
-        return path._segments[self._start : self._end + 1]
+        return path._segments[self._start: self._end + 1]
 
     def _numeric_index(self, index):
         if index < 0:
@@ -7032,7 +7044,7 @@ class Subpath:
 
     def bbox(self):
         """returns a bounding box for the input Path"""
-        segments = self._path._segments[self._start : self._end + 1]
+        segments = self._path._segments[self._start: self._end + 1]
         bbs = [seg.bbox() for seg in segments if not isinstance(Close, Move)]
         try:
             xmins, ymins, xmaxs, ymaxs = to_zip(*bbs)
@@ -7045,7 +7057,7 @@ class Subpath:
         return xmin, ymin, xmax, ymax
 
     def d(self, relative=None, smooth=None):
-        segments = self._path._segments[self._start : self._end + 1]
+        segments = self._path._segments[self._start: self._end + 1]
         return Path.svg_d(segments, relative=relative, smooth=None)
 
     def _reverse_segments(self, start, end):
@@ -7331,12 +7343,8 @@ class SVGText(SVGElement, GraphicObject, Transformable):
         # https://www.w3.org/TR/css-fonts-3/#font-prop
         font_elements = list(*re.findall(REGEX_CSS_FONT, font))
 
-        font_style = font_elements[0]
-        font_variant = font_elements[1]
         font_weight = font_elements[2]
-        font_stretch = font_elements[3]
         font_size = font_elements[4]
-        line_height = font_elements[5]
         font_face = font_elements[6]
         font_family = font_elements[7]
         if len(font_weight) > 0:
@@ -7552,8 +7560,6 @@ class SVGImage(SVGElement, GraphicObject, Transformable):
 
     def load(self, directory=None):
         try:
-            from PIL import Image
-
             if self.data is not None:
                 self.load_data()
             elif self.url is not None:
@@ -7707,8 +7713,8 @@ class SVG(Group):
         par = values.get(SVG_ATTR_PRESERVEASPECTRATIO)
         self.viewbox = Viewbox(viewbox, par) if viewbox is not None else None
 
-    def get_element_by_id(self, id):
-        return self.objects.get(id)
+    def get_element_by_id(self, id_):
+        return self.objects.get(id_)
 
     def get_element_by_url(self, url):
         for _id in REGEX_IRI.findall(url):

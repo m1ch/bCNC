@@ -1,38 +1,15 @@
 # Author: @DodoLaSaumure Pierre KLein
 # Date: 9 feb 2021
 
-from __future__ import print_function
-
-import math
-import os.path
-import re
 import sys
 from copy import deepcopy
-import tkinter
-from tkinter import *
-import tkinter.messagebox as tkMessageBox
+from tkinter import messagebox
 
-from math import (
-    acos,
-    asin,
-    atan2,
-    copysign,
-    cos,
-    degrees,
-    fmod,
-    hypot,
-    pi,
-    radians,
-    sin,
-    sqrt,
-)
-from bmath import Vector
-from bpath import EPS, Path, Segment, eq
-from CNC import CNC, Block  # ,toPath,importPath,addUndo
+from bpath import Path, Segment
 from ToolsPage import Plugin
+from Helpers import _
 
 __author__ = "@DodoLaSaumure  (Pierre Klein)"
-# __email__  = ""
 
 __name__ = _("Offset")
 __version__ = "0.0.1"
@@ -75,7 +52,6 @@ def pocket(
     for bid in reversed(selectedblocks):  # selected blocks
         if allblocks[bid].name() in ("Header", "Footer"):
             continue
-        newpath = []
         block = allblocks[bid]
         if (
             block.operationTest("island")
@@ -282,7 +258,6 @@ class PocketIsland:
             opathCopy = path.offset(self.profiledir
                                     * self.offset
                                     * float(direct))
-            points = opathCopy.intersectSelf()
             opathCopy.removeExcluded(path, abs(self.offset))
             if (
                 len(opathCopy) > 0
@@ -389,7 +364,7 @@ class PocketIsland:
                 for island in self.IntersectedIslands:
                     issegin = island.isSegInside(seg) == 1
                     if issegin:
-                        if not seg in island:
+                        if seg not in island:
                             inside = True
                             break
                 if not inside:
@@ -411,8 +386,8 @@ class PocketIsland:
             for elt in self.CleanPath:  # List of paths
                 for elt2 in self.CleanPath:
                     if (
-                        not elt2 in self.childrenIslands
-                        and not elt2 in self.childrenOutpath
+                        elt2 not in self.childrenIslands
+                        and elt2 not in self.childrenOutpath
                     ):
                         self.childrenOutpath.append(elt2)
 
@@ -588,7 +563,7 @@ Grey is simulation of how part will look after machining
             app,
         )
         if msg:
-            tkMessageBox.showwarning(
+            messagebox.showwarning(
                 _("Open paths"), _("WARNING: %s") % (msg), parent=app
             )
         app.editor.fill()

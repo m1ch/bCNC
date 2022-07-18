@@ -32,28 +32,78 @@
 #  Email: Vasilis.Vlachoudis@cern.ch
 #   Date: 12-Oct-2006
 
-from __future__ import absolute_import
-
 import re
 import sys
 import time
 
+from tkinter import (
+    TclError,
+    FALSE,
+    YES,
+    TRUE,
+    W,
+    E,
+    EW,
+    NSEW,
+    CENTER,
+    X,
+    Y,
+    BOTH,
+    LEFT,
+    TOP,
+    RIGHT,
+    BOTTOM,
+    RAISED,
+    SUNKEN,
+    FLAT,
+    RIDGE,
+    GROOVE,
+    SOLID,
+    HORIZONTAL,
+    VERTICAL,
+    OUTSIDE,
+    SEL,
+    END,
+    DISABLED,
+    ACTIVE,
+    SINGLE,
+    BROWSE,
+    EXTENDED,
+    SCROLL,
+    UNITS,
+    PAGES,
+    Event,
+    StringVar,
+    IntVar,
+    Tk,
+    Widget,
+    Toplevel,
+    Button,
+    Canvas,
+    Checkbutton,
+    Entry,
+    Frame,
+    Label,
+    Listbox,
+    Menu,
+    Message,
+    Radiobutton,
+    Scrollbar,
+    Text,
+    OptionMenu,
+    PhotoImage,
+    Spinbox,
+    LabelFrame,
+    PanedWindow,
+)
+from tkinter import _setit, _cnfmerge
+from tkinter.colorchooser import askcolor
+
 import bFileDialog
 import Unicode
-import Utils
+from Helpers import to_zip
 
 GLOBAL_CONTROL_BACKGROUND = "White"
-
-
-try:
-    from Tkinter import *
-    from Tkinter import _setit, _cnfmerge
-    from tkColorChooser import askcolor
-except ImportError:
-    from tkinter import *
-    from tkinter import _setit, _cnfmerge
-    from tkinter.colorchooser import askcolor
-
 ARROW_LEFT = "\u2190"
 ARROW_UP = "\u2191"
 ARROW_RIGHT = "\u2192"
@@ -469,7 +519,7 @@ class FloatEntry(_ValidatingEntry):
                     return True
                 plast = value[-2]
                 if ((plast == "e" or plast == "E")
-                    and (last == "-" or last == "+")):
+                        and (last == "-" or last == "+")):
                     return True
         return False
 
@@ -501,7 +551,7 @@ class VectorEntry(_ValidatingEntry):
                         continue
                     plast = token[-2]
                     if ((plast == "e" or plast == "E")
-                        and (last == "-" or last == "+")):
+                            and (last == "-" or last == "+")):
                         continue
                 return False
         return True
@@ -906,15 +956,10 @@ class ExListbox(Listbox):
 
         start = 0
         cur = self.index(ACTIVE)
-        try:
-            active = unicode(self.get(ACTIVE))
-        except Exception as e:
-            active = str(self.get(ACTIVE))
+        active = str(self.get(ACTIVE))
+
         if self.ignoreCase:
-            try:
-                active = active.upper()
-            except Exception:
-                pass
+            active = active.upper()
         if len(active) > 0:
             if self.ignoreNonAlpha:
                 for pos in range(len(active)):
@@ -925,7 +970,7 @@ class ExListbox(Listbox):
                         break
             else:
                 pos = 0
-            prefix = active[pos : pos + lsearch]
+            prefix = active[pos: pos + lsearch]
             if ExListbox._search == prefix:
                 if self._single:
                     self.selection_clear(0, END)
@@ -948,15 +993,9 @@ class ExListbox(Listbox):
                 loop += 1
 
             for i in range(start, self.size()):
-                try:
-                    item = unicode(self.get(i))
-                except Exception as e:
-                    item = str(self.get(i))
+                item = str(self.get(i))
                 if self.ignoreCase:
-                    try:
-                        item = item.upper()
-                    except Exception:
-                        pass
+                    item = item.upper()
 
                 if len(item) > 0:
                     if self.ignoreNonAlpha:
@@ -968,7 +1007,7 @@ class ExListbox(Listbox):
                                 break
                     else:
                         pos = 0
-                    prefix = item[pos : pos + lsearch]
+                    prefix = item[pos: pos + lsearch]
                     if ExListbox._search == prefix:
                         if self._single:
                             self.selection_clear(0, END)
@@ -1175,13 +1214,13 @@ class ExListbox(Listbox):
         for i in lst:
             if i >= sz:
                 continue
-            next = i + 1
-            if not self.selection_includes(next):
+            next_ = i + 1
+            if not self.selection_includes(next_):
                 act = self.index(ACTIVE)
-                self.swap(i, next)
-                self.selection_set(next)
+                self.swap(i, next_)
+                self.selection_set(next_)
                 if act == i:
-                    self.activate(next)
+                    self.activate(next_)
         self.event_generate("<<ListboxSelect>>")
 
     # ----------------------------------------------------------------------
@@ -1303,7 +1342,7 @@ class SearchListbox(ExListbox):
         # Fill up the list of items
         if not self._items:
             for item in Listbox.get(self, 0, END):
-                self._items.append(unicode(item))
+                self._items.append(str(item))
             self._pos = range(len(self._items))
 
         # if Search string is empty, fill the entire list
@@ -1411,7 +1450,7 @@ class SearchListbox(ExListbox):
 
         if len(self._items) == 0:
             return ""
-        return self._items[int(first) : last]
+        return self._items[int(first): last]
 
 
 # =============================================================================
@@ -1664,7 +1703,7 @@ class MultiListbox(Frame):
             for i, l in enumerate(self._lists):
                 l.insert(index, e[i])
             if len(e) < len(self._lists):
-                for li in self._lists[len(e) : len(self._lists)]:
+                for li in self._lists[len(e): len(self._lists)]:
                     li.insert(index, "")
 
         if self._sortColumn >= 0:
@@ -1929,14 +1968,14 @@ class MultiListbox(Frame):
 # =============================================================================
 class ColorMultiListbox(MultiListbox):
     # ----------------------------------------------------------------------
-    def sort(self, column, dir=None):
+    def sort(self, column, dir_=None):
         # remember colors
         colors = {}
         for i in range(self.size()):
             colors[self._lists[0].get(i)] = \
                 self._lists[0].itemcget(i, "foreground")
 
-        MultiListbox.sort(self, column, dir)
+        MultiListbox.sort(self, column, dir_)
 
         # set colors
         for i in range(self.size()):
@@ -2264,7 +2303,6 @@ class ImageListbox(Text):
         if last is None:
             if 0 <= first < len(self._selection):
                 first += 1
-                img = Text.image_cget(self, f"{int(first)}.0", "image")
                 txt = Text.get(self, f"{int(first)}.2", f"{int(first)}.end")
                 return txt
             return None
@@ -2826,7 +2864,6 @@ class InPlaceText(InPlaceEdit):
         x, y, w, h = bbox
         x += self.listbox.winfo_rootx()
         y += self.listbox.winfo_rooty()
-        w = self.listbox.winfo_width()
         try:
             self.toplevel.wm_geometry(f"+{int(x)}+{int(y)}")
         except TclError:
@@ -3279,10 +3316,6 @@ class Combobox(Frame):
     # Public methods
     # ----------------------------------------------------------------------
     def get(self, first=None, last=None):
-        try:
-            stringclass = basestring
-        except NameError:
-            stringclass = False
         if first is None:
             if isinstance(self._text, Label):
                 return self._text.cget("text")
@@ -3358,7 +3391,9 @@ class Combobox(Frame):
 
     # ----------------------------------------------------------------------
     def __setitem__(self, key, value):
-        self.configure({key: value})
+        # XXX: This code gave an error that was fixed with **{}. Not sure if it does, what it is supposed to do
+        # self.configure({key:value})
+        self.configure(**{key: value})
 
     # ----------------------------------------------------------------------
     def cget(self, key):
@@ -4445,7 +4480,7 @@ class Balloon:
     # set a balloon message to a widget
     # ----------------------------------------------------------------------
     @staticmethod
-    def set(widget, help):
+    def set(widget, help):  # noqa: A002
         widget._help = help
         widget.bind("<Any-Enter>", Balloon.enter)
         widget.bind("<Any-Leave>", Balloon.leave)
@@ -5087,7 +5122,7 @@ class TabPageSet(Frame):
 
     # ----------------------------------------------------------------------
     def removePage(self, pageName):
-        if not pageName in self.pages.keys():
+        if pageName not in self.pages.keys():
             raise InvalidTabPage("Invalid TabPage Name")
         self.pages[pageName]["tab"].pack_forget()
         self.pages[pageName]["page"].grid_forget()
@@ -5107,7 +5142,7 @@ class TabPageSet(Frame):
 
     # ----------------------------------------------------------------------
     def renamePage(self, old, new):
-        if not old in self.pages.keys():
+        if old not in self.pages.keys():
             raise InvalidTabPage("Invalid TabPage Name")
         self.pages[new] = self.pages[old]
         del self.pages[old]

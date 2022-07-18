@@ -5,16 +5,14 @@
 # Inspired by: "Death to sharpie" a drawbot by Scott Cooper
 # see at http://www.dullbits.com/drawbot/drawbot
 
-from __future__ import absolute_import, print_function
-
 import math
 
 # import time
 import random
-from array import *
 
 from CNC import CNC, Block
 from ToolsPage import Plugin
+from Helpers import _
 
 __author__ = "Filippo Rivato"
 __email__ = "f.rivato@gmail.com"
@@ -65,7 +63,7 @@ class Tool(Plugin):
     def findFirst(self, pix, scanAll, casual):
         most = 0
         if casual:
-            for e in xrange(1, 500):
+            for e in range(1, 500):
                 x = random.randint(2, self.imgWidth - 3)
                 y = random.randint(2, self.imgHeight - 3)
                 val = pix[x, y]
@@ -85,8 +83,8 @@ class Tool(Plugin):
             most = pix[2, 2]
             bestX = 2
             bestY = 2
-            for x in xrange(2, self.imgWidth - 2):
-                for y in xrange(2, self.imgHeight - 2):
+            for x in range(2, self.imgWidth - 2):
+                for y in range(2, self.imgHeight - 2):
                     val = pix[x, y]
                     if val < most:
                         most = val
@@ -108,8 +106,8 @@ class Tool(Plugin):
         distance = 1
 
         most = pix[startX, startY]
-        for x in xrange(xmin, xmax):
-            for y in xrange(ymin, ymax):
+        for x in range(xmin, xmax):
+            for y in range(ymin, ymax):
                 distance = math.sqrt((startX - x) ** 2 + (startY - y) ** 2)
                 if distance > maxRange:
                     continue
@@ -125,7 +123,7 @@ class Tool(Plugin):
         return bestX, bestY, distance
 
     def fadePixel(self, x, y, pix, fad, repetition):
-        if repetition == False:
+        if repetition is False:
             pix[x, y] = 256
         pix[x, y] += 10 * fad
         pix[x + 1, y] += 6 * fad

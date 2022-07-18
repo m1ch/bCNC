@@ -53,8 +53,6 @@
 #
 #   Filippo Rivato f.rivato@gmail.com
 
-from __future__ import absolute_import
-
 import codecs
 import mmap
 import os
@@ -123,15 +121,15 @@ class TruetypeInfo:
         """
         if not filename:
             filename = ""
-        len = os.stat(filename).st_size
+        len_ = os.stat(filename).st_size
         self._fileno = os.open(filename, os.O_RDONLY)
         if hasattr(mmap, "MAP_SHARED"):
             self._data = mmap.mmap(self._fileno,
-                                   len,
+                                   len_,
                                    mmap.MAP_SHARED,
                                    mmap.PROT_READ)
         else:
-            self._data = mmap.mmap(self._fileno, len, None, mmap.ACCESS_READ)
+            self._data = mmap.mmap(self._fileno, len_, None, mmap.ACCESS_READ)
 
         offsets = _read_offset_table(self._data, 0)
         self._tables = {}
@@ -508,7 +506,7 @@ class TruetypeInfo:
         Y_DELTA = 32
 
         glyph = Glyph()
-        glyph.type = "simple"
+        glyph.type_ = "simple"
         glyph.contoursEnd = []
         glyph.points = []
         # glyph.size = glyph_size
@@ -597,18 +595,14 @@ class TruetypeInfo:
         # FIXME:implements extraction of data for complex glyph
         ARG_1_AND_2_ARE_WORDS = 1
         ARGS_ARE_XY_VALUES = 2
-        ROUND_XY_TO_GRID = 4
         WE_HAVE_A_SCALE = 8
-        RESERVED = 16
         MORE_COMPONENTS = 32
         WE_HAVE_AN_X_AND_Y_SCALE = 64
         WE_HAVE_A_TWO_BY_TWO = 128
         WE_HAVE_INSTRUCTIONS = 256
-        USE_MY_METRICS = 512
-        OVERLAP_COMPONENT = 1024
 
         glyph = Glyph()
-        glyph.type = "compound"
+        glyph.type_ = "compound"
         glyph.components = []
 
         flags = MORE_COMPONENTS
@@ -768,9 +762,9 @@ class TruetypeInfo:
         nP = GlyphPoint(b_x, b_y)
         return nP
 
-    def _read_array(self, format, offset):
-        size = struct.calcsize(format)
-        return struct.unpack(format, self._data[offset:offset + size])
+    def _read_array(self, format_, offset):
+        size = struct.calcsize(format_)
+        return struct.unpack(format_, self._data[offset:offset + size])
 
     def close(self):
         """Close the font file.
@@ -790,9 +784,9 @@ def _read_table(*entries):
     fmt = ">"
     names = []
     for entry in entries:
-        name, type = entry.split(":")
+        name, type_ = entry.split(":")
         names.append(name)
-        fmt += type
+        fmt += type_
 
     class _table_class:
         size = struct.calcsize(fmt)
@@ -976,7 +970,7 @@ _read_glyph_size_table = _read_table(
 
 class Glyph:
     def __init__(self):
-        self.type = ""
+        self.type_ = ""
         self.contoursEnd = []
         self.points = []
 
@@ -991,9 +985,6 @@ class GlyphPoint:
 class GlyphComponent:
     def __init__(self):
         self.glyphIndex = 0
-        #
-        destPointIndex = 0
-        srcPointIndex = 0
         # Matrix
         self.a = 1
         self.b = 0

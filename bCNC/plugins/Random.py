@@ -3,25 +3,16 @@
 # Author:	Vasilis.Vlachoudis@cern.ch
 # Date:	20-Aug-2015
 
-from __future__ import absolute_import, print_function
-
 import random
 
 from ToolsPage import Plugin
+from tkinter import messagebox
+from Helpers import _
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"
 
 __name__ = _("Random")
-
-try:
-    import tkMessageBox
-except ImportError:
-    import tkinter.messagebox as tkMessageBox
-
-# import math
-# from bmath import Vector
-# from CNC import CW,CCW,CNC,Block
 
 
 # =============================================================================
@@ -50,18 +41,18 @@ class Tool(Plugin):
             blocks = app.editor.getSelectedBlocks()
 
         if not blocks:
-            tkMessageBox.showerror(_("Tile error"),
-                                   _("No g-code blocks selected"))
+            messagebox.showerror(_("Tile error"),
+                                 _("No g-code blocks selected"))
             return
 
         try:
             dx = self.fromMm("randx")
-        except:
+        except Exception:
             dx = 0.0
 
         try:
             dy = self.fromMm("randy")
-        except:
+        except Exception:
             dy = 0.0
 
         pos = blocks[-1]  # insert position

@@ -3,11 +3,9 @@
 # Author:	Filippo Rivato
 # Date: December 2015
 
-from __future__ import absolute_import, print_function
-
 from CNC import CNC, Block
 from ToolsPage import Plugin
-from Utils import to_decode
+from Helpers import _
 
 __author__ = "Filippo Rivato"
 __email__ = "f.rivato@gmail.com"
@@ -53,7 +51,7 @@ class Tool(Plugin):
         # Get inputs
         fontSize = self.fromMm("FontSize")
         depth = self.fromMm("Depth")
-        textToWrite = to_decode(self["Text"])
+        textToWrite = self["Text"]
         fontFileName = self["FontFile"]
         closed = self["Closed"]
         imageFileName = self["ImageToAscii"]
@@ -99,16 +97,10 @@ class Tool(Plugin):
             return
         cmap = font.get_character_map()
 
-        kern = None
-        try:
-            kern = font.get_glyph_kernings()
-        except Exception:
-            pass
         adv = font.get_glyph_advances()
 
         xOffset = 0
         yOffset = 0
-        glyphIndxLast = cmap[" "]
         for c in textToWrite:
             # New line
             if c == "\n":
@@ -118,10 +110,6 @@ class Tool(Plugin):
 
             if c in cmap:
                 glyphIndx = cmap[c]
-
-                if kern and (glyphIndx, glyphIndxLast) in kern:
-                    # FIXME: use kern for offset??
-                    k = kern[(glyphIndx, glyphIndxLast)]
 
                 # Get glyph contours as line segments and draw them
                 gc = font.get_glyph_contours(glyphIndx, closed)
@@ -140,7 +128,6 @@ class Tool(Plugin):
                     xOffset += adv[glyphIndx]
                 else:
                     xOffset += 1
-                glyphIndxLast = glyphIndx
 
         # Remeber to close Font
         font.close()
@@ -159,8 +146,6 @@ class Tool(Plugin):
     # Write GCode from glyph contours
     def writeGlyphContour(
             self, block, font, contours, fontSize, depth, xO, yO):
-        width = font.header.x_max - font.header.x_min
-        height = font.header.y_max - font.header.y_min
         scale = fontSize / font.header.units_per_em
         xO = xO * fontSize
         yO = yO * fontSize
@@ -200,5 +185,5 @@ class Tool(Plugin):
         output = ""
         for c in range(0, len(img_as_ascii), new_width):
             # print img_as_ascii[c:c+new_width]
-            output += img_as_ascii[c : c + new_width] + "\n"
+            output += img_as_ascii[c:c + new_width] + "\n"
         return output

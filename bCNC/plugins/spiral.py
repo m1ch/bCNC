@@ -3,32 +3,20 @@
 # Author:	T Marks
 # Date:	2020/04/14
 
-from __future__ import absolute_import, print_function
-
 import math
 import sys  # Trouble Shooting Only!
 
-import Utils
+from tkinter import messagebox
+
 from CNC import CNC, Block
 from ToolsPage import Plugin
-from Utils import to_zip
+from Helpers import _
 
 __author__ = "T Marks"
 __email__ = "tsmarks@gmail.com"
 
 __name__ = _("Spiral")
 __version__ = "0.0.1"
-
-try:
-    import Tkinter
-    from Queue import *
-    from Tkinter import *
-    import tkMessageBox
-except ImportError:
-    import tkinter
-    from queue import *
-    from tkinter import *
-    import tkinter.messagebox as tkMessageBox
 
 
 # =============================================================================
@@ -94,14 +82,14 @@ class Spiral:
         elif (
             Stepover > StepOverInUnitMax and SpiralType == "Lines"
         ):  # This could cause a tool crash, but could also be used to make faceted shapes.
-            dr = tkMessageBox.askyesno(
+            dr = messagebox.askyesno(
                 "Crash Risk",
                 "WARNING: Using a larger stepover value than tool's "
                 + "maximum with lines operation may result in a tool crash. "
                 + "Do you want to continue?",
             )
             sys.stdout.write(f"{dr}")
-            if dr == True or dr == "yes":
+            if dr is True or dr == "yes":
                 app.setStatus(
                     _("Risk Accepted")
                 )  # Using positive logic, if python returns ANYTHING other than True/yes this will not make g-code.  Incase Python uses No instead of False
@@ -149,7 +137,6 @@ class Spiral:
         if SpiralType == "Lines":
             # Calc number of indexes
             # Using the step over as Degrees
-            IndexNum = math.ceil(360 / Stepover)
 
             # Calc number of pass
             VerticalCount = math.ceil(abs(ReduceDepth) / PassDepth)
@@ -444,7 +431,7 @@ class Spiral:
             return
         block.append(CNC.zexit(ZApproach))
         blocks.append(block)
-        tkMessageBox.showinfo(
+        messagebox.showinfo(
             "Crash Risk",
             "WARNING: Check CAM file Header for Z move. If it exists, "
             + "remove it to prevent tool crash.",

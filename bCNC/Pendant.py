@@ -3,29 +3,23 @@
 # Author: vvlachoudis@gmail.com
 # Date: 24-Aug-2014
 
-from __future__ import absolute_import, print_function
-
 import json
 import os
 import re
-import sys
 import tempfile
 import threading
-import urllib
 
 import Camera
 from CNC import CNC
 from Utils import prgpath
 
 import urllib.parse as urlparse
-import http.server as HTTPServer
+import http.server as httpserver
 
 try:
     from PIL import Image
 except ImportError:
     Image = None
-
-
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"
@@ -41,7 +35,7 @@ iconpath = f"{prgpath}/icons/"
 # =============================================================================
 # Simple Pendant controller for CNC
 # =============================================================================
-class Pendant(HTTPServer.BaseHTTPRequestHandler):
+class Pendant(httpserver.BaseHTTPRequestHandler):
     camera = None
 
     # ----------------------------------------------------------------------
@@ -50,7 +44,7 @@ class Pendant(HTTPServer.BaseHTTPRequestHandler):
         if args[0].startswith("GET / ") or args[0].startswith("GET /send"):
             args = list(args)
             args[0] = self.address_string() + '" : "' + args[0]
-            HTTPServer.BaseHTTPRequestHandler.log_message(self, fmt, *args)
+            httpserver.BaseHTTPRequestHandler.log_message(self, fmt, *args)
 
     # ----------------------------------------------------------------------
     def do_HEAD(self, rc=200, content="text/html", cl=0):
@@ -294,7 +288,7 @@ class Pendant(HTTPServer.BaseHTTPRequestHandler):
 # -----------------------------------------------------------------------------
 def _server(app):
     global httpd
-    server_class = HTTPServer.HTTPServer
+    server_class = httpserver.HTTPServer
     try:
         httpd = server_class(("", port), Pendant)
         httpd.app = app

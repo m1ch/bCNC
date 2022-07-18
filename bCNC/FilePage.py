@@ -3,30 +3,36 @@
 # Author: vvlachoudis@gmail.com
 # Date: 18-Jun-2015
 
-from __future__ import absolute_import, print_function
-
 import os
 import sys
-
+from tkinter import (
+    YES,
+    W,
+    E,
+    EW,
+    NSEW,
+    BOTH,
+    LEFT,
+    TOP,
+    RIGHT,
+    BooleanVar,
+    Checkbutton,
+    Label,
+    Menu,
+)
 import CNCRibbon
 import Ribbon
-import Sender
 import tkExtra
 import Utils
+
+from Helpers import _, N_
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "vvlachoudis@gmail.com"
 
-
-try:
-    from Tkinter import *
-except ImportError:
-    from tkinter import *
-
-
 try:
     from serial.tools.list_ports import comports
-except:
+except Exception:
     print("Using fallback Utils.comports()!")
     from Utils import comports
 
@@ -418,6 +424,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
         devices += sorted(set(hwgrep))
         devices += [""]
         # Pyserial raw spy currently broken in python3
+        # TODO: search for python3 replacement for raw spy
         if sys.version_info[0] != 3:
             devices += sorted(
                 "spy://" + x[0] + "?raw&color" + "\t(Debug) " + x[1]

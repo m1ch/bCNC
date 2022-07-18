@@ -3,10 +3,46 @@
 # Author:       vvlachoudis@gmail.com
 # Date: 24-Aug-2014
 
-from __future__ import absolute_import, print_function
-
 import math
 import time
+import sys
+
+from tkinter import (
+    TclError,
+    FALSE,
+    N,
+    S,
+    W,
+    E,
+    NS,
+    EW,
+    NSEW,
+    CENTER,
+    NONE,
+    BOTH,
+    LEFT,
+    RIGHT,
+    RAISED,
+    HORIZONTAL,
+    VERTICAL,
+    ALL,
+    DISABLED,
+    LAST,
+    SCROLL,
+    UNITS,
+    StringVar,
+    IntVar,
+    BooleanVar,
+    Button,
+    Canvas,
+    Checkbutton,
+    Frame,
+    Label,
+    Radiobutton,
+    Scrollbar,
+    OptionMenu,
+)
+import tkinter
 
 from lib import bmath
 import Camera
@@ -14,13 +50,7 @@ import tkExtra
 import Utils
 from CNC import CNC
 
-try:
-    from Tkinter import *
-    import Tkinter
-except ImportError:
-    from tkinter import *
-    import tkinter as Tkinter
-
+from Helpers import _
 
 # Probe mapping we need PIL and numpy
 try:
@@ -32,6 +62,7 @@ try:
     RESAMPLE = Image.NEAREST  # resize type
     # RESAMPLE = Image.BILINEAR	# resize type
 except Exception:
+    from tkinter import Image
     numpy = None
     RESAMPLE = None
 
@@ -348,7 +379,6 @@ class CNCCanvas(Canvas):
 
     # ----------------------------------------------------------------------
     def handleKey(self, event):
-        ctrl = event.state & CONTROL_MASK
         if event.char == "a":
             self.event_generate("<<SelectAll>>")
         elif event.char == "A":
@@ -749,12 +779,6 @@ class CNCCanvas(Canvas):
         i = self.canvasx(event.x)
         j = self.canvasy(event.y)
         x, y, z = self.canvas2xyz(i, j)
-        blocks = self.app.editor.getSelectedBlocks()
-
-        from bmath import Vector
-
-        P = Vector(x, y)
-
     # 		for bid in blocks:
     # 			for path in self.gcode.toPath(bid):
     # 				print path
@@ -1101,10 +1125,8 @@ class CNCCanvas(Canvas):
                 return
             xmin = self._dx - CNC.travel_x
             ymin = self._dy - CNC.travel_y
-            zmin = self._dz - CNC.travel_z
             xmax = self._dx
             ymax = self._dy
-            zmax = self._dz
 
             xyz = [
                 (xmin, ymin, 0.0),
@@ -1357,7 +1379,7 @@ class CNCCanvas(Canvas):
         hc //= 2
         x = w // 2  # everything on center
         y = h // 2
-        if self.cameraAnchor == None:
+        if self.cameraAnchor is None:
             if self._lastGantry is not None:
                 x, y = self.plotCoords([self._lastGantry])[0]
             else:
@@ -1586,7 +1608,7 @@ class CNCCanvas(Canvas):
     def _rectCoords(self, rect, xmin, ymin, xmax, ymax, z=0.0):
         self.coords(
             rect,
-            Tkinter._flatten(
+            tkinter._flatten(
                 self.plotCoords(
                     [
                         (xmin, ymin, z),
@@ -1635,10 +1657,8 @@ class CNCCanvas(Canvas):
 
         xmin = self._dx - CNC.travel_x
         ymin = self._dy - CNC.travel_y
-        zmin = self._dz - CNC.travel_z
         xmax = self._dx
         ymax = self._dy
-        zmax = self._dz
 
         self._workarea = self._drawRect(
             xmin, ymin, xmax, ymax, 0.0, fill=WORK_COLOR, dash=(3, 2)
@@ -1952,12 +1972,7 @@ class CNCCanvas(Canvas):
             startTime = before = time.time()
             self.cnc.resetAllMargins()
             drawG = self.draw_rapid or self.draw_paths or self.draw_margin
-            bid = self.app.editor.getSelectedBlocks()
             for i, block in enumerate(self.gcode.blocks):
-                if i in bid:
-                    selected = True
-                else:
-                    selected = False
                 start = True  # start location found
                 block.resetPath()
 
@@ -2042,7 +2057,7 @@ class CNCCanvas(Canvas):
     # ----------------------------------------------------------------------
     # Return plotting coordinates for a 3d xyz path
     #
-    # NOTE: Use the Tkinter._flatten() to pass to self.coords() function
+    # NOTE: Use the tkinter._flatten() to pass to self.coords() function
     # ----------------------------------------------------------------------
     def plotCoords(self, xyz):
         coords = None
@@ -2094,7 +2109,6 @@ class CNCCanvas(Canvas):
     # Canvas to real coordinates
     # ----------------------------------------------------------------------
     def canvas2xyz(self, i, j):
-        coords = None
         if self.view == VIEW_XY:
             x = i / self.zoom
             y = -j / self.zoom

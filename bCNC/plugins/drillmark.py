@@ -3,15 +3,16 @@
 # Author:  Attila Kolinger
 # Date:	   26.feb.2018.
 
-__author__ = "Attila Kolinger"
-# <<< here put an email where plugins users can contact you
-__email__ = "attila.kolinger@gmail.com"
-
 import math
 
 # Here import the libraries you need, these are necessary to modify the code
 from CNC import CNC, Block
 from ToolsPage import Plugin
+from Helpers import _
+
+__author__ = "Attila Kolinger"
+# <<< here put an email where plugins users can contact you
+__email__ = "attila.kolinger@gmail.com"
 
 
 # =============================================================================
@@ -62,13 +63,14 @@ class Tool(Plugin):
         self.buttons.append(
             "exe"
         )
-        self.help = "This plugin is for creating drilling marks with a laser "
-        + "engraver for manual drilling"
+        self.help = " ".join([
+            "This plugin is for creating drilling marks with a laser",
+            "engraver for manual drilling"
+        ])
 
     def appendBurn(self, app, block):
         x0 = self.fromMm("PosX")
         y0 = self.fromMm("PosY")
-        movefeed = app.cnc["cutfeed"]
         burntime = self["Burn time"]
         burnpower = self["Burn power"]
         block.append(CNC.grapid(x=x0, y=y0))
@@ -271,7 +273,6 @@ class Tool(Plugin):
         movefeed = app.cnc["cutfeed"]
         drawfeed = app.cnc["cutfeedz"]
         marksizehalf = self.fromMm("Mark size") / 2
-        markpower = self["Mark power"]
         marktype = self["Mark type"]
         if "None" == marktype:
             pass
@@ -305,8 +306,6 @@ class Tool(Plugin):
         if not name or name == "default":
             name = "Drillmark"
         marksize = self["Mark size"]
-        x0 = self.fromMm("PosX")
-        y0 = self.fromMm("PosY")
         marktype = self["Mark type"]
         block = Block(name + f" {marktype} diameter {CNC.fmt('', marksize)}")
         self.appendBurn(app, block)

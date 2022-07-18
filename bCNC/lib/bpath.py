@@ -6,14 +6,21 @@
 # Contributor: @harvie Tomas Mudrunka (2018)
 # Date:   10-Mar-2015
 
-from __future__ import absolute_import, print_function
-
 from copy import deepcopy
-from math import acos, atan, atan2, ceil, cos, degrees, floor, pi, sin, sqrt
+from math import (
+    atan,
+    atan2,
+    ceil,
+    cos,
+    degrees,
+    pi,
+    sin,
+    sqrt
+)
 from operator import itemgetter
 
 from bmath import Vector, quadratic
-from Utils import to_zip
+from Helpers import to_zip
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"
@@ -274,7 +281,6 @@ class Segment:
     # A and B and the same C whenever it has a C attribute
     # ----------------------------------------------------------------------
     def equals(self, other):
-        result = True
         if not self.type == other.type:
             return False
         if not eq(self.A, other.A):
@@ -821,13 +827,13 @@ class Path(list):
     # ----------------------------------------------------------------------
     def _direction(self, closed=True):
         def dircalc(A, B):
-            dir = (B[0] - A[0]) * (B[1] + A[1])
+            _dir = (B[0] - A[0]) * (B[1] + A[1])
             # print("point", A[0], A[1], B[0], B[1],"\t",dir)
             # print("g1 x"+str(A[0])+" y"+str(A[1]))
             # print("g1 x"+str(B[0])+" y"+str(B[1]))
-            return dir
+            return _dir
 
-        sum = 0
+        sum_ = 0
         cwarc = 0
 
         for segment in self:
@@ -839,13 +845,13 @@ class Path(list):
             A = segment.A
             B = segment.B
             if A is not None and B is not None:
-                sum += dircalc(A, B)
+                sum_ += dircalc(A, B)
 
         # Decide direction
-        if sum < 0:
-            sum = -1  # CCW
-        if sum > 0:
-            sum = 1  # CW
+        if sum_ < 0:
+            sum_ = -1  # CCW
+        if sum_ > 0:
+            sum_ = 1  # CW
 
         # Arcs (and therefore circles) are now treated as lines (linear approximation)
         # If we can't decide based on points, we will compare amount of distance traveled in CW and CCW arcs
@@ -854,15 +860,15 @@ class Path(list):
         # That will vastly increase the resolution of linear approximation.
         # If you know to split arcs, plese do it. For now we have this heuristic:
 
-        if sum == 0:
+        if sum_ == 0:
             if cwarc < 0:
-                sum = -1  # CCW
+                sum_ = -1  # CCW
             if cwarc > 0:
-                sum = 1  # CW
+                sum_ = 1  # CW
 
         # if sum == 0: sum = 1	#CW if still undecided?
         # print("Sum ", sum)
-        return sum
+        return sum_
 
     # ----------------------------------------------------------------------
     # @return the bounding box of the path (very crude)
@@ -960,7 +966,7 @@ class Path(list):
                 return Segment.CW
             return Segment.CCW
 
-        def testFit(path, prec, C, r, dir=None):
+        def testFit(path, prec, C, r, dir_=None):
             if C is None or r is None:
                 return False
 
@@ -991,7 +997,7 @@ class Path(list):
                     return False
 
                 # Test direction
-                if arcdir(seg, C) != dir:
+                if arcdir(seg, C) != dir_:
                     # print "wrong direction"
                     return False
 
@@ -1073,7 +1079,7 @@ class Path(list):
             # FIXME: allow to merge lines with existing arcs when arc fitting
             if i + numseg <= len(self):
                 tmpath = Path("tmp")
-                tmpath.extend(self[i : i + numseg])
+                tmpath.extend(self[i:i + numseg])
                 C, r, arcd = path2arc(tmpath)
                 # FIXME: define arc in way that would enable us to fit arcs without fitting lines first
                 if testFit(tmpath, prec, C, r, arcd):
@@ -1335,8 +1341,8 @@ class Path(list):
 
             elif Op is not None:
                 # if cross*offset
-                cross = Oval[0] * Op[1] - O[1] * Op[0]
-                dot = Oval[0] * Op[0] + O[1] * Op[1]
+                cross = Oval[0] * Op[1] - Oval[1] * Op[0]
+                dot = Oval[0] * Op[0] + Oval[1] * Op[1]
                 # if (prev.type!=Segment.LINE and segment.type!=Segment.LINE) or \
                 if (abs(cross) > EPSV or dot < 0.0) and cross * offset >= 0:
                     # either a circle

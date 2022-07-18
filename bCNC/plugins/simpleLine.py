@@ -3,13 +3,10 @@
 # Author:	DodoLaSaumure
 # Date:	30-Dec-2019
 
-from __future__ import absolute_import, print_function
-
-import math
-
 from bmath import Vector
-from CNC import CNC, CW, Block
+from CNC import CNC, Block
 from ToolsPage import Plugin
+from Helpers import _
 
 __author__ = "DodoLaSaumure"
 __email__ = ""

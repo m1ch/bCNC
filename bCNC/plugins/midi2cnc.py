@@ -4,12 +4,11 @@
 # Date:		20 December 2015
 # Porting of midi2cnc https://github.com/michthom/MIDI-to-CNC (GPLv2+)
 
-from __future__ import absolute_import, print_function
-
 import math
 
 from CNC import CNC, Block
 from ToolsPage import Plugin
+from Helpers import _
 
 __author__ = "Filippo Rivato"
 __email__ = "f.rivato@gmail.com"
@@ -74,7 +73,7 @@ class Tool(Plugin):
         self.buttons.append("exe")
 
     # ----------------------------------------------------------------------
-    def reached_limit(self, current, distance, direction, min, max):
+    def reached_limit(self, current, distance, direction, min_, max_):
         # Returns true if the proposed movement will exceed the
         # safe working limits of the machine but the movement is
         # allowable in the reverse direction
@@ -84,21 +83,21 @@ class Tool(Plugin):
         #
         # Aborts if the movement is not possible in either direction
 
-        if ((current + (distance * direction)) < max) and (
-            (current + (distance * direction)) > min
+        if ((current + (distance * direction)) < max_) and (
+            (current + (distance * direction)) > min_
         ):
             # Movement in the current direction is within safe limits,
             return False
 
-        elif ((current + (distance * direction)) >= max) and (
-            (current - (distance * direction)) > min
+        elif ((current + (distance * direction)) >= max_) and (
+            (current - (distance * direction)) > min_
         ):
             # Movement in the current direction violates maximum safe
             # value, but would be safe if the direction is reversed
             return True
 
-        elif ((current + (distance * direction)) <= min) and (
-            (current - (distance * direction)) < max
+        elif ((current + (distance * direction)) <= min_) and (
+            (current - (distance * direction)) < max_
         ):
             # Movement in the current direction violates minimum safe
             # value, but would be safe if the direction is reversed
@@ -112,8 +111,8 @@ class Tool(Plugin):
     # ----------------------------------------------------------------------
     def execute(self, app):
         try:
-            import midiparser as midiparser
-        except:
+            import midiparser
+        except Exception:
             app.setStatus(_("Error: This plugin requires midiparser.py"))
             return
 
@@ -152,7 +151,7 @@ class Tool(Plugin):
 
         try:
             midi = midiparser.File(fileName)
-        except:
+        except Exception:
             app.setStatus(_("Error: Sorry can't parse the Midi file."))
             return
 
@@ -208,15 +207,10 @@ class Tool(Plugin):
 
             # Finished with this track
             if len(channels) > 0:
-                msg = ", ".join(["%2d" % ch for ch in sorted(channels)])
                 # print 'Processed track %d, containing channels numbered: [%s ]' % (track.number, msg)
                 all_channels = all_channels.union(channels)
 
-        # List all channels encountered
-        if len(all_channels) > 0:
-            msg = ", ".join(["%2d" % ch for ch in sorted(all_channels)])
-            # print 'The file as a whole contains channels numbered:
-            #   [%s ]' % msg
+
 
         # We now have entire file's notes with abs time from all channels
         # We don't care which channel/voice is which, but we do care about
@@ -343,13 +337,13 @@ class Tool(Plugin):
                 last_time = note[0]
 
             if note[1] == 1:  # Note on
-                if active_notes.has_key(note[2]):
+                if note[2] in active_notes:
                     pass
                 else:
                     # key and value are the same, but we don't really care.
                     active_notes[note[2]] = note[2]
             elif note[1] == 0:  # Note off
-                if active_notes.has_key(note[2]):
+                if note[2] in active_notes:
                     active_notes.pop(note[2])
 
         blocks.append(block)

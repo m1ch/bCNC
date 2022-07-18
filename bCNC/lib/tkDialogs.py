@@ -32,25 +32,46 @@
 # Author:	Vasilis.Vlachoudis@cern.ch
 # Date:	02-Aug-2006
 
-from __future__ import absolute_import
-
 import subprocess
 import sys
 import time
+from tkinter import (
+    YES,
+    W,
+    E,
+    EW,
+    CENTER,
+    X,
+    BOTH,
+    LEFT,
+    TOP,
+    RIGHT,
+    BOTTOM,
+    RAISED,
+    END,
+    NORMAL,
+    DISABLED,
+    StringVar,
+    IntVar,
+    Tk,
+    Toplevel,
+    Button,
+    Checkbutton,
+    Entry,
+    Frame,
+    Label,
+    Radiobutton,
+    OptionMenu,
+    Spinbox,
+    LabelFrame,
+)
+from tkinter import _cnfmerge
 
 import bFileDialog
 import tkExtra
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"
-
-
-try:
-    from Tkinter import *
-    from Tkinter import _cnfmerge
-except ImportError:
-    from tkinter import *
-    from tkinter import _cnfmerge
 
 
 # =============================================================================
@@ -145,7 +166,7 @@ class InputDialog(Toplevel):
     """
 
     def __init__(
-        self, master, title, message, input="",
+        self, master, title, message, input_="",
         type_="str", from_=None, to_=None
     ):
 
@@ -156,22 +177,22 @@ class InputDialog(Toplevel):
 
         if type_ == "int":
             self.entry = tkExtra.IntegerEntry(self)
-            self.entry.insert(0, input)
+            self.entry.insert(0, input_)
             w = self.entry
 
         elif type_ == "float":
             self.entry = tkExtra.FloatEntry(self)
-            self.entry.insert(0, input)
+            self.entry.insert(0, input_)
             w = self.entry
 
         elif type_ == "spin":
             self.entry = IntVar()
-            self.entry.set(input)
+            self.entry.set(input_)
             w = Spinbox(self, text=self.entry, from_=from_, to_=to_)
 
         else:  # default str
             self.entry = Entry(self)
-            self.entry.insert(0, input)
+            self.entry.insert(0, input_)
             w = self.entry
 
         w.pack(padx=5, expand=YES, fill=X)
@@ -630,7 +651,7 @@ class Printer(Toplevel):
         try:
             self.hnd.write(s)
             return True
-        except:
+        except Exception:
             return False
 
     # --------------------------------------------------------------------

@@ -1,12 +1,11 @@
 # Generic motion controller definition
 # All controller plugins inherit features from this one
 
-from __future__ import absolute_import, print_function
-
 import re
 import time
 
 from CNC import CNC, WCS
+from Helpers import _
 
 # GRBLv1
 SPLITPAT = re.compile(r"[:,]")
@@ -107,9 +106,9 @@ class _GenericController:
         self.master.sendGCode("$G")
 
     # ----------------------------------------------------------------------
-    def jog(self, dir):
+    def jog(self, direction):
         # print("jog",dir)
-        self.master.sendGCode(f"G91G0{dir}")
+        self.master.sendGCode(f"G91G0{direction}")
         self.master.sendGCode("G90")
 
     # ----------------------------------------------------------------------

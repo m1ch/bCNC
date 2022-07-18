@@ -1,12 +1,10 @@
-from __future__ import absolute_import
-
-
 class DummyException(Exception):
     pass
 
 
 def import_global(
-    name, modules=None, exceptions=DummyException, locals_=None, globals_=None, level=-1
+    name, modules=None, exceptions=DummyException,
+    locals_=None, globals_=None, level=-1
 ):
     """Import the requested items into the global scope
 

@@ -1,28 +1,16 @@
 # Author: @harvie Tomas Mudrunka
 # Date: 7 july 2018
 
-from __future__ import absolute_import, print_function
-
-import math
-import os.path
-import re
 from math import (
-    acos,
-    asin,
     atan2,
-    copysign,
     cos,
-    degrees,
-    fmod,
-    hypot,
-    pi,
     radians,
     sin,
-    sqrt,
 )
 
-from CNC import CNC, Block
+from CNC import Block
 from ToolsPage import Plugin
+from Helpers import _
 
 __author__ = "@harvie Tomas Mudrunka"
 # __email__  = ""
@@ -206,7 +194,6 @@ class Tool(Plugin):
             arc = "G3"
 
         phi = atan2(B[1] - A[1], B[0] - A[0])
-        step = sqrt((A[0] - B[0]) ** 2 + (A[1] - B[1]) ** 2)
 
         lval = self.pol2car(radius, phi + radians(90 * u))
         r = self.pol2car(radius, phi + radians(-90 * u))

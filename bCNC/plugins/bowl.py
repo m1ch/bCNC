@@ -3,12 +3,11 @@
 # Author:	https://github.com/carlosgs
 # Date:	14-Sep-2015
 
-from __future__ import absolute_import, print_function
-
 import math
 
 from CNC import CNC, Block
 from ToolsPage import Plugin
+from Helpers import _
 
 __author__ = "Carlos Garcia Saura"
 __email__ = ""

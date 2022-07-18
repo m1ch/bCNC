@@ -3,7 +3,6 @@
 # Author: Vasilis Vlachoudis
 #  Email: Vasilis.Vlachoudis@cern.ch
 #   Date: 16-Apr-2015
-from __future__ import absolute_import, print_function
 
 import gettext
 import glob
@@ -11,9 +10,52 @@ import os
 import sys
 import traceback
 
+from tkinter import (
+    TclError,
+    YES,
+    N,
+    W,
+    E,
+    EW,
+    X,
+    Y,
+    BOTH,
+    LEFT,
+    TOP,
+    RIGHT,
+    BOTTOM,
+    RAISED,
+    VERTICAL,
+    END,
+    DISABLED,
+    TkVersion,
+    TclVersion,
+    BooleanVar,
+    Toplevel,
+    Button,
+    Checkbutton,
+    Entry,
+    Frame,
+    Label,
+    Scrollbar,
+    Text,
+    PhotoImage,
+    LabelFrame,
+    messagebox,
+)
+import tkinter.font as tkfont
+import configparser
+import builtins
+
 import Ribbon
 from lib import tkExtra
+
 from lib.log import say
+
+try:
+    import serial
+except Exception:
+    serial = None
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "vvlachoudis@gmail.com"
@@ -30,94 +72,6 @@ __platform_fingerprint__ = "({} py{}.{}.{})".format(
 )
 __title__ = f"{__prg__} {__version__} {__platform_fingerprint__}"
 
-__all__ = (
-    # Override builtins
-    "basestring",
-    "unicode",
-    "unichr",
-    "bytes",
-    "str",
-    # Utility functions in here
-    "to_unicode",
-    "to_zip" "OLD",  # Leave this ol'comma alone!
-)
-
-# -----------------------------------------------------------------------------
-# We only need one try here for compatability check (for the moment at least!)
-OLD = False
-try:
-    # old version
-    unicode
-except (NameError, AttributeError):
-    # newer version
-    str = str
-    unichr = chr  # pylint: disable=redefined-builtin,invalid-name,unichr-builtin
-    unicode = str  # pylint: disable=redefined-builtin,invalid-name,unicode-builtin
-    bytes = bytes
-    basestring = (
-        str,
-        bytes,
-    )  # pylint: disable=redefined-builtin,invalid-name,basestring-builtin
-else:
-    # old version
-    str = str
-    unichr = unichr
-    unicode = unicode
-    bytes = str
-    basestring = basestring
-    OLD = True
-
-# -----------------------------------------------------------------------------
-# Standard imports
-if OLD:
-    from Tkinter import *
-    import tkFont
-    import tkMessageBox
-    import ConfigParser
-    import __builtin__
-
-    def to_unicode(s):
-        if isinstance(s, (unicode)) or type(s) == "unicode":
-            s = s.encode("utf-8")
-        return s
-
-    def to_zip(*args, **kwargs):
-        return zip(*args, **kwargs)
-
-    def to_decode(s):
-        if isinstance(s, bytes):
-            return s.decode("utf-8")
-        else:
-            return s
-
-else:
-    from tkinter import *
-    import tkinter.font as tkFont
-    import tkinter.messagebox as tkMessageBox
-    import configparser as ConfigParser
-    import builtins as __builtin__
-
-    def to_unicode(s):
-        return s
-
-    def to_zip(*args, **kwargs):
-        return list(zip(*args, **kwargs))
-
-    def to_decode(s):
-        return s
-
-
-# try:
-# 	import __builtin__
-# except Exception:
-# 	import builtins as __builtin__
-# 	#__builtin__.unicode = str		# Dirty hack for Python 3
-
-try:
-    import serial
-except Exception:
-    serial = None
-
 __prg__ = "bCNC"
 prgpath = os.path.abspath(os.path.dirname(__file__))
 if getattr(sys, "frozen", False):
@@ -130,10 +84,13 @@ hisFile = os.path.expanduser(f"~/.{__prg__}.history")
 
 # dirty way of substituting the "_" on the builtin namespace
 # __builtin__.__dict__["_"] = gettext.translation('bCNC', 'locale', fallback=True).ugettext
-__builtin__._ = gettext.translation(
-    "bCNC", os.path.join(prgpath, "locale"), fallback=True
-).gettext
-__builtin__.N_ = lambda message: message
+def _(txt):
+    return gettext.translation(
+        "bCNC", os.path.join(prgpath, "locale"), fallback=True
+    ).gettext
+
+def N_(message):
+    return message
 
 
 __www__ = "https://github.com/vlachoudis/bCNC"
@@ -185,7 +142,7 @@ LANGUAGES = {
 
 icons = {}
 images = {}
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 print(
     "new-config", __prg__, config
 )  # This is here to debug the fact that config is sometimes instantiated twice
@@ -260,7 +217,7 @@ def loadConfiguration(systemOnly=False):
         language = getStr(__prg__, "language")
         if language:
             # replace language
-            __builtin__._ = gettext.translation(
+            builtins._ = gettext.translation(
                 "bCNC",
                 os.path.join(prgpath, "locale"),
                 fallback=True,
@@ -286,7 +243,7 @@ def saveConfiguration():
 def cleanConfiguration():
     global config
     newconfig = config  # Remember config
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
 
     loadConfiguration(True)
 
@@ -297,7 +254,7 @@ def cleanConfiguration():
                 new = newconfig.get(section, item)
                 if value == new:
                     newconfig.remove_option(section, item)
-            except ConfigParser.NoOptionError:
+            except configparser.NoOptionError:
                 pass
     config = newconfig
 
@@ -361,9 +318,9 @@ def getBool(section, name, default=False):
 # -----------------------------------------------------------------------------
 def makeFont(name, value=None):
     try:
-        font = tkFont.Font(name=name, exists=True)
+        font = tkfont.Font(name=name, exists=True)
     except TclError:
-        font = tkFont.Font(name=name)
+        font = tkfont.Font(name=name)
         font.delete_font = False
     except AttributeError:
         return None
@@ -400,12 +357,12 @@ def fontString(font):
         s = f"{name} {size}"
 
     try:
-        if font[2] == tkFont.BOLD:
+        if font[2] == tkfont.BOLD:
             s += " bold"
     except Exception:
         pass
     try:
-        if font[3] == tkFont.ITALIC:
+        if font[3] == tkfont.ITALIC:
             s += " italic"
     except Exception:
         pass
@@ -511,7 +468,7 @@ def addRecent(filename):
 def getRecent(recent):
     try:
         return config.get("File", f"recent.{int(recent)}")
-    except ConfigParser.NoOptionError:
+    except configparser.NoOptionError:
         return None
 
 
@@ -554,6 +511,7 @@ def addException():
         errors.extend(exception)
         if len(errors) > 100:
             # If too many errors are found send the error report
+            # FIXME: self outside of Class
             ReportDialog(self.widget)
     except Exception:
         say(str(sys.exc_info()))
@@ -561,7 +519,7 @@ def addException():
 
 # =============================================================================
 class CallWrapper:
-    """Replaces the Tkinter.CallWrapper with extra functionality"""
+    """Replaces the tkinter.CallWrapper with extra functionality"""
 
     def __init__(self, func, subst, widget):
         """Store FUNC, SUBST and WIDGET as members."""
@@ -611,8 +569,8 @@ class ReportDialog(Toplevel):
 
         la = Label(
             frame,
-            text=_(f"The following report is about to be send "
-                   + f"to the author of {__prg__}")
+            text=_("The following report is about to be send "
+                   + f"to the author of {__prg__}"),
             justify=LEFT,
             anchor=W,
         )
@@ -664,7 +622,7 @@ class ReportDialog(Toplevel):
         )
         b.pack(side=RIGHT)
 
-        from Utils import __version__, __date__
+        from Helpers import __version__, __date__
 
         # Fill report
         txt = [
@@ -731,23 +689,23 @@ class ReportDialog(Toplevel):
             conn.request("POST", "/flair/send_email_bcnc.php", params, headers)
             response = conn.getresponse()
         except Exception:
-            tkMessageBox.showwarning(
+            messagebox.showwarning(
                 _("Error sending report"),
                 _("There was a problem connecting to the web site"),
                 parent=self,
             )
         else:
             if response.status == 200:
-                tkMessageBox.showinfo(
+                messagebox.showinfo(
                     _("Report successfully send"),
                     _("Report was successfully uploaded to web site"),
                     parent=self,
                 )
                 del errors[:]
             else:
-                tkMessageBox.showwarning(
+                messagebox.showwarning(
                     _("Error sending report"),
-                    _(f"There was an error sending the report\n"
+                    _("There was an error sending the report\n"
                       + f"Code={int(response.status)} {response.reason}"),
                     parent=self,
                 )

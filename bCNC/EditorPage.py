@@ -3,7 +3,21 @@
 # Author: vvlachoudis@gmail.com
 # Date: 18-Jun-2015
 
-from __future__ import absolute_import, print_function
+from tkinter import (
+    FALSE,
+    TRUE,
+    W,
+    NSEW,
+    Y,
+    BOTH,
+    LEFT,
+    TOP,
+    RIGHT,
+    VERTICAL,
+    EXTENDED,
+    Menu,
+    Scrollbar,
+)
 
 import CNCList
 import CNCRibbon
@@ -12,13 +26,10 @@ import tkExtra
 import Utils
 from CNCCanvas import ACTION_MOVE, ACTION_ORIGIN
 
+from Helpers import _, N_
+
 __author__ = "Vasilis Vlachoudis"
 __email__ = "vvlachoudis@gmail.com"
-
-try:
-    from Tkinter import *
-except ImportError:
-    from tkinter import *
 
 
 # =============================================================================

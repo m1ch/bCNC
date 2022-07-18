@@ -4,8 +4,6 @@
 # Date: 9 November 2015
 # A special thanks to Vasilis for his patient explanations
 
-from __future__ import absolute_import, print_function
-
 import math
 import os.path
 import re
@@ -14,6 +12,7 @@ from collections import OrderedDict
 import Utils
 from CNC import CNC, Block
 from ToolsPage import Plugin
+from Helpers import _
 
 __author__ = "Filippo Rivato"
 __email__ = "f.rivato@gmail.com"
@@ -79,7 +78,7 @@ class Tool(Plugin):
     def coord2float(self, text, unitinch, decimals=0.001):
         if "." in text:
             return float(text)
-        if unitinch == True:
+        if unitinch is True:
             return float(text) * 0.0001
         # Unit mm
         # modified to read the number of decimals from file
@@ -89,9 +88,9 @@ class Tool(Plugin):
     def convunit(self, value, unitinch):
         if unitinch == CNC.inch:
             return value
-        if unitinch == True and CNC.inch == False:
+        if unitinch is True and CNC.inch is False:
             return value * 25.4
-        if unitinch == False and CNC.inch:
+        if unitinch is False and CNC.inch:
             return value / 25.4
 
     # Excellon Import
@@ -110,12 +109,12 @@ class Tool(Plugin):
                     # Read header
                     if line == "M48":
                         header = True
-                    if header == True:
+                    if header is True:
                         if (line.startswith("INCH")
                                 or line.startswith("METRIC")):
                             unitinch = line.startswith("INCH")
                             decimals = 0.1 ** len(
-                                line[line.index(".") : -1]
+                                line[line.index("."): -1]
                             )  # calculates the multiplier for decimal places
                         if line == "M95" or line == "%":
                             header = False
@@ -128,7 +127,7 @@ class Tool(Plugin):
                             }
                         if line == "ICI":
                             incrementcoord = True
-                    if header == False:
+                    if header is False:
                         if line[0] == "T":
                             current_tool = line
                         if line[0] == "X":
@@ -210,7 +209,7 @@ class Tool(Plugin):
                     cmd = app.cnc.breakLine(
                         app.gcode.evaluate(app.cnc.compileLine(line))
                     )
-                except:
+                except Exception:
                     cmd = None
 
                 if cmd:
@@ -273,7 +272,7 @@ class Tool(Plugin):
         # ------------------------------------------------------------------
 
         # Check inputs
-        if holesDistance <= 0 and useAnchor == False:
+        if holesDistance <= 0 and useAnchor is False:
             app.setStatus(_("Driller abort: Distance must be > 0"))
             return
 
@@ -313,7 +312,7 @@ class Tool(Plugin):
             if len(bidSegment) == 0:
                 continue
 
-            if useAnchor == True:
+            if useAnchor is True:
                 bidHoles = []
                 for idx, anchor in enumerate(bidSegment):
                     if idx > 0:

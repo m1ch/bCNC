@@ -1,29 +1,9 @@
 # Author: @harvie Tomas Mudrunka
 # Date: 25 sept 2018
 
-from __future__ import absolute_import, print_function
-
-import math
-import os.path
-import re
-from math import (
-    acos,
-    asin,
-    atan2,
-    copysign,
-    cos,
-    degrees,
-    fmod,
-    hypot,
-    pi,
-    radians,
-    sin,
-    sqrt,
-)
-
-from bpath import Path, Segment, eq
-from CNC import CNC, Block
+from CNC import Block
 from ToolsPage import Plugin
+from Helpers import _
 
 __author__ = "@harvie Tomas Mudrunka"
 # __email__  = ""

@@ -3,10 +3,42 @@
 # Author: vvlachoudis@gmail.com
 # Date: 18-Jun-2015
 
-from __future__ import absolute_import, print_function
-
 import math
-from math import *  # Math in DRO
+from tkinter import (
+    TclError,
+    FALSE,
+    YES,
+    N,
+    S,
+    W,
+    E,
+    EW,
+    NSEW,
+    CENTER,
+    X,
+    BOTH,
+    LEFT,
+    TOP,
+    RIGHT,
+    BOTTOM,
+    FLAT,
+    HORIZONTAL,
+    END,
+    NORMAL,
+    DISABLED,
+    #  UNITS,
+    IntVar,
+    BooleanVar,
+    Button,
+    Checkbutton,
+    Entry,
+    Frame,
+    Label,
+    Menu,
+    Radiobutton,
+    Scale,
+    messagebox,
+)
 
 from CNC import CNC
 import CNCRibbon
@@ -15,18 +47,14 @@ import Sender
 import tkExtra
 import Unicode
 import Utils
-from CNC import DISTANCE_MODE, FEED_MODE, PLANE, UNITS, WCS
-from Sender import ERROR_CODES
+from CNC import DISTANCE_MODE, FEED_MODE, PLANE, WCS
+# from Sender import ERROR_CODES
+from _GenericGRBL import ERROR_CODES
+
+from Helpers import _, N_
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "vvlachoudis@gmail.com"
-
-try:
-    from Tkinter import *
-    import tkMessageBox
-except ImportError:
-    from tkinter import *
-    import tkinter.messagebox as tkMessageBox
 
 
 _LOWSTEP = 0.0001
@@ -580,7 +608,7 @@ class DROFrame(CNCRibbon.PageFrame):
         msg += ERROR_CODES.get(
             state, _("No info available.\nPlease contact the author.")
         )
-        tkMessageBox.showinfo(_("State: %s") % (state), msg, parent=self)
+        messagebox.showinfo(_("State: %s") % (state), msg, parent=self)
 
 
 # =============================================================================
@@ -889,7 +917,7 @@ class abcDROFrame(CNCRibbon.PageExLabelFrame):
             msg += ERROR_CODES.get(
                 state, _("No info available.\nPlease contact the author.")
             )
-            tkMessageBox.showinfo(_("State: %s") % (state), msg, parent=self)
+            messagebox.showinfo(_("State: %s") % (state), msg, parent=self)
 
 
 # =============================================================================
@@ -1671,7 +1699,9 @@ class abcControlFrame(CNCRibbon.PageExLabelFrame):
     def moveBdownCup(self, event=None):
         if event is not None and not self.acceptKey():
             return
-        self.app.mcontrol.jog(f"B-{self.step.get():C}{self.step.get()}")
+        # XXX: Posible error in original code lead to %C string; fixed by guessing from methods below.
+        # Original: self.app.mcontrol.jog("B-%C%s"%(self.step.get(),self.step.get()))
+        self.app.mcontrol.jog(f"B-{self.step.get()}C{self.step.get()}")
 
     def moveBupCup(self, event=None):
         if event is not None and not self.acceptKey():
@@ -2295,10 +2325,6 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
     def updateG(self):
         global wcsvar
         self._gUpdate = True
-        try:
-            focus = self.focus_get()
-        except Exception:
-            focus = None
 
         try:
             wcsvar.set(WCS.index(CNC.vars["WCS"]))
