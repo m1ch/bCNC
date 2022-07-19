@@ -579,7 +579,7 @@ class FileDialog(Toplevel):
             os.lstat(path)
         except OSError:
             messagebox.showerror(
-                _("Error"), _(f"Cannot access path \"{path}\""), parent=self
+                _("Error"), _("Cannot access path \"{}\"").format(path), parent=self
             )
             return
         self.buttonPath(path)
@@ -652,7 +652,7 @@ class FileDialog(Toplevel):
                         self.fileList.setColor(END, color)
         except OSError:
             messagebox.showerror(
-                _("Error"), _(f"Error listing folder \"{path}\""), parent=self
+                _("Error"), _("Error listing folder \"{}\"").format(path), parent=self
             )
 
         if FileDialog.sort is None:
@@ -877,7 +877,7 @@ class FileDialog(Toplevel):
             except OSError:
                 messagebox.showerror(
                     _("Error"),
-                    _(f"Error creating folder \"{edit.value}\""),
+                    _("Error creating folder \"{}\"").format(edit.value),
                     parent=self,
                 )
                 self.fileList.delete(END)
@@ -905,7 +905,7 @@ class FileDialog(Toplevel):
             except OSError:
                 messagebox.showerror(
                     _("Error"),
-                    _(f"Error renaming \"{fn}\" to \"{edit.value}\""),
+                    _("Error renaming \"{}\" to \"{}\"").format(fn, edit.value),
                     parent=self,
                 )
         self.select()
@@ -928,7 +928,7 @@ class FileDialog(Toplevel):
                 self.fileList.delete(i)
         except OSError:
             messagebox.showerror(
-                _("Error"), _(f"Error deleting file \"{fn}\""), parent=self
+                _("Error"), _("Error deleting file \"{}\"").format(fn), parent=self
             )
         self.select()
 
@@ -948,7 +948,7 @@ class OpenDialog(FileDialog):
                 except Exception:
                     messagebox.showwarning(
                         _("File does not exist"),
-                        _(f"File \"{f}\" does not exist"),
+                        _("File \"{}\" does not exist").format(f),
                         parent=self,
                     )
                     self.selFile = ""
@@ -959,7 +959,7 @@ class OpenDialog(FileDialog):
             except Exception:
                 messagebox.showwarning(
                     _("File does not exist"),
-                    _(f"File \"{self.selFile}\" does not exist"),
+                    _("File \"{}\" does not exist").format(self.selFile),
                     parent=self,
                 )
                 self.selFile = ""
@@ -982,7 +982,7 @@ class SaveAsDialog(FileDialog):
             os.lstat(self.selFile)
             ans = messagebox.askyesno(
                 _("File already exists"),
-                _(f"Overwrite existing file {repr(self.selFile)}?"),
+                _("Overwrite existing file {}?").format(repr(self.selFile)),
                 parent=self,
             )
             if str(ans) != messagebox.YES and not ans:

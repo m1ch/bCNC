@@ -456,4 +456,4 @@ class Tool(Plugin):
             active = 1
         app.gcode.insBlocks(active, blocks, "Driller")
         app.refresh()
-        app.setStatus(_("Generated Driller: %d holes") % numberholes)
+        app.setStatus(_("Generated Driller: {} holes").format(numberholes))

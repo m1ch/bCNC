@@ -282,8 +282,13 @@ class Tool(Plugin):
         app.refresh()
         app.setStatus(
             _(
-                f"Generated Halftone size W={int(self.imgWidth * self.ratio)} "
-                + f"x H={int(self.imgHeight * self.ratio)} x D={int(depth)}, "
-                + f"Total points: {int(len(circles))}"
+                "Generated Halftone size W={} "
+                + "x H={} x D={}, "
+                + "Total points: {}"
+            ).format(
+                int(self.imgWidth * self.ratio),
+                int(self.imgHeight * self.ratio),
+                int(depth),
+                int(len(circles)),
             )
         )

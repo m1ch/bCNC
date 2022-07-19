@@ -405,6 +405,6 @@ class Tool(Plugin):
         app.gcode.insBlocks(active, blocks, n)
         app.refresh()
         app.setStatus(
-            _(f"Generated Heightmap {int(image_w)} x {int(image_h)} x "
-              + f"{int(depth)}")
+            _("Generated Heightmap {} x {} x "
+              + "{}").format(int(image_w), int(image_h), int(depth))
         )

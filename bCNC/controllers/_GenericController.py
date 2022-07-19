@@ -159,7 +159,8 @@ class _GenericController:
         self.master.sendGCode(cmd)
         self.viewParameters()
         self.master.event_generate(
-            "<<Status>>", data=(_("Set workspace %s to %s") % (WCS[p], pos))
+            "<<Status>>",
+            data=(_("Set workspace {} to {}").format(WCS[p], pos))
         )
         # data=(_("Set workspace %s to %s")%(WCS[p],pos)))
         self.master.event_generate("<<CanvasFocus>>")

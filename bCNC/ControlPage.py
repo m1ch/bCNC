@@ -529,7 +529,7 @@ class DROFrame(CNCRibbon.PageFrame):
     # ----------------------------------------------------------------------
     def padFloat(self, decimals, value):
         if decimals > 0:
-            return "%0.*f" % (decimals, value)
+            return f"{value:0.{decimals}f}"
         else:
             return value
 
@@ -600,7 +600,7 @@ class DROFrame(CNCRibbon.PageFrame):
     def showState(self):
         err = CNC.vars["errline"]
         if err:
-            msg = _("Last error: %s\n") % (CNC.vars["errline"])
+            msg = _("Last error: {}\n").format(CNC.vars["errline"])
         else:
             msg = ""
 
@@ -608,14 +608,12 @@ class DROFrame(CNCRibbon.PageFrame):
         msg += ERROR_CODES.get(
             state, _("No info available.\nPlease contact the author.")
         )
-        messagebox.showinfo(_("State: %s") % (state), msg, parent=self)
+        messagebox.showinfo(_("State: {}").format(state), msg, parent=self)
 
 
 # =============================================================================
 # DRO Frame ABC
 # =============================================================================
-
-
 class abcDROFrame(CNCRibbon.PageExLabelFrame):
 
     dro_status = ("Helvetica", 12, "bold")
@@ -836,7 +834,7 @@ class abcDROFrame(CNCRibbon.PageExLabelFrame):
 
     def padFloat(self, decimals, value):
         if decimals > 0:
-            return "%0.*f" % (decimals, value)
+            return f"{value:0.{decimals}f}"
         else:
             return value
 
@@ -909,7 +907,7 @@ class abcDROFrame(CNCRibbon.PageExLabelFrame):
     def showState(self):
         err = CNC.vars["errline"]
         if err:
-            msg = _("Last error: %s\n") % (CNC.vars["errline"])
+            msg = _("Last error: {}\n").format(CNC.vars["errline"])
         else:
             msg = ""
 
@@ -917,7 +915,7 @@ class abcDROFrame(CNCRibbon.PageExLabelFrame):
             msg += ERROR_CODES.get(
                 state, _("No info available.\nPlease contact the author.")
             )
-            messagebox.showinfo(_("State: %s") % (state), msg, parent=self)
+            messagebox.showinfo(_("State: {}").format(state), msg, parent=self)
 
 
 # =============================================================================
@@ -1264,12 +1262,12 @@ class ControlFrame(CNCRibbon.PageExLabelFrame):
     def setStep(self, s, zs=None):
         self.step.set(f"{s:.4g}")
         if self.zstep is self.step or zs is None:
-            self.event_generate("<<Status>>", data=_("Step: %g") % (s))
+            self.event_generate("<<Status>>", data=_("Step: {:g}").format(s))
             # data=(_("Step: %g")%(s)))
         else:
             self.zstep.set(f"{zs:.4g}")
             self.event_generate(
-                "<<Status>>", data=_("Step: %g    Zstep:%g ") % (s, zs))
+                "<<Status>>", data=_("Step: {:g}  Zstep: {:g} ").format(s, zs))
             # data=(_("Step: %g    Zstep:%g ")%(s,zs)))
 
     # ----------------------------------------------------------------------
@@ -1738,12 +1736,12 @@ class abcControlFrame(CNCRibbon.PageExLabelFrame):
     def setStep(self, s, aas=None):
         self.step.set(f"{s:.4g}")
         if self.astep is self.step or aas is None:
-            self.event_generate("<<Status>>", data=_("Step: %g") % (s))
+            self.event_generate("<<Status>>", data=_("Step: {:g}").format(s))
             # data=(_("Step: %g")%(s)))
         else:
             self.astep.set(f"{aas:.4g}")
             self.event_generate(
-                "<<Status>>", data=_("Step: %g    Astep:%g ") % (s, aas)
+                "<<Status>>", data=_("Step: {:g}   Astep:{:g} ").format(s, aas)
             )
             # data=(_("Step: %g    Zstep:%g ")%(s,zs)))
 
@@ -1903,7 +1901,7 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
                 command=self.wcsChange,
             )
             b.pack(side=LEFT, fill=X, expand=YES)
-            tkExtra.Balloon.set(b, _("Switch to workspace %s") % (w))
+            tkExtra.Balloon.set(b, _("Switch to workspace {}").format(w))
             self.addWidget(b)
 
         # Absolute or relative mode

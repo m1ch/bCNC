@@ -82,12 +82,13 @@ iniSystem = os.path.join(prgpath, f"{__prg__}.ini")
 iniUser = os.path.expanduser(f"~/.{__prg__}")
 hisFile = os.path.expanduser(f"~/.{__prg__}.history")
 
+
 # dirty way of substituting the "_" on the builtin namespace
 # __builtin__.__dict__["_"] = gettext.translation('bCNC', 'locale', fallback=True).ugettext
-def _(txt):
-    return gettext.translation(
-        "bCNC", os.path.join(prgpath, "locale"), fallback=True
-    ).gettext
+_ = gettext.translation(
+    "bCNC", os.path.join(prgpath, "locale"), fallback=True
+).gettext
+
 
 def N_(message):
     return message
@@ -570,7 +571,7 @@ class ReportDialog(Toplevel):
         la = Label(
             frame,
             text=_("The following report is about to be send "
-                   + f"to the author of {__prg__}"),
+                   + "to the author of {}").format(__prg__),
             justify=LEFT,
             anchor=W,
         )
@@ -706,7 +707,8 @@ class ReportDialog(Toplevel):
                 messagebox.showwarning(
                     _("Error sending report"),
                     _("There was an error sending the report\n"
-                      + f"Code={int(response.status)} {response.reason}"),
+                      + "Code={} {}").format(int(response.status),
+                                             response.reason),
                     parent=self,
                 )
         conn.close()

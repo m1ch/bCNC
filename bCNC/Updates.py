@@ -190,7 +190,7 @@ class CheckUpdateDialog(Toplevel):
 
         else:
             self.webversion.config(
-                text=_("Error %d in connection") % (r.status))
+                text=_("Error {} in connection").format(r.status))
 
         # self.laterButton.config(state=DISABLED)
 

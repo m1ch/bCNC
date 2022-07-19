@@ -564,7 +564,7 @@ Grey is simulation of how part will look after machining
         )
         if msg:
             messagebox.showwarning(
-                _("Open paths"), _("WARNING: %s") % (msg), parent=app
+                _("Open paths"), _("WARNING: {}").format(msg), parent=app
             )
         app.editor.fill()
         app.editor.selectBlocks(selectedblocks)

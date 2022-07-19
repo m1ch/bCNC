@@ -624,7 +624,8 @@ class CNCCanvas(Canvas):
             i = self.canvasx(event.x)
             j = self.canvasy(event.y)
             x, y, z = self.canvas2xyz(i, j)
-            self.app.insertCommand(_("origin %g %g %g") % (x, y, z), True)
+            self.app.insertCommand(_("origin {:g} {:g} {:g}").format(x, y, z),
+                                   True)
             self.setActionSelect()
 
         elif self.action == ACTION_PAN:
@@ -674,8 +675,7 @@ class CNCCanvas(Canvas):
             dy = self._vy1 - self._vy0
             dz = self._vz1 - self._vz0
             self.status(
-                _("dx=%g  dy=%g  dz=%g  length=%g  angle=%g")
-                % (
+                _("dx={:g}  dy={:g}  dz={:g}  length={:g}  angle={:g}").format(
                     dx,
                     dy,
                     dz,
@@ -757,7 +757,7 @@ class CNCCanvas(Canvas):
             dx = self._vx1 - self._vx0
             dy = self._vy1 - self._vy0
             dz = self._vz1 - self._vz0
-            self.status(_("Move by %g, %g, %g") % (dx, dy, dz))
+            self.status(_("Move by {:g}, {:g}, {:g}").format(dx, dy, dz))
             self.app.insertCommand(("move %g %g %g") % (dx, dy, dz), True)
 
         elif self._mouseAction == ACTION_PAN:
@@ -1825,7 +1825,7 @@ class CNCCanvas(Canvas):
         for i, uv in enumerate(self.plotCoords(probe.points)):
             item = self.create_text(
                 uv,
-                text="%.*f" % (CNC.digits, probe.points[i][2]),
+                text=f"{probe.points[i][2]:.{CNC.digits}f}",
                 tag="Probe",
                 justify=CENTER,
                 fill=PROBE_TEXT_COLOR,
@@ -1998,9 +1998,9 @@ class CNCCanvas(Canvas):
                         raise
                     except Exception:
                         sys.stderr.write(
-                            _(">>> ERROR: %s\n") % (str(sys.exc_info()[1]))
+                            _(">>> ERROR: {}\n").format(str(sys.exc_info()[1]))
                         )
-                        sys.stderr.write(_("     line: %s\n") % (line))
+                        sys.stderr.write(_("     line: {}\n").format(line))
                         cmd = None
                     if cmd is None or not drawG:
                         block.addPath(None)

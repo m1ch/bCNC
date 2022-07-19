@@ -291,8 +291,10 @@ class Tool(Plugin):
         # Info block
         block = Block("Info")
         block.append(
-            "(Sketch size W=%d x H=%d x distance=%d)"
-            % (self.imgWidth * self.ratio, self.imgHeight * self.ratio, depth)
+            "(Sketch size W={:d} x H={:d} x distance={:d})".format(
+                int(self.imgWidth * self.ratio),
+                int(self.imgHeight * self.ratio),
+                int(depth))
         )
         block.append(f"(Channel = {channel})")
         blocks.append(block)
@@ -363,10 +365,16 @@ class Tool(Plugin):
         app.refresh()
         app.setStatus(
             _(
-                f"Generated Sketch size W={int(self.imgWidth * self.ratio)} x "
-                + f"H={int(self.imgHeight * self.ratio)} x "
-                + f"distance={int(depth)}, Total line:{int(total_line)}, "
-                + f"Total length:{int(total_length)}"
+                "Generated Sketch size W={} x "
+                + "H={} x "
+                + "distance={}, Total line:{}, "
+                + "Total length:{}"
+            ).format(
+                int(self.imgWidth * self.ratio),
+                int(self.imgHeight * self.ratio),
+                int(depth),
+                int(total_line),
+                int(total_length)
             )
         )
         # img.save('test.png')

@@ -210,5 +210,7 @@ class Tool(Plugin):
             active = 1
         app.gcode.insBlocks(active, blocks, "Pyrograph")
         app.refresh()
-        app.setStatus(_(f"Generated Pyrograph W={newWidth * toolSize:g} x "
-                        + f"H={newHeight * toolSize:g} x D={depth:g}"))
+        app.setStatus(_("Generated Pyrograph W={:g} x "
+                        + "H={:g} x D={:g}").format(
+            newWidth * toolSize, newHeight * toolSize, depth)
+        )

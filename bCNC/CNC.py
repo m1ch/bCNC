@@ -1046,10 +1046,7 @@ class CNC:
         # format string unless rounded
         # I guess it's vital idea to round them rather than truncate anyway!
         v = round(v, d)
-        return ("%s%*f" % (c, d, v)).rstrip("0").rstrip(".")
-        # FIXME: I don't know how the returned string should look exactly
-        #       The following f-string might work:
-        # return (f"{c}{v:>{d}.3f}").rstrip("0").rstrip(".")
+        return (f"{c}{v:>{d}f}").rstrip("0").rstrip(".")
 
     # ----------------------------------------------------------------------
     @staticmethod

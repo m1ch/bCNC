@@ -352,7 +352,7 @@ class Sender:
             pass
 
         else:
-            return _("unknown command"), _("Invalid command %s") % (oline)
+            return _("unknown command"), _("Invalid command {}").format(oline)
 
     # ----------------------------------------------------------------------
     def help(self, event=None):

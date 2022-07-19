@@ -210,8 +210,6 @@ class Tool(Plugin):
                 # print 'Processed track %d, containing channels numbered: [%s ]' % (track.number, msg)
                 all_channels = all_channels.union(channels)
 
-
-
         # We now have entire file's notes with abs time from all channels
         # We don't care which channel/voice is which, but we do care about
         # having all the notes in order so sort event list by abstime

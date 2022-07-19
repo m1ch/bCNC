@@ -133,7 +133,7 @@ Also note you can export resulting slices to DXF and SVG if needed.
         blocks = []
 
         # Load mesh
-        self.app.setStatus(_(f"Loading mesh: {file}"), True)
+        self.app.setStatus(_("Loading mesh: {}").format(file), True)
         verts, faces = self.loadMesh(file)
 
         # Rotate/flip mesh
@@ -176,8 +176,8 @@ Also note you can export resulting slices to DXF and SVG if needed.
             while z >= zmin:
                 # print(_("Slicing %f / %f"%(z,zmax)))
                 self.app.setStatus(
-                    _(f"Slicing {axis} {z:f} in {zmin:f} -> "
-                      + f"{zmax:f} of {file}"),
+                    _("Slicing {} {:f} in {:f} -> "
+                      + "{:f} of {}").format(axis, z, zmin, zmax, file),
                     True,
                 )
                 block = self.slice(verts, faces, z, zout, axis)
@@ -273,9 +273,9 @@ Also note you can export resulting slices to DXF and SVG if needed.
         for i, _v in enumerate(verts):
             self.app.setStatus(
                 _(
-                    "Calculating distance %d of %d (SciPy not installed => using SLOW fallback method)"
-                    % (i, len(verts))
-                ),
+                    "Calculating distance {} of {} (SciPy not installed => "
+                    + "using SLOW fallback method)"
+                ).format(i, len(verts)),
                 True,
             )
             D[i] = D[:, i] = np.sqrt(np.sum(np.square(verts - verts[i]), axis=1))

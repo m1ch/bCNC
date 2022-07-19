@@ -844,7 +844,7 @@ class Application(Toplevel, Sender):
     def about(self, event=None, timer=None):
         toplevel = Toplevel(self)
         toplevel.transient(self)
-        toplevel.title(_(f"About {Utils.__prg__} v{__version__}"))
+        toplevel.title(_("About {} v{}").format(Utils.__prg__, __version__))
         if sys.platform == "win32":
             self.iconbitmap(f"{Utils.prgpath}\\bCNC.ico")
         else:
@@ -1582,7 +1582,7 @@ class Application(Toplevel, Sender):
             else:
                 messagebox.showerror(
                     _("Direction command error"),
-                    _(f"Invalid direction {line[1]} specified"),
+                    _("Invalid direction {} specified").format(line[1]),
                     parent=self,
                 )
                 return "break"
@@ -1950,7 +1950,7 @@ class Application(Toplevel, Sender):
             except Exception:
                 tool = self.tools["EndMill"]
                 diam = self.tools.fromMm(tool["diameter"])
-            self.setStatus(_(f"EndMill: {tool['name']} {diam:g}"))
+            self.setStatus(_("EndMill: {} {}").format(tool["name"], diam))
 
         # TOOLS
         elif cmd == "TOOLS":
@@ -1975,7 +1975,7 @@ class Application(Toplevel, Sender):
                 except Exception:
                     return "break"
             if idx < 0 or idx >= n:
-                self.setStatus(_(f"Invalid user command {line[1]}"))
+                self.setStatus(_("Invalid user command {}").format(line[1]))
                 return "break"
             cmd = Utils.getStr("Buttons", f"command.{int(idx)}", "")
             for line in cmd.splitlines():
@@ -2033,7 +2033,7 @@ class Application(Toplevel, Sender):
         if not items:
             messagebox.showwarning(
                 _("Nothing to do"),
-                _(f"Operation {cmd} requires some gcode to be selected"),
+                _("Operation {} requires some gcode to be selected").format(cmd),
                 parent=self,
             )
             return
@@ -2126,7 +2126,7 @@ class Application(Toplevel, Sender):
         self.editor.selectBlocks(blocks)
         self.draw()
         self.notBusy()
-        self.setStatus(_(f"Profile block distance={ofs * sign:g}"))
+        self.setStatus(_("Profile block distance={:g}").format(ofs * sign))
 
     # -----------------------------------------------------------------------
     def pocket(self, name=None):
@@ -2143,7 +2143,7 @@ class Application(Toplevel, Sender):
         msg = self.gcode.pocket(blocks, diameter, stepover, name)
         if msg:
             messagebox.showwarning(
-                _("Open paths"), _(f"WARNING: {msg}"), parent=self
+                _("Open paths"), _("WARNING: {}").format(msg), parent=self
             )
         self.editor.fill()
         self.editor.selectBlocks(blocks)
@@ -2228,7 +2228,7 @@ class Application(Toplevel, Sender):
         self.editor.selectBlocks(blocks)
         self.draw()
         self.notBusy()
-        self.setStatus(_(f"Profile block distance={ofs * sign:g}"))
+        self.setStatus(_("Profile block distance={:g}").format(ofs * sign))
 
     # -----------------------------------------------------------------------
     def edit(self, event=None):
@@ -2421,7 +2421,7 @@ class Application(Toplevel, Sender):
                 if ans == messagebox.YES or ans is True:
                     self.gcode.probe.init()
 
-        self.setStatus(_(f"Loading: {filename} ..."), True)
+        self.setStatus(_("Loading: {} ...").format(filename), True)
         Sender.load(self, filename)
 
         if ext == ".probe":
@@ -2443,10 +2443,11 @@ class Application(Toplevel, Sender):
 
         if autoloaded:
             self.setStatus(
-                _(f"'{filename}' reloaded at '{str(datetime.now())}'")
+                _("'{}' reloaded at '{}'").format(
+                    filename, str(datetime.now()))
             )
         else:
-            self.setStatus(_(f"'{filename}' loaded"))
+            self.setStatus(_("'{}' loaded").format(filename))
         self.title(
             f"{Utils.__prg__} {__version__}: {self.gcode.filename} "
             + f"{__platform_fingerprint__}"
@@ -2455,7 +2456,7 @@ class Application(Toplevel, Sender):
     # -----------------------------------------------------------------------
     def save(self, filename):
         Sender.save(self, filename)
-        self.setStatus(_(f"'{filename}' saved"))
+        self.setStatus(_("'{}' saved").format(filename))
         self.title(
             f"{Utils.__prg__} {__version__}: {self.gcode.filename} "
             + f"{__platform_fingerprint__}"
@@ -2522,10 +2523,10 @@ class Application(Toplevel, Sender):
                 ans = messagebox.askquestion(
                     _("Warning"),
                     _(
-                        f"Gcode file {self.gcode.filename} was changed since "
+                        "Gcode file {} was changed since "
                         "editing started\n"
                         "Reload new version?"
-                    ),
+                    ).format(self.gcode.filename),
                     parent=self,
                 )
                 if ans == messagebox.YES or ans is True:
