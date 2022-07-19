@@ -25,5 +25,9 @@ bad:
 print("Hello %s" % w)
 print("Hello {}".format(w))
 ```
-
+#### Exception
+For translateable strings (`_()`), `"".format()` shall be used outside the function.
+```
+print(_("Hello {}").format(w))
+```
 
