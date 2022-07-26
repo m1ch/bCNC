@@ -2,8 +2,6 @@
 # Author: vvlachoudis@gmail.com
 # Date: 18-Jun-2015
 
-from lib import tkExtra
-import Utils
 from tkinter import (
     FALSE,
     YES,
@@ -29,6 +27,8 @@ from tkinter import (
     Radiobutton,
 )
 
+import Utils
+import tkExtra
 from Helpers import _
 
 __author__ = "Vasilis Vlachoudis"

@@ -48,7 +48,7 @@ import configparser
 import builtins
 
 import Ribbon
-from lib import tkExtra
+import tkExtra
 
 from lib.log import say
 

@@ -75,7 +75,7 @@ from tkinter import (
 )
 import tkinter.messagebox as messagebox
 
-from lib import tkExtra
+import tkExtra
 from Helpers import _
 
 __author__ = "Vasilis Vlachoudis"
