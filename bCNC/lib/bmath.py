@@ -653,7 +653,7 @@ class Vector(list):
 # -----------------------------------------------------------------------------
 # Basic 3D Vectors
 # -----------------------------------------------------------------------------
-Vector.O = Vector(0.0, 0.0, 0.0)
+Vector.null = Vector(0.0, 0.0, 0.0)
 Vector.X = Vector(1.0, 0.0, 0.0)
 Vector.Y = Vector(0.0, 1.0, 0.0)
 Vector.Z = Vector(0.0, 0.0, 1.0)
@@ -1259,7 +1259,7 @@ class Matrix(list):
 # -----------------------------------------------------------------------------
 # Basic Matrices
 # -----------------------------------------------------------------------------
-Matrix.O = Matrix(4, type_=0)
+Matrix.null = Matrix(4, type_=0)
 Matrix.U = Matrix(4, type_=1)
 
 
@@ -1997,7 +1997,7 @@ def roman2int(roman):
     ints = (1000, 500, 100, 50, 10, 5, 1)
     places = []
     for c in roman:
-        if not c in nums:
+        if c not in nums:
             raise ValueError(f"input is not a valid roman numeral: {roman}")
     for i in range(len(roman)):
         c = roman[i]

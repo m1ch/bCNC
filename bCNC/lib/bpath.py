@@ -404,46 +404,46 @@ class Segment:
             t.norm()
             return t
         else:
-            O = self.B - self.C
-            O.norm()
+            o_ = self.B - self.C
+            o_.norm()
             if self.type == Segment.CCW:
                 # return cross product -O x z(0,0,1)
-                return Vector(-O[1], O[0])
+                return Vector(-o_[1], o_[0])
             else:
                 # return cross product -O x z(0,0,1)
-                return Vector(O[1], -O[0])
+                return Vector(o_[1], -o_[0])
 
     # ----------------------------------------------------------------------
     # Orthogonal vector at start
     # ----------------------------------------------------------------------
     def orthogonalStart(self):
         if self.type == Segment.LINE:
-            O = self.AB.orthogonal()
-            O.norm()
-            return O
+            o_ = self.AB.orthogonal()
+            o_.norm()
+            return o_
         else:
-            O = self.A - self.C
-            O.norm()
+            o_ = self.A - self.C
+            o_.norm()
             if self.type == Segment.CCW:
-                return -O
+                return -o_
             else:
-                return O
+                return o_
 
     # ----------------------------------------------------------------------
     # Orthogonal vector at end
     # ----------------------------------------------------------------------
     def orthogonalEnd(self):
         if self.type == Segment.LINE:
-            O = self.AB.orthogonal()
-            O.norm()
-            return O
+            o_ = self.AB.orthogonal()
+            o_.norm()
+            return o_
         else:
-            O = self.B - self.C
-            O.norm()
+            o_ = self.B - self.C
+            o_.norm()
             if self.type == Segment.CCW:
-                return -O
+                return -o_
             else:
-                return O
+                return o_
 
     # ----------------------------------------------------------------------
     # Check if point P is on segment

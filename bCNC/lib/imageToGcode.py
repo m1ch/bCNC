@@ -634,15 +634,15 @@ class ArcEntryCut:
             conv.g.rapid(x1, p1[1])
             conv.g.cut(z=z1)
 
-            I = -cx * circ(radius, z1 - p1[2])
-            K = (p1[2] + radius) - z1
+            i_ = -cx * circ(radius, z1 - p1[2])
+            k_ = (p1[2] + radius) - z1
 
             conv.g.flush()
             conv.g.lastgcode = None
             if cx > 0:
-                conv.g.write(f"G3 X{p1[0]:f} Z{p1[2]:f} I{I:f} K{K:f}")
+                conv.g.write(f"G3 X{p1[0]:f} Z{p1[2]:f} I{i_:f} K{k_:f}")
             else:
-                conv.g.write(f"G2 X{p1[0]:f} Z{p1[2]:f} I{I:f} K{K:f}")
+                conv.g.write(f"G2 X{p1[0]:f} Z{p1[2]:f} I{i_:f} K{k_:f}")
 
             conv.g.lastx = p1[0]
             conv.g.lasty = p1[1]
@@ -672,15 +672,15 @@ class ArcEntryCut:
             conv.g.rapid(p1[0], y1)
             conv.g.cut(z=z1)
 
-            J = -cy * circ(radius, z1 - p1[2])
-            K = (p1[2] + radius) - z1
+            j_ = -cy * circ(radius, z1 - p1[2])
+            k_ = (p1[2] + radius) - z1
 
             conv.g.flush()
             conv.g.lastgcode = None
             if cy > 0:
-                conv.g.write(f"G2 Y{p1[1]:f} Z{p1[2]:f} J{J:f} K{K:f}")
+                conv.g.write(f"G2 Y{p1[1]:f} Z{p1[2]:f} J{j_:f} K{k_:f}")
             else:
-                conv.g.write(f"G3 Y{p1[1]:f} Z{p1[2]:f} J{J:f} K{K:f}")
+                conv.g.write(f"G3 Y{p1[1]:f} Z{p1[2]:f} J{j_:f} K{k_:f}")
             conv.g.lastx = p1[0]
             conv.g.lasty = p1[1]
             conv.g.lastz = p1[2]

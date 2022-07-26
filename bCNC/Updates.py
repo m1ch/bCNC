@@ -188,7 +188,6 @@ class CheckUpdateDialog(Toplevel):
             self.webversion.config(
                 text=_("Error {} in connection").format(r.status))
 
-
         # Save today as lastcheck date
         Utils.config.set(Utils.__prg__, "lastcheck", str(int(time.time())))
 

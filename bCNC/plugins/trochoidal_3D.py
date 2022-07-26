@@ -1253,19 +1253,19 @@ class Tool(Plugin):
             u = -1
             arc = "G3"
 
-        l = self.pol2car(radius, phi + radians(90 * u))
+        l_ = self.pol2car(radius, phi + radians(90 * u))
         r = self.pol2car(radius, phi + radians(-90 * u))
         bl = self.pol2car(radius, phi + radians(90 * u), C)
         br = self.pol2car(radius, phi + radians(-90 * u), C)
 
         radius = round(radius, 4)
-        l[0] = round(l[0], 4)
-        l[1] = round(l[1], 4)
+        l_[0] = round(l_[0], 4)
+        l_[1] = round(l_[1], 4)
         r[0] = round(r[0], 4)
         r[1] = round(r[1], 4)
 
         # RESOLVE CONFLICT G2 G3 I J
-        obteinedradius = sqrt(l[0] ** 2 + l[1] ** 2)
+        obteinedradius = sqrt(l_[0] ** 2 + l_[1] ** 2)
         if obteinedradius > radius:
             block.append(
                 "(error G2 G3: radius "
@@ -1284,9 +1284,9 @@ class Tool(Plugin):
                 + " y"
                 + str(round(bl[1], 4))
                 + " i"
-                + str(-l[0])
+                + str(-l_[0])
                 + " j"
-                + str(-l[1])
+                + str(-l_[1])
                 + " z"
                 + str(round(C[2], 4))
             )

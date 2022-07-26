@@ -91,6 +91,7 @@ _ = gettext.translation(
 def N_(message):
     return message
 
+
 __www__ = "https://github.com/vlachoudis/bCNC"
 __contribute__ = (
     "@effer Filippo Rivato\n"
@@ -509,7 +510,7 @@ def addException():
         if len(errors) > 100:
             # If too many errors are found send the error report
             # FIXME: self outside of Class
-            ReportDialog(self.widget)
+            ReportDialog(self.widget)  # noqa: F821 - see fixme
     except Exception:
         say(str(sys.exc_info()))
 
