@@ -1,7 +1,7 @@
 # $Id$
 #
-# Author:	DodoLaSaumure
-# Date:	30-Dec-2019
+# Author:    DodoLaSaumure
+# Date:      30-Dec-2019
 
 import math
 

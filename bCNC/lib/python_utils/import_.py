@@ -44,7 +44,6 @@ def import_global(
                 name = name[1:]
                 level = 1
 
-            # raise IOError((name, level))
             module = __import__(
                 name=name[0] or ".",
                 globals=globals_,

@@ -30,8 +30,8 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 # DAMAGES.
 #
-# Author:	Vasilis.Vlachoudis@cern.ch
-# Date:	10-Oct-2014
+# Author:   Vasilis.Vlachoudis@cern.ch
+# Date:     10-Oct-2014
 
 import sys
 

@@ -107,7 +107,6 @@ class _GenericController:
 
     # ----------------------------------------------------------------------
     def jog(self, direction):
-        # print("jog",dir)
         self.master.sendGCode(f"G91G0{direction}")
         self.master.sendGCode("G90")
 
@@ -130,8 +129,6 @@ class _GenericController:
 
     # ----------------------------------------------------------------------
     def _wcsSet(self, x, y, z, a=None, b=None, c=None):
-        # global wcsvar
-        # p = wcsvar.get()
         p = WCS.index(CNC.vars["WCS"])
         if p < 6:
             cmd = "G10L20P%d" % (p + 1)
@@ -162,7 +159,6 @@ class _GenericController:
             "<<Status>>",
             data=(_("Set workspace {} to {}").format(WCS[p], pos))
         )
-        # data=(_("Set workspace %s to %s")%(WCS[p],pos)))
         self.master.event_generate("<<CanvasFocus>>")
 
     # ----------------------------------------------------------------------
@@ -251,7 +247,6 @@ class _GenericController:
         elif "error:" in line or "ALARM:" in line:
             self.master.log.put((self.master.MSG_ERROR, line))
             self.master._gcount += 1
-            # print "gcount ERROR=",self._gcount
             if cline:
                 del cline[0]
             if sline:
@@ -270,11 +265,6 @@ class _GenericController:
                 del cline[0]
             if sline:
                 del sline[0]
-            # print "SLINE:",sline
-        # 			if  self._alarm and not self.running:
-        # 				# turn off alarm for connected status once
-        # 				# a valid gcode event occurs
-        # 				self._alarm = False
 
         elif line[0] == "$":
             self.master.log.put((self.master.MSG_RECEIVE, line))
@@ -282,9 +272,7 @@ class _GenericController:
             if pat:
                 CNC.vars[f"grbl_{pat.group(1)}"] = pat.group(2)
 
-        # and self.running:
         elif line[:4] == "Grbl" or line[:13] == "CarbideMotion":
-            # tg = time.time()
             self.master.log.put((self.master.MSG_RECEIVE, line))
             self.master._stop = True
             del cline[:]  # After reset clear the buffer counters

@@ -99,7 +99,6 @@ class CNCListbox(Listbox):
         ypos = self.yview()[0]
         act = self.index(ACTIVE)
 
-        # sel = self.curselection()
         items = self.getSelection()
         self.delete(0, END)
 
@@ -136,7 +135,6 @@ class CNCListbox(Listbox):
                 self._items.append((bi, lj))
 
         self.select(items)
-        # for i in sel: self.selection_set(i)
         self.yview_moveto(ypos)
         self.activate(act)
         self.see(act)
@@ -233,8 +231,6 @@ class CNCListbox(Listbox):
         self.yview_moveto(ypos)
         self.select(selitems, clear=True)
 
-        # self.selection_set(ACTIVE)
-        # self.see(ACTIVE)
         self.winfo_toplevel().event_generate("<<Modified>>")
 
     # ----------------------------------------------------------------------
@@ -716,15 +712,11 @@ class CNCListbox(Listbox):
             bl = Block(self.gcode[bid].name())
             for line in self.gcode[bid]:
                 if line == "( ---------- cut-here ---------- )":
-                    # newblocks.append(bl)
-                    # self.insertBlock(bl)
                     self.gcode.addUndo(self.gcode.addBlockUndo(bid + 1, bl))
                     bl = Block(self.gcode[bid].name())
                 else:
                     bl.append(line)
         self.gcode.addUndo(self.gcode.addBlockUndo(bid + 1, bl))
-        # newblocks.append(bl)
-        # self.gcode.extend(newblocks)
         if change:
             self.fill()
         self.deleteBlock()

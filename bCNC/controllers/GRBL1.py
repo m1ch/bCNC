@@ -31,7 +31,6 @@ class Controller(_GenericGRBL):
         self.gcode_case = 0
         self.has_override = True
         self.master = master
-        # print("grbl1 loaded")
 
     def jog(self, direction):
         self.master.sendGCode(f"$J=G91 {direction} F100000")
@@ -123,7 +122,6 @@ class Controller(_GenericGRBL):
                     CNC.vars["wz"] = round(
                         CNC.vars["mz"] - CNC.vars["wcoz"], CNC.digits
                     )
-                    # if Utils.config.get("bCNC","enable6axis") == "true":
                     if len(word) > 4:
                         CNC.vars["ma"] = float(word[4])
                         CNC.vars["wa"] = round(
@@ -186,7 +184,7 @@ class Controller(_GenericGRBL):
                     CNC.vars["wcox"] = float(word[1])
                     CNC.vars["wcoy"] = float(word[2])
                     CNC.vars["wcoz"] = float(word[3])
-                    # if Utils.config.get("bCNC","enable6axis") == "true":
+
                     if len(word) > 4:
                         CNC.vars["wcoa"] = float(word[4])
                     if len(word) > 5:
@@ -223,18 +221,15 @@ class Controller(_GenericGRBL):
             and not cline
             and fields[0] not in ("Run", "Jog", "Hold")
         ):
-            # if not self.master.running: self.master.jobDone() #This is not a good idea, it purges the controller while waiting for toolchange. see #1061
             self.master.sio_wait = False
             self.master._gcount += 1
 
     def parseBracketSquare(self, line):
         word = SPLITPAT.split(line[1:-1])
-        # print word
         if word[0] == "PRB":
             CNC.vars["prbx"] = float(word[1])
             CNC.vars["prby"] = float(word[2])
             CNC.vars["prbz"] = float(word[3])
-            # if self.running:
             self.master.gcode.probe.add(
                 CNC.vars["prbx"] - CNC.vars["wcox"],
                 CNC.vars["prby"] - CNC.vars["wcoy"],
@@ -246,7 +241,6 @@ class Controller(_GenericGRBL):
             CNC.vars["G92X"] = float(word[1])
             CNC.vars["G92Y"] = float(word[2])
             CNC.vars["G92Z"] = float(word[3])
-            # if Utils.config.get("bCNC","enable6axis") == "true":
             if len(word) > 4:
                 CNC.vars["G92A"] = float(word[4])
             if len(word) > 5:

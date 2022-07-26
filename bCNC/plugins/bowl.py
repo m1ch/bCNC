@@ -1,7 +1,7 @@
 # $Id$
 #
-# Author:	https://github.com/carlosgs
-# Date:	14-Sep-2015
+# Author:    https://github.com/carlosgs
+# Date:      14-Sep-2015
 
 import math
 

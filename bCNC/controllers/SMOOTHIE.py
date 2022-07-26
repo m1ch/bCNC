@@ -11,7 +11,6 @@ class Controller(_GenericController):
         self.gcode_case = 1
         self.has_override = False
         self.master = master
-        # print("smoothie loaded")
 
     def executeCommand(self, oline, line, cmd):
         if line[0] in (
@@ -106,7 +105,6 @@ class Controller(_GenericController):
                 CNC.vars["prbx"] = float(pat.group(2))
                 CNC.vars["prby"] = float(pat.group(3))
                 CNC.vars["prbz"] = float(pat.group(4))
-                # if self.running:
                 self.master.gcode.probe.add(
                     CNC.vars["prbx"] + CNC.vars["wx"] - CNC.vars["mx"],
                     CNC.vars["prby"] + CNC.vars["wy"] - CNC.vars["my"],

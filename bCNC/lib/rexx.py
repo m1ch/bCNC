@@ -29,8 +29,8 @@
 # LIABILITY OR OTHERWISE, ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 #
-# Author:	Vasilis.Vlachoudis@cern.ch
-# Date:	14-May-2004
+# Author:   Vasilis.Vlachoudis@cern.ch
+# Date:     14-May-2004
 
 import string
 
@@ -329,10 +329,7 @@ if __name__ == "__main__":
     assert insert("abc", "def", 5, "*") == "def**abc"
 
     say("translate")
-    # 	assert translate("Foo Bar"), "FOO BAR"
     assert translate("Foo Bar", "", "") == "Foo Bar"
-    # 	assert translate("Foo Bar","") == "       "
-    # 	assert translate("Foo Bar",None,None,'*') == "*******"
     assert translate("Foo Bar", xrange(1, 255)) == "Gpp!Cbs"
     assert translate("", "klasjdf", "woieruw") == ""
     assert translate("foobar", "abcdef", "fedcba") == "aooefr"

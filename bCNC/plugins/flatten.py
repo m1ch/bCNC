@@ -1,7 +1,7 @@
 # $Id$
 #
-# Author:	Filippo Rivato
-# Date:	2015/10/04
+# Author:    Filippo Rivato
+# Date:      2015/10/04
 
 from CNC import CNC, Block
 from ToolsPage import Plugin
@@ -228,7 +228,6 @@ class Flatten:
             # Pocketing
             lastxy = None
             for x, y in zip(xP, yP):
-                # 				block.append(CNC.gline(x,y))
                 if lastxy != CNC.gline(x, y) or None:
                     block.append(CNC.gline(x, y))
                 lastxy = CNC.gline(x, y)

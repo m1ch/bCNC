@@ -1,6 +1,6 @@
 # $Id$
 #
-# Author:	Filippo Rivato
+# Author:    Filippo Rivato
 # Date: 16 October 2015
 
 from CNC import CNC, Block
@@ -114,7 +114,6 @@ class Tool(Plugin):
         # Create a thumbnail image to work faster
         img.thumbnail((newWidth, newHeight), Image.ANTIALIAS)
         newWidth, newHeight = img.size
-        # img.save("thumb.png")
         pixels = list(img.getdata())
 
         # Extract luminance

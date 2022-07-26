@@ -1,7 +1,7 @@
 # $Id: Updates.py 3349 2014-11-28 14:09:26Z bnv $
 
-# Author: vvlachoudis@gmail.com
-# Date:	5-Apr-2007
+# Author:   vvlachoudis@gmail.com
+# Date:     5-Apr-2007
 
 import json
 import time
@@ -144,10 +144,6 @@ class CheckUpdateDialog(Toplevel):
 
         self.bind("<Escape>", self.close)
 
-        # x = master.winfo_rootx() + 200
-        # y = master.winfo_rooty() + 50
-        # self.geometry("+%d+%d" % (x,y))
-        # self.wait_visibility()
         self.wait_window()
 
     # ----------------------------------------------------------------------
@@ -192,7 +188,6 @@ class CheckUpdateDialog(Toplevel):
             self.webversion.config(
                 text=_("Error {} in connection").format(r.status))
 
-        # self.laterButton.config(state=DISABLED)
 
         # Save today as lastcheck date
         Utils.config.set(Utils.__prg__, "lastcheck", str(int(time.time())))

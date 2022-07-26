@@ -145,15 +145,6 @@ class Segment:
                     self.type = Segment.CCW
                 else:
                     self.type = Segment.CW
-            # if (self.C-C).length()>EPS:
-            # 	print self
-            # 	print (self.C-C).length()
-            # make a check for both radius
-            # r1 = (self.A-self.C).length()
-            # r2 = (self.B-self.C).length()
-            # if abs(r1-r2)>EPS:
-            # 	print "ERROR r1=",r1,"r2=",r2
-            # 	print self
 
         # -------------------------------------------------------------
         # Check angles in ARC to ensure proper values
@@ -332,17 +323,13 @@ class Segment:
     # Linearize this segment and return resulted segments
     # ----------------------------------------------------------------------
     def linearize(self, maxseg=1, splitlines=False):
-        # self.correct()
-        # linearized = Path("linearized segment", None)
         linearized = []
         if splitlines or self.type == Segment.CW or self.type == Segment.CCW:
             count = int(ceil(self.length() / maxseg))
             if count == 0:
                 count = 1  # fix for zero length
             step = self.length() / count
-            # print "---"
             for i in range(0, count):
-                # print i, self.length(), i*step, (i+1)*step
                 linearized.append(
                     Segment(
                         Segment.LINE,
@@ -658,10 +645,6 @@ class Segment:
     # Return minimum distance of P from segment
     # ----------------------------------------------------------------------
     def distance(self, P):
-        # 		if eq(P,Vector(42.0926, 16.8319)) and \
-        # 		   eq(self.A, Vector(48.0042, 15.5539)) and \
-        # 		   eq(self.B, Vector(36.2223, 15.5307)):
-        # 			import pdb; pdb.set_trace()
         if self.type == Segment.LINE:
             AB2 = self.AB[0] ** 2 + self.AB[1] ** 2
             APx = P[0] - self.A[0]
@@ -798,8 +781,8 @@ class Path(list):
 
     # ----------------------------------------------------------------------
     # Change path direction:
-    # 	+1 for Segment.CW
-    # 	-1 for Segment.CCW
+    #   +1 for Segment.CW
+    #   -1 for Segment.CCW
     # ----------------------------------------------------------------------
     def directionSet(self, opdir):
         curdir = self._direction(self.isClosed())
@@ -811,9 +794,9 @@ class Path(list):
 
     # ----------------------------------------------------------------------
     # Return:
-    # 	-1 for Segment.CCW closed path
+    #       -1 for Segment.CCW closed path
     #        0 for open path
-    # 	+1 for Segment.CW  closed path
+    #       +1 for Segment.CW  closed path
     # ----------------------------------------------------------------------
     def direction(self):
         if not self.isClosed():
@@ -828,9 +811,6 @@ class Path(list):
     def _direction(self, closed=True):
         def dircalc(A, B):
             _dir = (B[0] - A[0]) * (B[1] + A[1])
-            # print("point", A[0], A[1], B[0], B[1],"\t",dir)
-            # print("g1 x"+str(A[0])+" y"+str(A[1]))
-            # print("g1 x"+str(B[0])+" y"+str(B[1]))
             return _dir
 
         sum_ = 0
@@ -865,9 +845,6 @@ class Path(list):
                 sum_ = -1  # CCW
             if cwarc > 0:
                 sum_ = 1  # CW
-
-        # if sum == 0: sum = 1	#CW if still undecided?
-        # print("Sum ", sum)
         return sum_
 
     # ----------------------------------------------------------------------
@@ -998,7 +975,6 @@ class Path(list):
 
                 # Test direction
                 if arcdir(seg, C) != dir_:
-                    # print "wrong direction"
                     return False
 
             return True
@@ -1040,7 +1016,6 @@ class Path(list):
             for i in range(1, len(tmpath)):
                 Ct = circle3center(tmpath[i - 1].A,
                                    tmpath[i - 1].B, tmpath[i].B)
-                # Ct = circle3center(tmpath[0].A, tmpath[i].A, tmpath[-1].B)
                 if Ct is not None:
                     cnt += 1
                     C += Ct
@@ -1060,7 +1035,6 @@ class Path(list):
 
             # Fix center to match start and end of segment:
             # (Not sure if this needed)
-            # print("Center: ", C, radius2points(tmpath[0].A, tmpath[-1].B, r, arcd))
             C = radius2points(tmpath[0].A, tmpath[-1].B, r, arcd)
 
             return C, r, arcd
@@ -1093,19 +1067,15 @@ class Path(list):
                             break
                         Co, ro, ign = path2arc(tmpath)
                         if testFit(tmpath, prec, Co, ro, arcd):
-                            # print "upd", len(tmpath), C, r, Co, ro
                             C, r = Co, ro
                         j += 1
 
                     if len(tmpath) >= numseg:
                         found = True
-                        # npath.extend(tmpath)
-                        # npath.append(Segment(Segment.LINE, tmpath[0].A, tmpath[-1].B))
                         npath.append(
                             Segment(arcd2seg(arcd),
                                     tmpath[0].A, tmpath[-1].B, C)
                         )
-                        # path2gc(tmpath)
                         i = j
 
             if not found:
@@ -1174,21 +1144,17 @@ class Path(list):
     # WARNING: the path must be closed otherwise it is meaningless
     # ----------------------------------------------------------------------
     def isInside(self, P):
-        # print "P=",P
-        # minx,miny,maxx,maxy = self.bbox()
         maxx = self.bbox()[2]
-        # print "limits:",minx,miny,maxx,maxy
-        # FIXME: this is strange. adding +1000 to line endpoint changes the outcome of method
-        # 	i've found that doing this works around some unknown problem in most cases, but it's not really ideal solution
+        # FIXME: this is strange. adding +1000 to line endpoint changes the
+        #        outcome of method i've found that doing this works around some
+        #        unknown problem in most cases, but it's not really ideal
+        #        solution
         line = Segment(Segment.LINE, P, Vector(maxx * 1.1, P[1] + 1000))
         count = 0
         PP1 = None  # previous points to avoid double counting
         PP2 = None
-        # print "Line=",line
         for segment in self:
             P1, P2 = line.intersect(segment)
-            # print
-            # print i,segment
             if P1 is not None:
                 if PP1 is None and PP2 is None:
                     count += 1
@@ -1220,10 +1186,8 @@ class Path(list):
                         count += 1
                     elif PP2 is not None and not eq(P2, PP2):
                         count += 1
-            # print P1,P2,count
             PP1 = P1
             PP2 = P2
-        # print "Count=",count
         return bool(count & 1)
 
     # ----------------------------------------------------------------------
@@ -1299,23 +1263,12 @@ class Path(list):
                     paths.append(path)
                     path.append(self.pop(0))
 
-        # Correct ending points of the contours
-        # 		for path in paths:
-        # 			closed = path.isClosed()
-        # 			end = path[0].B
-        # 			for segment in path[1:]:
-        # 				segment.setStart(end)
-        # 				end = segment.B
-        # 			if closed:
-        # 				path[0].setStart(end)
-
         return paths
 
     # ----------------------------------------------------------------------
     # Return path with offset
     # ----------------------------------------------------------------------
     def offset(self, offset, name=None):
-        # start = time.time()
         if name is None:
             name = self.name
         path = Path(name, self.color)
@@ -1332,28 +1285,21 @@ class Path(list):
             Oval = segment.orthogonalStart()
             So = segment.A + Oval * offset
             # Join with the previous edge
-            # 			inside = False
             if Eo is not None and eq(Eo, So):
                 # possibly a full circle
                 if segment.type != Segment.LINE and len(self) == 1:
                     path.append(Segment(segment.type, Eo, So, segment.C))
-            # 					print "*0*",path[-1]
-
             elif Op is not None:
                 # if cross*offset
                 cross = Oval[0] * Op[1] - Oval[1] * Op[0]
                 dot = Oval[0] * Op[0] + Oval[1] * Op[1]
-                # if (prev.type!=Segment.LINE and segment.type!=Segment.LINE) or \
                 if (abs(cross) > EPSV or dot < 0.0) and cross * offset >= 0:
                     # either a circle
                     t = Segment.CW if offset > 0 else Segment.CCW
                     path.append(Segment(t, Eo, So, segment.A))
-                # 					print "*A*",path[-1]
                 else:
                     # or a straight line if inside
                     path.append(Segment(Segment.LINE, Eo, So))
-            # 					inside = True
-            # 					print "*B*",path[-1]
 
             # connect with previous point
             Oval = segment.orthogonalEnd()
@@ -1361,33 +1307,12 @@ class Path(list):
             if (So - Eo).length2() > EPSV2:
                 if segment.type == Segment.LINE:
                     path.append(Segment(Segment.LINE, So, Eo))
-                # 					print "*C*",path[-1]
                 else:
                     # FIXME check for radius + offset > 0.0
                     path.append(Segment(segment.type, So, Eo, segment.C))
-            # 					print "*D*",path[-1]
-            # 					if abs(abs(segment.radius - path[-1].radius) - abs(offset)) > EPS:
-            # 						print "ERROR", segment.radius - path[-1].radius - abs(offset)
-            # 						import pdb; pdb.set_trace()
-
-            # Internal line segment?
-            # 				if inside and len(path)>2:
-            # 					# Check the distance with the intersection point
-            # 					P1,P2 = path[-3].intersect(path[-1])
-            # 					if P1 or P2:
-            # 						M = path[-2].midPoint()
-            # 						if P1 and (P1-M).length() < abs(offset)/100:
-            # 								#delete segment
-            # 								path[-3].setEnd(P1)
-            # 								path[-1].setStart(P1)
-            # 								del path[-2]
-            # 								print "DELETE SEGMENT"
-            # 						elif P2:
-            # 							pass
 
             Op = Oval
             prev = segment
-        # print("# path.offset: %g\n"%(time.time()-start))
         return path
 
     # ----------------------------------------------------------------------
@@ -1510,7 +1435,8 @@ class Path(list):
 
         # Mark inside segments
         # FIXME: for some reason this fails if doing multiple intersections
-        # 	in such case you have to intersect all paths and then mark them using markInside() additionaly
+        #        in such case you have to intersect all paths and then mark
+        #        them using markInside() additionaly
         if setinside is not None:
             self.markInside(path, setinside)
 
@@ -1538,9 +1464,6 @@ class Path(list):
             for i in range(i0):
                 if path[i].distance(P) < chkofs:
                     return False, i
-            # 			for x in path:
-            # 				if x.distance(P) < chkofs:
-            # 					return False
             return True, last
 
         last = 0
@@ -1638,9 +1561,7 @@ class Path(list):
                     distance = abs(offset) * (1.0 / costheta2 - 1.0)
                     if overcut == 1 and adaptative == 0:
                         pass
-                    # 	distance =  float(abs(adaptedRadius))
                     if overcut == 0 and adaptative == 1:
-                        # 	distance =  abs(adaptedRadius)
                         distance = abs(adaptedRadius) * (1.0 / costheta2 - 1.0)
                         distance += abs(adaptedRadius)
                     elif overcut == 1 and adaptative == 1:
@@ -1845,7 +1766,8 @@ class Path(list):
     # return eulerian paths
     # It takes bpath with random segments and tries to order and invert them
     # to create longest possible continuous toolpaths that actually makes sense
-    # FIXME: This probably can be replaced with split2contours() and i've just reinvented wheel LOL
+    # FIXME: This probably can be replaced with split2contours() and i've just
+    #        reinvented wheel LOL
     # ----------------------------------------------------------------------
     def eulerize(self, single=False):
         # Find eulerian path of graph
@@ -1858,7 +1780,8 @@ class Path(list):
                 # return None
                 print("Failed to find eulerian path! Using non-eulerized "
                       + "path instead!")
-                # FIXME: Probably we should at least find some non-eulerian paths instead?
+                # FIXME: Probably we should at least find some non-eulerian
+                #        paths instead?
                 return graph
 
             stack = [odd[0]]
@@ -1879,9 +1802,9 @@ class Path(list):
             return path
 
         # Encode bpath to graph
-        # 	bpath segments	-> graph nodes
-        # 	bpath points	-> graph edges
-        # 	(yes it's confusing, but it has to be this way)
+        #        bpath segments -> graph nodes
+        #        bpath points   -> graph edges
+        #   (yes it's confusing, but it has to be this way)
         eulg = {}
         for i, segi in enumerate(self):
             eulg[i] = []
@@ -1889,7 +1812,8 @@ class Path(list):
             for j, segj in enumerate(self):
                 if i == j:
                     continue
-                # TODO: some of these are probably redundant, for now i left it here to be safe:
+                # TODO: some of these are probably redundant, for now i left
+                #       it here to be safe:
                 if eq(segi.B, segj.A) or eq(segi.A, segj.B):
                     if j not in eulg[i]:
                         eulg[i].append(j)
@@ -1959,7 +1883,6 @@ class Path(list):
     def removeZeroLength(self, eps=EPSV):
         i = 0
         while i < len(self):
-            # if eq(self[i].A, [227.286, 151.109]): import pdb; pdb.set_trace()
             if self[i].length() < eps:
                 start = self[i].A
                 del self[i]
@@ -2011,7 +1934,6 @@ class Path(list):
                 self.append(Segment(Segment.CCW, A, B, center))
 
             elif entity.type == "ARC":
-                # t = entity._invert and Segment.CW or Segment.CCW
                 t = Segment.CW if entity._invert else Segment.CCW
                 center = dxf.convert(entity.center(), units)
                 self.append(Segment(t, A, B, center))
@@ -2051,7 +1973,6 @@ class Path(list):
 
                     else:
                         # arc with bulge = b
-                        # b = tan(theta/4)
                         theta = 4.0 * atan(abs(b))
                         if abs(b) > 1.0:
                             theta = 2.0 * pi - theta

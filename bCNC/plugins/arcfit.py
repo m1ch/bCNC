@@ -70,16 +70,10 @@ Before this plugin tries to fit arcs it also tries to fit and merge longest poss
         linpreci = self.fromMm("linpreci")
         numseg = self["numseg"]
 
-        # print("go!")
         blocks = []
         for bid in app.editor.getSelectedBlocks():
             if len(app.gcode.toPath(bid)) < 1:
                 continue
-
-            # nblock = Block("flat "+app.gcode[bid].name())
-            # for i in app.gcode[bid]:
-            # 	nblock.append(re.sub(r"\s?z-?[0-9\.]+","",i))
-            # blocks.append(nblock)
 
             eblock = Block("fit " + app.gcode[bid].name())
             npath = app.gcode.toPath(bid)[0]
@@ -92,12 +86,9 @@ Before this plugin tries to fit arcs it also tries to fit and merge longest poss
             eblock = app.gcode.fromPath(npath, eblock)
             blocks.append(eblock)
 
-        # active = app.activeBlock()
-        # if active == 0: active+=1
         active = -1  # add to end
         app.gcode.insBlocks(
             active, blocks, "Arc fit"
         )  # <<< insert blocks over active block in the editor
         app.refresh()  # <<< refresh editor
         app.setStatus(_("Generated: Arc fit"))  # <<< feed back result
-        # app.gcode.blocks.append(block)

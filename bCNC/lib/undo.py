@@ -27,7 +27,7 @@
 # LIABILITY OR OTHERWISE, ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 #
-# Author:	Vasilis.Vlachoudis@cern.ch
+# Author:    Vasilis.Vlachoudis@cern.ch
 
 
 # =============================================================================
@@ -103,9 +103,7 @@ class UndoRedo:
             else:
                 return redolist
         else:
-            # 			print "<<< Undo:", undoinfo
             redoinfo = func(*args)
-            # 			print ">>> Redo:", redoinfo
             if isinstance(redoinfo[0], str):
                 return redoinfo
             elif msg:

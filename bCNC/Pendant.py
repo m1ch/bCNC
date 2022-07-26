@@ -64,10 +64,6 @@ class Pendant(httpserver.BaseHTTPRequestHandler):
             page = self.path
             arg = None
 
-        # 		print self.path,type(self.path)
-        # 		print page
-        # 		print arg
-
         if page == "/send":
             if arg is None:
                 return
@@ -171,7 +167,6 @@ class Pendant(httpserver.BaseHTTPRequestHandler):
 
             if Pendant.camera.read():
                 Pendant.camera.save("camera.jpg")
-                # cv.imwrite("camera.jpg",img)
                 self.do_HEAD(
                     200, content="image/jpeg", cl=os.path.getsize("camera.jpg")
                 )

@@ -7,7 +7,6 @@
 import os
 import socket
 import sys
-# import threading
 import time
 import traceback
 import webbrowser
@@ -111,8 +110,6 @@ DRAW_AFTER = 300  # ms
 RX_BUFFER_SIZE = 128
 
 MAX_HISTORY = 500
-
-# ZERO = ["G28", "G30", "G92"]
 
 FILETYPES = [
     (
@@ -242,7 +239,6 @@ class Application(Toplevel, Sender):
         # --- Canvas ---
         self.canvasFrame = CNCCanvas.CanvasFrame(frame, self)
         self.canvasFrame.pack(side=TOP, fill=BOTH, expand=YES)
-        # self.paned.add(self.canvasFrame)
         # XXX FIXME do I need the self.canvas?
         self.canvas = self.canvasFrame.canvas
 
@@ -370,7 +366,6 @@ class Application(Toplevel, Sender):
         self.bind("<<Run>>", lambda e, s=self: s.run())
         self.bind("<<Stop>>", self.stopRun)
         self.bind("<<Pause>>", self.pause)
-        # 		self.bind('<<TabAdded>>',	self.tabAdded)
 
         tkExtra.bindEventData(self, "<<Status>>", self.updateStatus)
         tkExtra.bindEventData(self, "<<Coords>>", self.updateCanvasCoords)
@@ -441,9 +436,6 @@ class Application(Toplevel, Sender):
         self.bind("<<SelectInvert>>", self.selectInvert)
         self.bind("<<SelectLayer>>", self.selectLayer)
 
-        # 		self.bind('<Control-Key-f>',	self.find)
-        # 		self.bind('<Control-Key-g>',	self.findNext)
-        # 		self.bind('<Control-Key-h>',	self.replace)
         self.bind("<Control-Key-e>", self.editor.toggleExpand)
         self.bind("<Control-Key-n>", self.showInfo)
         self.bind("<<ShowInfo>>", self.showInfo)
@@ -733,12 +725,6 @@ class Application(Toplevel, Sender):
         except Exception:
             pass
 
-        # read Tk fonts to initialize them
-        # font = Utils.getFont("TkDefaultFont")
-        # font = Utils.getFont("TkFixedFont")
-        # font = Utils.getFont("TkMenuFont")
-        # font = Utils.getFont("TkTextFont")
-
         self._swapKeyboard = Utils.getInt("Control", "swap", 0)
 
         self._onStart = Utils.getStr("Events", "onstart", "")
@@ -765,8 +751,6 @@ class Application(Toplevel, Sender):
         # Program
         Utils.setInt(Utils.__prg__, "width", str(self.winfo_width()))
         Utils.setInt(Utils.__prg__, "height", str(self.winfo_height()))
-        # Utils.setInt(Utils.__prg__,  "x",	  str(self.winfo_rootx()))
-        # Utils.setInt(Utils.__prg__,  "y",	  str(self.winfo_rooty()))
         Utils.setInt(Utils.__prg__, "sash", str(self.paned.sash_coord(0)[0]))
 
         # save windowState
@@ -853,7 +837,6 @@ class Application(Toplevel, Sender):
         bg = "#707070"
         fg = "#ffffff"
 
-        # font1 = "Helvetica -32 bold"
         font2 = "Helvetica -12"
         font3 = "Helvetica -10"
 
@@ -873,14 +856,6 @@ class Application(Toplevel, Sender):
         )
         la.grid(row=row, column=0, columnspan=2, padx=5, pady=5)
 
-        # -----
-        # row += 1
-        # la = Label(frame, text=Utils.__prg__,
-        # 		foreground=fg, background=bg,
-        # 		font=font1)
-        # la.grid(row=row, column=0, columnspan=2, sticky=W, padx=10, pady=5)
-
-        # -----
         row += 1
         la = Label(
             frame,
@@ -1089,15 +1064,6 @@ class Application(Toplevel, Sender):
         toplevel.bind("<Escape>", closeFunc)
         toplevel.bind("<Return>", closeFunc)
         toplevel.bind("<KP_Enter>", closeFunc)
-
-        # Center to the screen
-        # toplevel.update_idletasks()
-        # w = toplevel.winfo_screenwidth()
-        # h = toplevel.winfo_screenheight()
-        # size = tuple(int(_) for _ in toplevel.geometry().split('+')[0].split('x'))
-        # x = w/2 - size[0]/2
-        # y = h/2 - size[1]/2
-        # toplevel.geometry("%dx%d+%d+%d" % (size + (x, y)))
 
         toplevel.deiconify()
         toplevel.wait_visibility()
@@ -1414,26 +1380,13 @@ class Application(Toplevel, Sender):
     def find(self, event=None):
         self.ribbon.changePage("Editor")
 
-    # self.editor.findDialog()
-    # 		return "break"
-    #
-    #
-
     # -----------------------------------------------------------------------
     def findNext(self, event=None):
         self.ribbon.changePage("Editor")
 
-    # self.editor.findNext()
-    # 		return "break"
-    #
-    #
-
     # -----------------------------------------------------------------------
     def replace(self, event=None):
         self.ribbon.changePage("Editor")
-
-    # self.editor.replaceDialog()
-    # 		return "break"
 
     # -----------------------------------------------------------------------
     def activeBlock(self):
@@ -1478,8 +1431,6 @@ class Application(Toplevel, Sender):
     # Execute a single command
     # -----------------------------------------------------------------------
     def execute(self, line):
-        # print
-        # print "<<<",line
         try:
             line = self.evaluate(line)
         except Exception:
@@ -1487,7 +1438,6 @@ class Application(Toplevel, Sender):
                 _("Evaluation error"), sys.exc_info()[1], parent=self
             )
             return "break"
-        # print ">>>",line
 
         if line is None:
             return "break"
@@ -1680,24 +1630,12 @@ class Application(Toplevel, Sender):
         elif rexx.abbrev("LOAD", cmd, 2) and len(line) == 1:
             self.loadDialog()
 
-        # MAT*ERIAL [name/height] [pass-per-depth] [feed]: set material from database or parameters
-        # 		elif rexx.abbrev("MATERIAL",cmd,3):
-        # 			tool = self.tools["Material"]
-        # 			# MAT*ERIAL [height] [pass-depth] [feed]
-        # 			try: self.height = float(line[1])
-        # 			except Exception: pass
-        # 			try: self.depth_pass = float(line[2])
-        # 			except Exception: pass
-        # 			try: self.feed = float(line[3])
-        # 			except Exception: pass
-        # 			self.setStatus(_("Height: %g  Depth-per-pass: %g  Feed: %g")%(self.height,self.depth_pass, self.feed))
-
-        # MIR*ROR [H*ORIZONTAL/V*ERTICAL]: mirror selected objects horizontally or vertically
+        # MIR*ROR [H*ORIZONTAL/V*ERTICAL]: mirror selected objects
+        # horizontally or vertically
         elif rexx.abbrev("MIRROR", cmd, 3):
             if len(line) == 1:
                 return "break"
             line1 = line[1].upper()
-            # if nothing is selected:
             if not self.editor.curselection():
                 self.editor.selectAll()
             if rexx.abbrev("HORIZONTAL", line1):
@@ -1831,13 +1769,10 @@ class Application(Toplevel, Sender):
             x0 = y0 = 0.0
             if line1 == "CCW":
                 ang = 90.0
-                # self.editor.selectAll()
             elif line1 == "CW":
                 ang = -90.0
-                # self.editor.selectAll()
             elif line1 == "FLIP":
                 ang = 180.0
-                # self.editor.selectAll()
             else:
                 try:
                     ang = float(line[1])
@@ -2040,7 +1975,6 @@ class Application(Toplevel, Sender):
 
         self.busy()
         sel = None
-        # undoinfo = None  # all operations should return undo information
         if cmd == "AUTOLEVEL":
             sel = self.gcode.autolevel(items)
         elif cmd == "CUT":
@@ -2150,8 +2084,6 @@ class Application(Toplevel, Sender):
         self.draw()
         self.notBusy()
 
-    # 		self.setStatus(_("Pocket block distance=%g")%(ofs*sign))
-
     # -----------------------------------------------------------------------
     def trochprofile_bcnc(
         self,
@@ -2168,8 +2100,6 @@ class Application(Toplevel, Sender):
         tabsWidth=0.0,
         tabsHeight=0.0,
     ):
-        # 	tool = self.tools["EndMill"]
-        # 	ofs  = self.tools.fromMm(tool["diameter"])/2.0
         adaptedRadius = float(adaptedRadius)
         ofs = float(cutDiam) / 2.0
         sign = 1.0
@@ -2632,20 +2562,8 @@ class Application(Toplevel, Sender):
                 pass
 
         if lines is None:
-            # if not self.gcode.probe.isEmpty() and not self.gcode.probe.zeroed:
-            # 	messagebox.showerror(_("Probe is not zeroed"),
-            # 		_("Please ZERO any location of the probe before starting a run"),
-            # 		parent=self)
-            # 	return
             self.statusbar.setLimits(0, 9999)
             self.statusbar.setProgress(0, 0)
-
-            # class MyQueue:
-            # 	def put(self,line):
-            # 		print ">>>",line
-            # self._paths = self.gcode.compile(MyQueue(), self.checkStop)
-            # return
-
             self._paths = self.gcode.compile(self.queue, self.checkStop)
             if self._paths is None:
                 self.emptyQueue()
@@ -2747,7 +2665,6 @@ class Application(Toplevel, Sender):
                 msg, line = self.log.get_nowait()
                 line = str(line).rstrip("\n")
                 inserted = True
-                # print "<<<",msg,line,"\n" in line
 
                 if msg == Sender.MSG_BUFFER:
                     self.buffer.insert(END, line)
@@ -2828,7 +2745,6 @@ class Application(Toplevel, Sender):
         # Update position if needed
         if self._posUpdate:
             state = CNC.vars["state"]
-            # print Sender.ERROR_CODES[state]
             try:
                 CNC.vars["color"] = STATECOLOR[state]
             except KeyError:
@@ -2849,7 +2765,6 @@ class Application(Toplevel, Sender):
             )
             if state == "Run":
                 self.gstate.updateFeed()
-                # self.xxx.updateSpindle()
             self._posUpdate = False
 
         # Update status string
@@ -2975,8 +2890,6 @@ def main(optlist, args):
             CNC.developer = True
         elif opt == "-D":
             CNC.developer = False
-        # elif opt == "-g":
-        #     geometry = val
         elif opt in ("-r", "-R", "--recent", "-l", "--list"):
             if opt in ("-r", "--recent"):
                 r = 0
@@ -3027,16 +2940,6 @@ def main(optlist, args):
 
         elif opt in ("-f", "--fullscreen"):
             fullscreen = True
-
-        # elif opt == "-S":
-        #     _openserial = False
-
-        # elif opt in ("-s", "--serial"):
-        #     _openserial = True
-        #     _device = val
-
-        # elif opt in ("-b", "--baud"):
-        #     _baud = val
 
         elif opt == "-p":
             pass  # startPendant()

@@ -88,7 +88,6 @@ class Sender:
         self.history = []
         self._historyPos = None
 
-        # self.mcontrol     = None
         self.controllers = {}
         self.controllerLoad()
         self.controllerSet("GRBL1")
@@ -131,7 +130,6 @@ class Sender:
             name, ext = os.path.splitext(os.path.basename(f))
             if name[0] == "_":
                 continue
-            # print("Loaded motion controller plugin: %s"%(name))
             try:
                 exec(f"import {name}")
                 self.controllers[name] = eval(f"{name}.Controller(self)")
@@ -141,19 +139,14 @@ class Sender:
 
     # ----------------------------------------------------------------------
     def controllerList(self):
-        # print("ctrlist")
-        # self.controllers["GRBL1"].test()
-        # if len(self.controllers.keys()) < 1: self.controllerLoad()
         return sorted(self.controllers.keys())
 
     # ----------------------------------------------------------------------
     def controllerSet(self, ctl):
-        # print("Activating motion controller plugin: %s"%(ctl))
         if ctl in self.controllers.keys():
             self.controller = ctl
             CNC.vars["controller"] = ctl
             self.mcontrol = self.controllers[ctl]
-            # self.mcontrol.test()
 
     # ----------------------------------------------------------------------
     def quit(self, event=None):
@@ -199,7 +192,7 @@ class Sender:
     # ----------------------------------------------------------------------
     # Execute a line as gcode if pattern matches
     # @return True on success
-    # 	  False otherwise
+    #         False otherwise
     # ----------------------------------------------------------------------
     def executeGcode(self, line):
         if (
@@ -215,14 +208,6 @@ class Sender:
     # Execute a single command
     # ----------------------------------------------------------------------
     def executeCommand(self, line):
-        # print
-        # print "<<<",line
-        # try:
-        # 	line = self.gcode.evaluate(CNC.compileLine(line,True))
-        # except Exception:
-        # 	return "Evaluation error", sys.exc_info()[1]
-        # print ">>>",line
-
         if line is None:
             return
 
@@ -491,10 +476,6 @@ class Sender:
     # Serial write
     # ----------------------------------------------------------------------
     def serial_write(self, data):
-        # 		print('W %s : %s'%(type(data),data))
-
-        # if sys.version_info[0] == 2:
-        # 	ret = self.serial.write(str(data))
         if isinstance(data, bytes):
             ret = self.serial.write(data)
         else:
@@ -505,7 +486,6 @@ class Sender:
     # Open serial port
     # ----------------------------------------------------------------------
     def open(self, device, baudrate):
-        # self.serial = serial.Serial(
         self.serial = serial.serial_for_url(
             device.replace("\\", "\\\\"),  # Escape for windows
             baudrate,
@@ -524,8 +504,6 @@ class Sender:
         time.sleep(1)
         CNC.vars["state"] = CONNECTED
         CNC.vars["color"] = STATECOLOR[CNC.vars["state"]]
-        # self.state.config(text=CNC.vars["state"],
-        # 		background=CNC.vars["color"])
         # toss any data already received, see
         # http://pyserial.sourceforge.net/pyserial_api.html#serial.Serial.flushInput
         self.serial.flushInput()
@@ -534,7 +512,6 @@ class Sender:
         except OSError:
             pass
         time.sleep(1)
-        # 		self.serial_write(b"\n\n") # serial_write should be handling this
         self.serial_write("\n\n")
         self._gcount = 0
         self._alarm = True
@@ -766,15 +743,11 @@ class Sender:
             ):
                 try:
                     tosend = self.queue.get_nowait()
-                    # print "+++",repr(tosend)
                     if isinstance(tosend, tuple):
-                        # print "gcount tuple=",self._gcount
                         # wait to empty the grbl buffer and status is Idle
                         if tosend[0] == WAIT:
                             # Don't count WAIT until we are idle!
                             self.sio_wait = True
-                            # print "+++ WAIT ON"
-                            # print "gcount=",self._gcount, self._runLines
                         elif tosend[0] == MSG:
                             # Count executed commands as well
                             self._gcount += 1
@@ -793,16 +766,11 @@ class Sender:
                     elif not isinstance(tosend, str):
                         try:
                             tosend = self.gcode.evaluate(tosend, self)
-                            # 							if isinstance(tosend, list):
-                            # 								cline.append(len(tosend[0]))
-                            # 								sline.append(tosend[0])
                             if isinstance(tosend, str):
                                 tosend += "\n"
                             else:
                                 # Count executed commands as well
                                 self._gcount += 1
-                                # print "gcount str=",self._gcount
-                            # print "+++ eval=",repr(tosend),type(tosend)
                         except Exception:
                             for s in str(sys.exc_info()[1]).splitlines():
                                 self.log.put((Sender.MSG_ERROR, s))
@@ -862,8 +830,6 @@ class Sender:
                     self.close()
                     return
 
-                # print "<R<",repr(line)
-                # print "*-* stack=",sline,"sum=",sum(cline),"wait=",wait,"pause=",self._pause
                 if not line:
                     pass
                 elif self.mcontrol.parseLine(line, cline, sline):
@@ -882,15 +848,8 @@ class Sender:
                 if self._runLines != sys.maxsize:
                     self._stop = False
 
-            # print "tosend='%s'"%(repr(tosend)),"stack=",sline,
-            # 	"sum=",sum(cline),"wait=",wait,"pause=",self._pause
             if tosend is not None and sum(cline) < RX_BUFFER_SIZE:
                 self._sumcline = sum(cline)
-                # 				if isinstance(tosend, list):
-                # 					self.serial_write(str(tosend.pop(0)))
-                # 					if not tosend: tosend = None
-
-                # print ">S>",repr(tosend),"stack=",sline,"sum=",sum(cline)
                 if self.mcontrol.gcode_case > 0:
                     tosend = tosend.upper()
                 if self.mcontrol.gcode_case < 0:
@@ -898,8 +857,6 @@ class Sender:
 
                 self.serial_write(tosend)
 
-                # self.serial_write(tosend)
-                # self.serial.flush()
                 self.log.put((Sender.MSG_BUFFER, tosend))
 
                 tosend = None

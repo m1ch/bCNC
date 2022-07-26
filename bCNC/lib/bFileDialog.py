@@ -30,8 +30,8 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 # DAMAGES.
 #
-# Author:	Vasilis.Vlachoudis@cern.ch
-# Date:	29-Nov-2009
+# Author:   Vasilis.Vlachoudis@cern.ch
+# Date:     29-Nov-2009
 
 import fnmatch
 import os
@@ -1057,20 +1057,10 @@ if __name__ == "__main__":
     initdir = None
     if len(sys.argv) > 1:
         initdir = os.path.abspath(sys.argv[1])
-    # print askdirectory()
 
     files = asksaveasfilename(
         title=_("Open"),
         initialdir=initdir,
-        # 			initialfile="test.f",
         filetypes=(("All", "*"), ("Python", "*.py"),
                    ("Flair", ("*.flair", "*.inp"))),
     )
-    # print files
-
-    # import tkFileDialog
-    # print tkFileDialog.asksaveasfilename( title="Open flair project",
-    # 		initialdir=initdir,
-    # 		filetypes=(("All","*"),
-    # 			("Python", "*.py"),
-    # 			("Flair",("*.flair", "*.inp"))))

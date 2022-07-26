@@ -158,8 +158,6 @@ class _Base:
                     value = round(value, self.master.digits)
                 except Exception:
                     value = ""
-            # elif t == "list":
-            # 	value += " " + Unicode.BLACK_DOWN_POINTING_TRIANGLE
             self.master.listbox.insert(END, (lp, value))
 
             if t == "color":
@@ -1097,11 +1095,9 @@ class Tabs(DataBase):
         self.icon = "tab"
         self.variables = [
             ("name", "db", "", _("Name")),
-            # ("circ",     "bool", True, _("Create circular tabs (constant width in all angles)"), _("You should only use circular tabs, they are better in all ways. I've left the rectangles here just so people can experiment and get used to circular ones, but i think they can be safely deprecated.")),
             ("ntabs", "int", 5, _("Number of tabs")),
             ("dtabs", "mm", 0.0, _("Min. Distance of tabs")),
             ("dx", "mm", 5.0, "Width"),
-            # ("dy",        "mm",    5.0,   "Dy"),
             ("z", "mm", -3.0, _("Height")),
         ]
         self.buttons.append("exe")
@@ -1139,7 +1135,6 @@ class Tabs(DataBase):
 
         dtabs = self.fromMm("dtabs", 0.0)
         dx = self.fromMm("dx", self.master.fromMm(5.0))
-        # dy    = self.fromMm("dy", self.master.fromMm(5.))
         dy = dx
         z = self.fromMm("z", -self.master.fromMm(3.0))
 
@@ -1155,7 +1150,6 @@ class Tabs(DataBase):
                   + "to zero"),
             )
 
-        # circ = self["circ"]
         circ = True
 
         app.executeOnSelection("TABS", True, ntabs, dtabs, dx, dy, z, circ)
@@ -1547,7 +1541,6 @@ class CAMGroup(CNCRibbon.ButtonMenuGroup):
                     continue
                 # ===
                 if tool.oneshot:
-                    # print("oneshot", tool.name)
                     b = Ribbon.LabelButton(
                         self.frame,
                         image=Utils.icons[tool.icon + "32"],
@@ -1664,8 +1657,6 @@ class CAMGroup(CNCRibbon.ButtonMenuGroup):
 
         # ---
         row += 1
-        # col += 1
-        # row  = 0  #do not start new column before plugins to save space
 
         # Find plugins in the plugins directory and load them
         for group in ["CAM_Core", "CAM"]:
@@ -1674,7 +1665,6 @@ class CAMGroup(CNCRibbon.ButtonMenuGroup):
                     continue
                 # ===
                 if tool.oneshot:
-                    # print("oneshot", tool.name)
                     b = Ribbon.LabelButton(
                         self.frame,
                         image=Utils.icons[tool.icon],
@@ -1684,7 +1674,6 @@ class CAMGroup(CNCRibbon.ButtonMenuGroup):
                         command=lambda s=self, a=app, t=tool: a.tools[
                             t.name.upper()
                         ].execute(a),
-                        # command=tool.execute,
                         background=Ribbon._BACKGROUND,
                     )
                 else:
@@ -1711,7 +1700,6 @@ class CAMGroup(CNCRibbon.ButtonMenuGroup):
     # ----------------------------------------------------------------------
     def createMenu(self):
         menu = Menu(self, tearoff=0)
-        # for group in ("Artistic", "Generator", "Macros"):
         for group in ("Artistic", "Generator", "Development"):
             submenu = Menu(menu, tearoff=0)
             menu.add_cascade(label=group, menu=submenu)
@@ -1740,58 +1728,10 @@ class CAMGroup(CNCRibbon.ButtonMenuGroup):
 
 
 # =============================================================================
-# Plugins Group
-# =============================================================================
-# class PluginsGroup(CNCRibbon.ButtonGroup):
-# 	def __init__(self, master, group, app):
-# 		CNCRibbon.ButtonGroup.__init__(self, master, group, app)
-# 		self.grid3rows()
-#
-# 		col,row=0,0
-# 		# Find plugins in the plugins directory and load them
-# 		for tool in app.tools.pluginList():
-# 			if tool.group != group: continue
-# 			# ===
-# 			b = Ribbon.LabelRadiobutton(self.frame,
-# 					image=Utils.icons[tool.icon],
-# 					text=tool.name,
-# 					compound=LEFT,
-# 					anchor=W,
-# 					variable=app.tools.active,
-# 					value=tool.name,
-# 					background=Ribbon._BACKGROUND)
-# 			b.grid(row=row, column=col, padx=2, pady=0, sticky=NSEW)
-# 			tkExtra.Balloon.set(b, tool.__doc__)
-# 			self.addWidget(b)
-#
-# 			row += 1
-# 			if row==3:
-# 				col += 1
-# 				row  = 0
-
-
-# =============================================================================
-# Macros Groups based on plugins
-# =============================================================================
-# class MacrosGroup(PluginsGroup):
-# 	def __init__(self, master, app):
-# 		PluginsGroup.__init__(self, master, N_("Macros"), app)
-#
-# class GeneratorGroup(PluginsGroup):
-# 	def __init__(self, master, app):
-# 		PluginsGroup.__init__(self, master, N_("Generator"), app)
-#
-# class ArtisticGroup(PluginsGroup):
-# 	def __init__(self, master, app):
-# 		PluginsGroup.__init__(self, master, N_("Artistic"), app)
-
-
-# =============================================================================
 # Config
 # =============================================================================
 class ConfigGroup(CNCRibbon.ButtonMenuGroup):
     def __init__(self, master, app):
-        # CNCRibbon.ButtonGroup.__init__(self, master, N_("Config"), app)
         CNCRibbon.ButtonMenuGroup.__init__(self, master, N_("Config"), app)
         self.grid3rows()
 
@@ -1877,20 +1817,6 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
         b.grid(row=row, column=col, padx=1, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Camera Configuration"))
         self.addWidget(b)
-
-    # 		# ---
-    # 		row += 1
-    # 		b = Ribbon.LabelRadiobutton(self.frame,
-    # 				image=Utils.icons["event"],
-    # 				text=_("Events"),
-    # 				compound=LEFT,
-    # 				anchor=W,
-    # 				variable=app.tools.active,
-    # 				value="Events",
-    # 				background=Ribbon._BACKGROUND)
-    # 		b.grid(row=row, column=col, padx=1, pady=0, sticky=NSEW)
-    # 		tkExtra.Balloon.set(b, _("Events configuration"))
-    # 		self.addWidget(b)
 
     # ----------------------------------------------------------------------
     def fillLanguage(self):
@@ -1989,8 +1915,6 @@ class ToolsFrame(CNCRibbon.PageFrame):
         self.toolList.bindList("<Double-1>", self.help)
         self.toolList.bindList("<Return>", self.edit)
         self.toolList.bindList("<Key-space>", self.edit)
-        # 		self.toolList.bindList("<Key-space>",	self.commandFocus)
-        # 		self.toolList.bindList("<Control-Key-space>",	self.commandFocus)
         self.toolList.listbox(1).bind("<ButtonRelease-1>", self.edit)
         self.tools.setListbox(self.toolList)
         self.addWidget(self.toolList)
@@ -2029,9 +1953,6 @@ class ToolsFrame(CNCRibbon.PageFrame):
     # Edit tool listbox
     # ----------------------------------------------------------------------
     def help(self, event=None, rename=False):
-        # lb = self.master.listbox.listbox(1)
-        # print("help",item)
-        # messagebox.showinfo("Help for "+item, "Help for "+item)
         item = self.toolList.get(self.toolList.curselection())[0]
         for var in self.tools.getActive().variables:
             if var[3] == item or _(var[3]) == item:
@@ -2076,10 +1997,6 @@ class ToolsFrame(CNCRibbon.PageFrame):
         self.tools.getActive().rename()
 
     # ----------------------------------------------------------------------
-
-
-# 	def selectTab(self, tabid):
-#
 
 
 # =============================================================================

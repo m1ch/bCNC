@@ -29,8 +29,8 @@
 # LIABILITY OR OTHERWISE, ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 
-# Author:	Vasilis.Vlachoudis@cern.ch
-# Date:	10-Mar-2015
+# Author    :Vasilis.Vlachoudis@cern.ch
+# Date:     10-Mar-2015
 
 import math
 import sys
@@ -460,7 +460,6 @@ class Entity(dict):
         else:
             error("Cannot handle entity type: "
                   + f"{self.type} in layer: {self.name}\n")
-            # import traceback; traceback.print_stack()
             self._start = self._end = self.point()
 
     # ----------------------------------------------------------------------
@@ -544,13 +543,6 @@ class Entity(dict):
             xyz = to_zip(self[10], self[20], self[30])
             flag = int(self.get(70, 0))
             closed = bool(flag & Entity.CLOSED)
-            # 			print "\nSPLINE"
-            # 			print "closed=",closed
-            # 			print "periodic=",periodic
-            # 			print "rational=",rational
-            # 			print "planar=",planar
-            # 			print "linear=",linear
-            # 			for n in sorted(self.keys()): print n,"=",self[n]
             knots = self[40]
             xx, yy, zz = spline.spline2Polyline(
                 xyz, int(self[71]), closed, splineSegs, knots
@@ -603,7 +595,6 @@ class Entity(dict):
 
         while True:
             tag, value = dxf.read()
-            # print tag,value
             if tag is None:
                 return
             if tag == 0:
@@ -740,8 +731,6 @@ class Layer:
         while self.entities:
             # End point
             ex, ey = new[-1].end()
-            # print
-            # print "*-*",new[-1].start(),new[-1].end()
 
             # Find the entity that starts after the last one
             for i, entity in enumerate(self.entities):
@@ -969,34 +958,35 @@ class DXF:
     # http://www.autodesk.com/techpubs/autocad/acad2000/dxf/
     #   group_code_value_types_dxf_01.htm
     #
-    # Code range	python	Group value type
-    # 0-9		str	String. (With the introduction of extended symbol names
-    # 			in AutoCAD 2000, the 255 character limit has been lifted.
-    # 			There is no explicit limit to the number of bytes per line,
-    # 			although most lines should fall within 2049 bytes.)
-    # 10-59		float	Double precision 3D point
-    # 60-79		int	16-bit integer value
-    # 90-99		int	32-bit integer value
-    # 100		str	String (255-character maximum; less for Unicode strings)
-    # 102		str	String (255-character maximum; less for Unicode strings)
-    # 105		str	String representing hexadecimal (hex) handle value
-    # 140-147	float	Double precision scalar floating-point value
-    # 170-175	int	16-bit integer value
-    # 280-289	int	8-bit integer value
-    # 300-309	str	Arbitrary text string
-    # 310-319	str	String representing hex value of binary chunk
-    # 320-329	str	String representing hex handle value
-    # 330-369	str	String representing hex object IDs
-    # 370-379	int	8-bit integer value
-    # 380-389	int	8-bit integer value
-    # 390-399	str	String representing hex handle value
-    # 400-409	int	16-bit integer value
-    # 410-419	str	String
-    # 999		str	Comment (string)
-    # 1000-1009	str	String. (Same limits as indicated with 0-9 code range.)
-    # 1010-1059	float	Floating-point value
-    # 1060-1070	int	16-bit integer value
-    # 1071		int	32-bit integer value
+    # Code range    python      Group value type
+    # 0-9           str         String. (With the introduction of extended
+    #                           symbol names
+    #           in AutoCAD 2000, the 255 character limit has been lifted.
+    #           There is no explicit limit to the number of bytes per line,
+    #           although most lines should fall within 2049 bytes.)
+    # 10-59         float       Double precision 3D point
+    # 60-79         int         16-bit integer value
+    # 90-99         int         32-bit integer value
+    # 100           str         String (255-character maximum; less for Unicode strings)
+    # 102           str         String (255-character maximum; less for Unicode strings)
+    # 105           str         String representing hexadecimal (hex) handle value
+    # 140-147       float       Double precision scalar floating-point value
+    # 170-175       int         16-bit integer value
+    # 280-289       int         8-bit integer value
+    # 300-309       str         Arbitrary text string
+    # 310-319       str         String representing hex value of binary chunk
+    # 320-329       str         String representing hex handle value
+    # 330-369       str         String representing hex object IDs
+    # 370-379       int         8-bit integer value
+    # 380-389       int         8-bit integer value
+    # 390-399       str         String representing hex handle value
+    # 400-409       int         16-bit integer value
+    # 410-419       str         String
+    # 999           str         Comment (string)
+    # 1000-1009     str         String. (Same limits as indicated with 0-9 code range.)
+    # 1010-1059     float       Floating-point value
+    # 1060-1070     int         16-bit integer value
+    # 1071          int         32-bit integer value
     # ----------------------------------------------------------------------
     def read(self):
         """Read one pair tag,value either from file or previously saved"""
@@ -1077,7 +1067,6 @@ class DXF:
             self.push(tag, value)
             return False
         return True
-        # raise Exception("DXF expecting %d,%s found %s,%s"%(t,v,str(tag),str(value)))
 
     # ----------------------------------------------------------------------
     def skipBlock(self):
@@ -1151,9 +1140,6 @@ class DXF:
                 return None
             entity = Entity(value)
             entity.read(self)
-            # 			print
-            # 			print ">>>",entity
-            # 			for n in sorted(entity.keys()): print n,":",entity[n]
             if entity.type in ("HATCH",):
                 continue  # ignore
             self.addEntity(entity)
@@ -1164,7 +1150,6 @@ class DXF:
         block = None
         while True:
             tag, value = self.read()
-            # print ">>>",tag,value
             if tag is None:
                 return
             elif tag == 0:
@@ -1174,7 +1159,6 @@ class DXF:
                     block = Block()
                     block.read(self)
                     self.blocks[block.name] = block
-                    # print block
                 elif value == "ENDBLK":
                     self.skipBlock()
                 else:
@@ -1225,7 +1209,6 @@ class DXF:
         if tag != 2:
             self.push()
             return None
-        # print "-"*40,value,"-"*40
         if value == "HEADER":
             self.readHeader()
 
@@ -1329,7 +1312,6 @@ class DXF:
             self.write(8, name)
         self.writeVector(0, x, y)
         self.write(40, r)
-        # if start > end: start,end = end,start
         self.write(50, start)
         self.write(51, end)
 
@@ -1413,48 +1395,6 @@ class DXF:
 
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
-    # 	from dxfwrite.algebra import CubicSpline, CubicBezierCurve
     dxf = DXF(sys.argv[1], "r")
     dxf.readFile()
     dxf.close()
-# 	for name,layer in dxf.layers.items():
-# 		print "#",name
-# 		for entity in layer.entities:
-# 			print entity.name, entity.type
-# 			if entity.type == "SPLINE":
-# 				xy = to_zip(entity[10], entity[20])
-# 				cs = CubicBezierCurve(xy)
-# 				for x,y in cs.approximate(100):
-# 					print x,y
-
-# 	for name,layer in dxf.layers.items():
-# 		#print "Frozen=",not bool(layer.isFrozen())
-# 		for entity in dxf.sortLayer(name):
-# 			print entity, entity._invert
-
-# 	dxf = DXF("test.dxf","w")
-# 	dxf.writeHeader()
-# 	#dxf.line( 0, 0, 20, 0, "line1")
-# 	#dxf.line(20, 0, 20,10, "line1")
-# 	#dxf.line(20,10,  0,10, "line1")
-# 	#dxf.line( 0,10,  0, 0, "line1")
-# 	#dxf.circle(20,10,5,"circle")
-#
-# 	dxf.arc(0,0,5,30,90,"arc")
-# 	dxf.arc(0,0,10,90,30,"arc")
-# 	dxf.line(8.660254037844387, 5, 20,30,"arc")
-# 	dxf.line(0,5,0,10,"arc")
-# 	dxf.arc(0,0,20,90,30,"arc")
-#
-# 	#dxf.polyline([(100,0),(200,200),(100,200)],"polyline")
-# 	dxf.writeEOF()
-# 	dxf.close()
-#
-# 	dxf.open("test2.dxf","r")
-# 	dxf.readFile()
-# 	dxf.close()
-# 	#print "-"*80
-# 	#for name in dxf.layers:
-# 	#	for entity in dxf.sortLayer(name):
-# 	#		print entity
-# 	dxf.close()

@@ -1,7 +1,7 @@
 # $Id$
 #
-# Author:	Filippo Rivato
-# Date:		20 December 2015
+# Author:    Filippo Rivato
+# Date:      20 December 2015
 # Porting of midi2cnc https://github.com/michthom/MIDI-to-CNC (GPLv2+)
 
 import math
@@ -159,7 +159,6 @@ class Tool(Plugin):
         all_channels = set()
 
         for track in midi.tracks:
-            # channels=set()
             for event in track.events:
                 if event.type == midiparser.meta.SetTempo:
                     tempo = event.detail.tempo
@@ -207,7 +206,6 @@ class Tool(Plugin):
 
             # Finished with this track
             if len(channels) > 0:
-                # print 'Processed track %d, containing channels numbered: [%s ]' % (track.number, msg)
                 all_channels = all_channels.union(channels)
 
         # We now have entire file's notes with abs time from all channels
@@ -216,8 +214,6 @@ class Tool(Plugin):
         # to dechannelify
 
         noteEventList.sort()
-        # print noteEventList
-        # print len(noteEventList)
 
         last_time = -0
         # make this a dict so we can add and remove notes by name
@@ -234,7 +230,6 @@ class Tool(Plugin):
         block.append(CNC.zenter(0))
 
         for note in noteEventList:
-            # note[timestamp, note off/note on, note_no, velocity]
             if last_time < note[0]:
 
                 freq_xyz = [0, 0, 0]
@@ -255,15 +250,12 @@ class Tool(Plugin):
                     #
                     j = self.axes_dict.get(axes)[i]
 
-                    # Debug
-                    # print"Axes %s: item %d is %d" % (axes_dict.get(args.axes), i, j)
-
                     # Sound higher pitched notes first by sorting by pitch
                     # then indexing by axis
                     #
                     nownote = sorted(active_notes.values(), reverse=True)[i]
 
-                    # MIDI note 69	 = A4(440Hz)
+                    # MIDI note 69   = A4(440Hz)
                     # 2 to the power (69-69) / 12 * 440 = A4 440Hz
                     # 2 to the power (64-69) / 12 * 440 = E4 329.627Hz
                     #

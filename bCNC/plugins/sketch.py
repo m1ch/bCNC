@@ -1,7 +1,7 @@
 # $Id$
 #
-# Author:	Filippo Rivato
-# Date: 	07 January 2016
+# Author:   Filippo Rivato
+# Date:     07 January 2016
 # Inspired by: "Death to sharpie" a drawbot by Scott Cooper
 # see at http://www.dullbits.com/drawbot/drawbot
 
@@ -321,7 +321,6 @@ class Tool(Plugin):
         self.mostest = 256
         x, y = self.findFirst(pix, True, casual)
 
-        # startAll = time.time()
         total_line = 0
         total_length = 0
         for c in range(squiggleTotal):
@@ -329,8 +328,6 @@ class Tool(Plugin):
             if pix[x, y] > max_light:
                 continue
             block = Block(self.name)
-            # print c,x,y
-            # start = time.time()
 
             total_line += 1
             total_length += 1
@@ -342,7 +339,6 @@ class Tool(Plugin):
             # restore cut/draw feed
             block.append(CNC.gcode(1, [("f", CNC.vars["cutfeed"])]))
 
-            # start = time.time()
             s = 0
             while s < squiggleLength:
                 x, y, distance = self.findInRange(x, y, pix, radius)
@@ -356,7 +352,6 @@ class Tool(Plugin):
                     x, y, pix, fading, repetition
                 )  # adjustbrightness int the bright map
             # tool up
-            # print 'Squiggle: %f' % (time.time() - start)
             # Gcode Zsafe
             block.append(CNC.zsafe())
             blocks.append(block)
@@ -377,5 +372,3 @@ class Tool(Plugin):
                 int(total_length)
             )
         )
-        # img.save('test.png')
-        # print 'Time: %f' % (time.time() - startAll)

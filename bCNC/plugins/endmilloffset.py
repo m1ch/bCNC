@@ -276,7 +276,6 @@ class PocketIsland:
             if len(opath) > 0:
                 opath.removeExcluded(path, abs(offset))
             opath.removeZeroLength(abs(self.diameter) / 100.0)
-            # 			opath.removeZeroLength(abs(EPS*10.))
             opath.convert2Lines(abs(self.diameter) / 10.0)
             if self.depth == 0 and self.Overcuts:
                 opath.overcut(self.profiledir * self.offset * float(direct))
@@ -301,7 +300,6 @@ class PocketIsland:
             if len(offIsl) > 0:
                 offIsl.removeExcluded(island, abs(self.offset))
             offIsl.removeZeroLength(abs(self.diameter) / 100.0)
-            # 			offIsl.removeZeroLength(abs(EPS*10.))
             offIsl.convert2Lines(abs(self.diameter) / 10.0)
             if len(offIsl) > 0:
                 p4 = offIsl[0].A

@@ -219,7 +219,7 @@ def format__(number, length=10, useExp=False, useD=False):
                     integer = integer[0:_MAXLEN]
 
     # Now the number is described by:
-    # 	sgn 0.integer "E" exponent
+    #   sgn 0.integer "E" exponent
 
     # Make space for sign
     if sgn:
@@ -228,15 +228,15 @@ def format__(number, length=10, useExp=False, useD=False):
     while True:
         # Minimum length representation of a number
         # Length = Length of integer
-        # 	    + 1 for Dot if needed (no exponent)
-        # 	    + (2-4) for exponent
-        # 	exponent can be in the following forms
-        # 		nothing if dot can placed inside integer
-        # 		E#	2
-        # 		E##	3
-        # 		E-#	3
-        # 		E-##	4
-        # 	integer is given as  0.integer
+        #       + 1 for Dot if needed (no exponent)
+        #       + (2-4) for exponent
+        #   exponent can be in the following forms
+        #       nothing if dot can placed inside integer
+        #       E#	2
+        #       E##	3
+        #       E-#	3
+        #       E-##	4
+        #   integer is given as  0.integer
         lint = len(integer)
         if useExp:
             mNum = f"{rexx.insert('.', integer, 1)}{expE}{int(exponent - 1)}"
@@ -897,9 +897,9 @@ class Matrix(list):
 
     # ----------------------------------------------------------------------
     # Create a rotation matrix around one axis
-    # 	X = 0
-    # 	Y = 1
-    # 	Z = 2
+    #   X = 0
+    #   Y = 1
+    #   Z = 2
     # or an arbitrary vector
     # ----------------------------------------------------------------------
     def rotate(self, angle, axis):
@@ -968,14 +968,14 @@ class Matrix(list):
         """return the Euler rotation angles
         ROTX(x) * ROTY(y) * ROTZ(z)"""
         #  cos(z)*cos(y)
-        # 			sin(z)*cos(y)
-        # 						-sin(y)
+        #           sin(z)*cos(y)
+        #                       -sin(y)
         # -sin(z)*cos(x)+cos(z)*sin(y)*sin(x)
-        # 			cos(z)*cos(x)+sin(z)*sin(y)*sin(x)
-        # 						cos(y)*sin(x)
+        #           cos(z)*cos(x)+sin(z)*sin(y)*sin(x)
+        #                       cos(y)*sin(x)
         #  sin(z)*sin(x)+cos(z)*sin(y)*cos(x)
-        # 			-cos(z)*sin(x)+sin(z)*sin(y)*cos(x)
-        # 						cos(y)*cos(x)
+        #           -cos(z)*sin(x)+sin(z)*sin(y)*cos(x)
+        #                       cos(y)*cos(x)
         rx = atan2(self[1][2], self[2][2])
         ry = -asin(self[0][2])
         rz = atan2(self[0][1], self[0][0])
@@ -1182,7 +1182,7 @@ class Matrix(list):
     # ----------------------------------------------------------------------
     # LU decomposition.
     # Parameters
-    #      index[0:size]	row permutation record
+    #      index[0:size]    row permutation record
     # ----------------------------------------------------------------------
     def __ludcmp(self, index):  # procedure expose indx.
         size = self.rows
@@ -1232,8 +1232,8 @@ class Matrix(list):
 
     # ----------------------------------------------------------------------
     # backward substitution
-    #      index[0:size]	  row permutation record
-    #      col[0:size]	  right hand vector (?)
+    #      index[0:size]      row permutation record
+    #      col[0:size]    right hand vector (?)
     # ----------------------------------------------------------------------
     def __lubksb(self, index, col):
         ii = -1
@@ -1494,7 +1494,7 @@ def linear(X, Y):
 #   pivakes, dnladn pivakes me mndevika ola ta stoixeia ektos tns
 #   kyrias diagwvioy, va exoyv sav idiotimes ta diagwvia stoixeia.
 #   Me tov metasxnmatismo.
-# 	      T			      T
+#      T                       T
 #      A1 = R1 (f) A R1(f),    A2 = R2 (f) A1 R2(f)
 #   metaballoyme syvexws tov pivaka A, mexris otoy to a8roisma olwv
 #   twv mn diagwviwv stoixeiwv f8asei mia ka8orismevn timn tns eklogns
@@ -1507,22 +1507,23 @@ def linear(X, Y):
 #   4. Elegxos av to a8roisma twv mn diagwviwv stoixeiwv exei f8asei tnv
 #      epi8ymntn timn. Eav vai tote ta diagwvia stoixeia eivai oi
 #      proseggiseis twv idiotimwv, eav oxi tote epistrefoyme sto 1.
-#      px.     |  1 -2 -1 |
-# 	   A = | -2  1 -1 |
-# 	       | -1 -1 2.5|
+#      px.
+#          |  1 -2 -1 |
+#      A = | -2  1 -1 |
+#          | -1 -1 2.5|
 #      apolyto megisto A(1,2) = -2
 #      Ypologizoyme tnv gwvia f, co=cos(f), si=sin(f) kai kavoyme tov
 #      metasxnmatismo
-# 	   | co -si  0 |   |  1 -2 -1 |   |  co  si  0 |
+#          | co -si  0 |   |  1 -2 -1 |   |  co  si  0 |
 #      A = | si  co  0 | x | -2  1 -1 | x | -si  co  0 |
-# 	   |  0   0  1 |   | -1 -1 2.5|   |   0   0  1 |
+#          |  0   0  1 |   | -1 -1 2.5|   |   0   0  1 |
 #
 #
 #      Oi parametroi tns roytivas eivai oi e3ns:
-# 	 A     - pivakas tetragwvikos
-# 	 eps   - akribeia (a8roisma tetragwvwv)
-# 	 check - av prepei va elejei tnv symmetria toy arxikoy pivaka
-# 		 n oxi
+#    A     - pivakas tetragwvikos
+#    eps   - akribeia (a8roisma tetragwvwv)
+#    check - av prepei va elejei tnv symmetria toy arxikoy pivaka
+#            n oxi
 # -----------------------------------------------------------------------------
 def eigenvalues(M, eps=_accuracy, check=False):
     """Return eigen values and eigen vectors of a symmetric matrix"""
@@ -1581,8 +1582,8 @@ def eigenvalues(M, eps=_accuracy, check=False):
         RT[q][p] = si
 
         # Bnma 3. metasxnmatismos Ai+1 = Rt * Ai * R
-        # 	  ka8os kai to ginomeno Rn*...*R2*R1 that
-        # 	  gives us the eigenvectors
+        #   ka8os kai to ginomeno Rn*...*R2*R1 that
+        #   gives us the eigenvectors
         if V is None:
             V = R.clone()
         else:
@@ -1631,13 +1632,13 @@ def eigenvalues(M, eps=_accuracy, check=False):
 # returned as xmin, and the minimum function value is returned as golden, the
 # returned function value.
 #
-# @param func	function to be evaluated
-# @param ax	triplet of abscissas ax,bx,cx
-# @param bx	where func(x+bx*d) < min[ func(x+ax*d), func(x+cx*d) ]
-# @param cx	...
-# @param x	starting vector/value
-# @param d	direction vector/value
-# @param eps	accuracy of search
+# @param func   function to be evaluated
+# @param ax     triplet of abscissas ax,bx,cx
+# @param bx     where func(x+bx*d) < min[ func(x+ax*d), func(x+cx*d) ]
+# @param cx     ...
+# @param x      starting vector/value
+# @param d      direction vector/value
+# @param eps    accuracy of search
 # -----------------------------------------------------------------------------
 def goldenSectionSearch(func, ax, bx, cx, x, d=1, eps=_accuracy):
     R = 0.61803399  # The golden ratio
@@ -1721,8 +1722,8 @@ def xpermutations(items):
 # -----------------------------------------------------------------------------
 # Conversion between rectangular and polar coordinates
 # Usage:
-# 	real, real = rect(real, real [, deg=False])
-# 	real, real = polar(real, real [, deg=False])
+#   real, real = rect(real, real [, deg=False])
+#   real, real = polar(real, real [, deg=False])
 # Normally, rect() and polar() uses radian for angle; but,
 # if deg=True specified, degree is used instead.
 # -----------------------------------------------------------------------------
@@ -1760,27 +1761,10 @@ def polar(x, y, deg=False):
 # Usage
 #    number, number = quadratic(real, real [, real])
 #
-# Normally, x^2 + ax + b = 0 is assumed with the 2 coefficients # as
-# arguments; but, if 3 arguments are present, then ax^2 + bx + c = 0 is assumed.
+# Normally, x^2 + ax + b = 0 is assumed with the 2 coefficients
+# as arguments; but, if 3 arguments are present,
+# then ax^2 + bx + c = 0 is assumed.
 # -----------------------------------------------------------------------------
-# def quadratic(a, b, c=None):
-# 	"""
-# 	x^2 + ax + b = 0 (or ax^2 + bx + c = 0)
-# 	By substituting x = y-t and t = a/2,
-# 	the equation reduces to y^2 + (b-t^2) = 0
-# 	which has easy solution
-# 	y = +/- sqrt(t^2-b)
-# 	"""
-# 	if c: # (ax^2 + bx + c = 0)
-# 		a, b = b / float(a), c / float(a)
-# 	t = a / 2.0
-# 	r = t**2 - b
-# 	if r >= 0: # real roots
-# 		y1 = sqrt(r)
-# 	else: # complex roots
-# 		y1 = cmath.sqrt(r)
-# 	y2 = -y1
-# 	return y1 - t, y2 - t
 def quadratic(b, c, eps=_accuracy):
     D = b * b - 4.0 * c
     if D <= 0.0:

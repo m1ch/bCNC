@@ -126,7 +126,6 @@ ANSI_UNDERLINE = "\033[4m"
 ANSI_REVERSE = "\033[7m"
 ANSI_NORMAL = "\033[m"
 
-# base64.encodestring(open("save.gif","rb").read())
 _SAVEICON = """
 R0lGODlhEAAQAOcBAAAAAP//////////////////////////////////////////////////////
 /////////0xLS0RDRLO0ubO0ubO0ubO0ubS2ubS2u7a4vLe5vLi5vLm5vERDRExLS////////0JA
@@ -194,17 +193,17 @@ ADs=
 # events to send data <<...>>
 #
 # Example, instead of binding like
-# 	widget.bind("<<VirtualEvent>>", function)
+#       widget.bind("<<VirtualEvent>>", function)
 # use it as
-# 	bindEventData(widget, "<<VirtualEvent>>", function)
+#       bindEventData(widget, "<<VirtualEvent>>", function)
 #
 # def function(event):
-# 	print event.serial, event.widget, event.data
+#       print event.serial, event.widget, event.data
 #
 # Send message as
-# 	widget.event_generate("<<VirtualEvent>>", data="Hello")
-# 	widget.event_generate("<<VirtualEvent>>", data=("One","Two"))
-# 	widget.event_generate("<<VirtualEvent>>", serial=10, data=("One","Two"))
+#     widget.event_generate("<<VirtualEvent>>", data="Hello")
+#     widget.event_generate("<<VirtualEvent>>", data=("One","Two"))
+#     widget.event_generate("<<VirtualEvent>>", serial=10, data=("One","Two"))
 #
 # WARNING: Unfortunatelly it will convert data to STRING!!!
 # -----------------------------------------------------------------------------
@@ -277,9 +276,7 @@ def toggleHeight(root, oldHeight):
         newy = 0
         newheight = maxheight - 72
     else:
-        # newy = 24
         newy = 0
-        # newheight = maxheight - 96
         newheight = maxheight - 88
 
     if height >= newheight:
@@ -619,7 +616,6 @@ class AutoScrollbar(Scrollbar):
     def pack(self, **kw):
         self.method = 1
         Scrollbar.pack(self, **kw)
-        # raise TclError("cannot use pack with this widget")
 
     # ----------------------------------------------------------------------
     def place(self, **kw):
@@ -632,7 +628,6 @@ class AutoScrollbar(Scrollbar):
 class ProgressBar(Canvas):
     def __init__(self, master=None, **kw):
         Canvas.__init__(self, master, **kw)
-        # self.config(background="DarkGray")
         self.currBox = self.create_rectangle(0, 0, 0, 0,
                                              fill="Orange", width=0)
         self.doneBox = self.create_rectangle(
@@ -805,7 +800,6 @@ class ExListbox(Listbox):
         Listbox.__init__(self, master, **kw)
         ExListbox.resetSearch()
         self._single = kw.get("selectmode", "") in [SINGLE, BROWSE]
-        # 		self.bind('<Button-1>', lambda e,s=self:s.focus_set())
         self.bind("<Key>", self.handleKey)
         self.bind("<Home>", lambda e, s=self: s._scrollTo(0))
         self.bind("<Prior>", lambda e, s=self: s._scrollTo(-1, PAGES))
@@ -923,10 +917,9 @@ class ExListbox(Listbox):
         if event.keysym in ("Delete", "Escape", "Return", "KP_Enter"):
             ExListbox.resetSearch()
             return
-        # Search Again	Ctrl-G
+        # Search Again  Ctrl-G
         elif event.char == "\007":
             # Space bar selects...
-            # (event.char==' ' and self.ignoreNonAlpha):
             self.activate(oldActive + 1)
             again = True
         # Backspace
@@ -987,7 +980,6 @@ class ExListbox(Listbox):
             if again:
                 start = cur + 1
                 again = False
-            # elif oldActive != self.index(ACTIVE):
             else:
                 start = 0
                 loop += 1
@@ -1267,22 +1259,6 @@ class SearchListbox(ExListbox):
         self._pos = []
 
     # ----------------------------------------------------------------------
-    # Fill the listbox
-    # ----------------------------------------------------------------------
-    # 	def fill(self, items=None):
-    # 		del self._items[:]
-    # 		if items is None:
-    # 			for item in Listbox.get(self,0,END):
-    # 				self._items.append(unicode(item))
-    # 		else:
-    # 			self.delete(0,END)
-    # 			for item in items:
-    # 				item = unicode(item)
-    # 				self._items.append(item)
-    # 				self.insert(END, item)
-    # 		self._pos = range(len(self._items))
-
-    # ----------------------------------------------------------------------
     def reset(self):
         if self._items and ExListbox._search:
             ExListbox.resetSearch()
@@ -1432,7 +1408,6 @@ class SearchListbox(ExListbox):
     # FIXME needs work to handle, ACTIVE, END...
     # ----------------------------------------------------------------------
     def get(self, first, last=None):
-        # say("SearchListbox.get",first,type(first),last,type(last))
         if not self._items:
             return Listbox.get(self, first, last)
 
@@ -1455,9 +1430,9 @@ class SearchListbox(ExListbox):
 
 # =============================================================================
 # MultiListbox based on recipe from
-# 	http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/52266
-# Author:	Brent Burley
-# Date:		2001/03/14
+#  http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/52266
+# Author:    Brent Burley
+# Date:      2001/03/14
 # =============================================================================
 class MultiListbox(Frame):
     """Multilistbox class"""
@@ -1507,7 +1482,6 @@ class MultiListbox(Frame):
                 options[n] = o
 
         for li, w, a in lists:
-            # if header:
             frame = Frame(self.paneframe, border=0)
             try:
                 self.paneframe.add(frame, minsize=16, stretch=stretch)
@@ -1518,13 +1492,8 @@ class MultiListbox(Frame):
                 lbl.pack(fill=X)
                 lbl.bind("<Button-1>", lambda e, s=self, c=col: s.sort(c))
                 self._labels.append(lbl)
-            # else:
-            # 	frame = self
 
             lb = ExListbox(frame, width=w, **options)
-            # if header:
-            # 	lb.pack(expand=YES, fill=BOTH)
-            # else:
             lb.pack(side=LEFT, expand=YES, fill=BOTH)
             self._lists.append(lb)
 
@@ -1882,7 +1851,6 @@ class MultiListbox(Frame):
             if reverse is None:
                 reverse = False
 
-        # elements = self.get(0, END)
         elements = []
         lst = self._lists[0]
         for i in range(self.size()):
@@ -2000,14 +1968,11 @@ class ImageListbox(Text):
         self.config(
             cursor="arrow",
             tabs="20p",
-            # insertofftime=0,
-            # insertontime=0,
             wrap="none",
             insertwidth=0,
             takefocus=TRUE,
             exportselection=0,
         )
-        # 			state=DISABLED)
         self.bind("<Button-1>", self._button1)
         self.bind("<Control-Button-1>", self._controlButton1)
         self.bind("<Shift-Button-1>", self._motion1)
@@ -2029,7 +1994,6 @@ class ImageListbox(Text):
     # ----------------------------------------------------------------------
     def insert(self, index, icon, text):
         """Insert ELEMENTS at INDEX."""
-        # 		self.config(state=NORMAL)
         if index != END:
             index = int(index)
             sindex = f"{int(index + 1)}.0"
@@ -2040,8 +2004,6 @@ class ImageListbox(Text):
             self.image_create(END, image=icon)
             Text.insert(self, END, f"\t{text}\n")
             self._selection.append(False)
-
-    # 		self.config(state=DISABLED)
 
     # ----------------------------------------------------------------------
     def delete(self, first, last=None):
@@ -2264,7 +2226,6 @@ class ImageListbox(Text):
         Text.selection_clear(self)
 
     # ----------------------------------------------------------------------
-    # def bbox(self, *args):
     def bbox(self, index):
         """Return a tuple of X1,Y1,X2,Y2 coordinates for a rectangle
         which encloses the item identified by index in ARGS."""
@@ -2435,7 +2396,6 @@ class InPlaceEdit:
         self.frame.bind("<ButtonRelease-1>", self.clickOk)
         self.frame.bind("<ButtonRelease-3>", self.clickCancel)
         self.listbox.bind("<Configure>", self.resize)
-        # self.frame.bind("<Unmap>",          self._destroy)
 
         try:
             self._grab_window = self.frame.grab_current()
@@ -2454,7 +2414,6 @@ class InPlaceEdit:
             self.frame.wait_window()
         except TclError:
             pass
-        # self.listbox.focus_set()
 
     # ----------------------------------------------------------------------
     # Override method if another widget is requested
@@ -2669,7 +2628,6 @@ class InPlaceList(InPlaceEdit):
             self.frame,
             selectmode=BROWSE,
             height=self.height,
-            # background="White",
             yscrollcommand=sb.set,
         )
         sb.config(command=self.edit.yview)
@@ -2831,8 +2789,6 @@ class InPlaceText(InPlaceEdit):
         InPlaceEdit.defaultBinds(self)
         self.toplevel.bind("<ButtonRelease-1>", self.clickOk)
         self.toplevel.bind("<ButtonRelease-3>", self.clickCancel)
-        # self.edit.bind("<ButtonRelease-1>", self.clickOk)
-        # self.edit.bind("<ButtonRelease-3>", self.clickCancel)
         self.edit.bind("<Shift-Return>", self.shiftReturn)
         self.edit.bind("<Escape>", self.cancel)
 
@@ -2981,7 +2937,6 @@ class InPlaceFile(InPlaceEdit):
                 filetypes=self.filetypes,
             )
         self.frame.grab_set()
-        # self.frame.bind("<FocusOut>", self.cancel)
         self._icon = None
         if len(fn) > 0:
             self.edit.delete(0, END)
@@ -3032,8 +2987,6 @@ class PopupList(Toplevel):
         if x is not None and y is not None:
             self.geometry(f"+{int(x)}+{int(y)}")
         self._listbox.focus_set()
-        # self.wait_visibility()
-        # self.grab_set()
         self.wait_window()
         return self.selected
 
@@ -3143,14 +3096,9 @@ class Combobox(Frame):
         self._popup.bind("<FocusOut>", self._focusOut)
         self._popup.bind("<Button-1>", self.popupClick)
         self._popup.bind("<Button-3>", self.popupClick)
-        # self._popup.bind('<Shift-Tab>',	self._selectUnpostPrev)
-        # self._popup.bind('<Tab>',	self._selectUnpostNext)
-        # if sys.platform in ("linux","linux2"):
-        # 	self._popup.bind('<ISO_Left_Tab>', self._selectUnpostPrev)
 
         # grab_set redirects all mouse events to the list even
         # when the list is posted with a mouse click
-        # self._hide_on_next_release = False
         self._grab_window = None
 
     # ----------------------------------------------------------------------
@@ -3196,8 +3144,6 @@ class Combobox(Frame):
             # Grab the popup, so that all events are delivered to it, and
             # set focus to the listbox, to make keyboard navigation
             # easier.
-            # self._popup.grab_set()
-            # self._popup.focus_set()
             self._listbox.focus_set()
             self._showSelection()
 
@@ -3392,7 +3338,6 @@ class Combobox(Frame):
     # ----------------------------------------------------------------------
     def __setitem__(self, key, value):
         # XXX: This code gave an error that was fixed with **{}. Not sure if it does, what it is supposed to do
-        # self.configure({key:value})
         self.configure(**{key: value})
 
     # ----------------------------------------------------------------------
@@ -3738,18 +3683,12 @@ class _SplitNode:
     def makeSplit(self, master, drag):
         self.split = Frame(master, bd=1, relief=GROOVE)
         self.split.bind("<B1-Motion>", drag)
-        # split.bind("<ButtonRelease-1>", self.placeChilds)
-        # split.bind("<Double-Button-1>", self.toggle)
         self.setCursor()
 
     # ----------------------------------------------------------------------
     def printNode(self, depth):
         if self.left:
             self.left.printNode(depth + 1)
-        # if self.child:
-        # 	say("   "*depth, self.child, self.child["bg"])
-        # else:
-        # 	say("   "*depth, " ======== H=",self.hori," pos=",self.pos)
         if self.right:
             self.right.printNode(depth + 1)
 
@@ -4027,8 +3966,6 @@ class TreeSplitter(Frame):
     def __placeNode(self, node, x, y, w, h):
         if node is None:
             return
-        # say("placeNode", node, node.child)
-        # say("    ",x, y, w, h)
         if node.end():
             # Place the child
             if x > 0.0:
@@ -4669,12 +4606,10 @@ class ScrollFrame(Frame):
         self.stretch_x = stretch
         self.stretch_y = stretch
 
-        # self.bind("<Expose>",		self.updateScrollRegion)
         self.bind("<Configure>", self.updateScrollRegion)
 
         self.defaultBinds()
 
-        # w = self.client.winfo_toplevel()
         self.mult = 1.0
         self._drag = None
         self._startx = self._startx = 0
@@ -5206,21 +5141,9 @@ if __name__ == "__main__":
     lb.insert(END, "Creation of windows...")
     lb.insert(END, "Writing ini file")
     lb.insert(END, "Exiting program")
-    # 	lb.fill()
     lb.pack(expand=YES, fill=BOTH)
     lb.focus_set()
     lb.ignoreCase = True
-    # 	lb.ignoreNonAlpha = False
-
-    # 	v = StringVar()
-    # 	lst = ["One", "Two", "Three", "Four"]
-    # 	v.set("One")
-    # 	o = ExOptionMenu(vsplitR.bottomFrame(), v, *lst)
-    # 	o.pack()
-    # 	o.delete()
-    # 	lst.reverse()
-    # 	for i in lst:
-    # 		o.add(i)
 
     # test dialog
     frame = vsplitR.bottomFrame()

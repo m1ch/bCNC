@@ -7,8 +7,8 @@
 # Usage:
 # svgcode = SVGcode('./image.svg')
 # for path in svgcode.get_gcode():
-# 	print(path['id'])
-# 	print(path['path'])
+#   print(path['id'])
+#   print(path['path'])
 
 import numpy
 from svg_elements import SVG, Arc, Close, Line, Move, Path, Shape

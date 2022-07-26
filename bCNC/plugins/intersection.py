@@ -49,7 +49,6 @@ class Tool(Plugin):
     # This method is executed when user presses the plugin execute button
     # ----------------------------------------------------------------------
     def execute(self, app):
-        # print("go!")
         blocks = []
 
         bid = app.editor.getSelectedBlocks()[0]
@@ -61,22 +60,11 @@ class Tool(Plugin):
         xbasepath.intersectPath(xislandpath)
         xislandpath.intersectPath(xbasepath)
 
-        # xnewisland = self.pathBoolIntersection(xbasepath, xislandpath)
         xnewisland = self.pathBoolIntersection(xislandpath, xbasepath)
-
-        # pth = Path("temp")
-        # basepath.invert()
-        # pth.extend(basepath)
-        # pth.extend(basepath)
-        # pth.invert()
 
         block = Block("intersect")
         block.extend(app.gcode.fromPath(xnewisland))
         blocks.append(block)
-
-        # block = Block("diff")
-        # block.extend(app.gcode.fromPath(pth))
-        # blocks.append(block)
 
         active = app.activeBlock()
         app.gcode.insBlocks(
@@ -84,7 +72,6 @@ class Tool(Plugin):
         )  # <<< insert blocks over active block in the editor
         app.refresh()  # <<< refresh editor
         app.setStatus(_("Generated: Intersect"))  # <<< feed back result
-        # app.gcode.blocks.append(block)
 
     ##############################################
 
@@ -129,9 +116,6 @@ class Tool(Plugin):
         return sub
 
     def pathBoolIntersection(self, basepath, islandpath):
-        # basepath = deepcopy(basepath)
-        # islandpath = deepcopy(islandpath)
-
         # find first intersecting segment
         first = None
         for i, segment in enumerate(islandpath):
@@ -158,7 +142,5 @@ class Tool(Plugin):
                     print("new", newisland)
                     A = None
                 newisland.append(segment)
-        # for i,seg in enumerate(newisland):
-        # 	newisland[i].correct();
         print("new2", newisland)
         return newisland

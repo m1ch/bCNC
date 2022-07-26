@@ -452,10 +452,6 @@ class ProbeFrame(CNCRibbon.PageFrame):
             self, text=_("Record"), foreground="DarkBlue")
         recframe.pack(side=TOP, expand=YES, fill=X)
 
-        # Label(lframe(), text=_("Diameter:")).pack(side=LEFT)
-        # self.diameter = tkExtra.FloatEntry(lframe(), background=tkExtra.GLOBAL_CONTROL_BACKGROUND)
-        # self.diameter.pack(side=LEFT, expand=YES, fill=X)
-
         self.recz = IntVar()
         self.reczb = Checkbutton(
             recframe(),
@@ -564,14 +560,13 @@ class ProbeFrame(CNCRibbon.PageFrame):
         self.autogoto = Checkbutton(
             lframe(),
             "",
-            variable=self.probeautogoto,  # onvalue=1, offvalue=0,
+            variable=self.probeautogoto,
             activebackground="LightYellow",
             padx=2,
             pady=1,
         )
         self.autogoto.select()
         tkExtra.Balloon.set(self.autogoto, _("Automatic GOTO after probing"))
-        # self.autogoto.pack(side=LEFT, expand=YES, fill=X)
         self.autogoto.grid(row=row, column=col, padx=1, sticky=EW)
         self.addWidget(self.autogoto)
 
@@ -583,7 +578,6 @@ class ProbeFrame(CNCRibbon.PageFrame):
             text=_("Goto"),
             compound=LEFT,
             command=self.goto2Probe,
-            # 				width=48,
             padx=5,
             pady=0,
         )
@@ -627,7 +621,6 @@ class ProbeFrame(CNCRibbon.PageFrame):
             text=_("Probe"),
             compound=LEFT,
             command=self.probe,
-            # 				width=48,
             padx=5,
             pady=0,
         )
@@ -1163,11 +1156,7 @@ class ProbeFrame(CNCRibbon.PageFrame):
         self.app.refresh()
         self.app.setStatus(_("Pointrec"))
 
-        # print("hello",x,y,z)
-        # print(self.app.editor.getSelectedBlocks())
-
     def recordCoords(self, gcode="G0", point=False):
-        # print("Z",self.recz.get())
         x = CNC.vars["wx"]
         y = CNC.vars["wy"]
         z = CNC.vars["wz"]
@@ -1193,7 +1182,6 @@ class ProbeFrame(CNCRibbon.PageFrame):
 
     def recordCircle(self):
         r = float(self.recsiz.get())
-        # self.recordCoords('G02 R%s'%(r))
         x = CNC.vars["wx"] - r
         y = CNC.vars["wy"]
         z = CNC.vars["wz"]
@@ -1202,7 +1190,6 @@ class ProbeFrame(CNCRibbon.PageFrame):
         if self.recz.get() == 1:
             coords += f" Z{z}"
 
-        # self.recordAppend('G0 %s R%s'%(coords, r))
         self.recordAppend(f"G0 {coords}")
         self.recordAppend(f"G02 {coords} I{r}")
 
@@ -1863,53 +1850,6 @@ class CameraFrame(CNCRibbon.PageFrame):
         self.updateValues()
 
 
-# 	#-----------------------------------------------------------------------
-# 	def findScale(self):
-# 		return
-# 		self.app.canvas.cameraMakeTemplate(30)
-#
-# 		self.app.control.moveXup()
-# 		#self.app.wait4Idle()
-# 		time.sleep(2)
-# 		dx,dy = self.app.canvas.cameraMatchTemplate()	# right
-#
-# 		self.app.control.moveXdown()
-# 		self.app.control.moveXdown()
-# 		#self.app.wait4Idle()
-# 		time.sleep(2)
-# 		dx,dy = self.app.canvas.cameraMatchTemplate()	# left
-#
-# 		self.app.control.moveXup()
-# 		self.app.control.moveYup()
-# 		#self.app.wait4Idle()
-# 		time.sleep(2)
-# 		dx,dy = self.app.canvas.cameraMatchTemplate()	# top
-#
-# 		self.app.control.moveYdown()
-# 		self.app.control.moveYdown()
-# 		#self.app.wait4Idle()
-# 		time.sleep(2)
-# 		dx,dy = self.app.canvas.cameraMatchTemplate()	# down
-#
-# 		self.app.control.moveYup()
-
-# -----------------------------------------------------------------------
-# Move camera to spindle location and change coordinates to relative
-# to camera via g92
-# -----------------------------------------------------------------------
-# 	def switch2Camera(self, event=None):
-# 		print("Switch to camera")
-# 		wx = CNC.vars["wx"]
-# 		wy = CNC.vars["wy"]
-# 		dx = float(self.dx.get())
-# 		dy = float(self.dy.get())
-# 		if self.switchVar.get():
-# 			self.sendGCode("G92X%gY%g"%(dx+wx,dy+wy))
-# 		else:
-# 			self.sendGCode("G92.1")
-# 		self.sendGCode("G0X%gY%g"%(wx,wy))
-
-
 # =============================================================================
 # Tool Group
 # =============================================================================
@@ -2144,8 +2084,6 @@ class ToolFrame(CNCRibbon.PageFrame):
 
     # -----------------------------------------------------------------------
     def saveConfig(self):
-        # 		Utils.setInt(  "Probe", "toolpolicy",  TOOL_POLICY.index(self.toolPolicy.get()))
-        # 		Utils.setInt(  "Probe", "toolwait",    TOOL_WAIT.index(self.toolWait.get()))
         Utils.setInt(
             "Probe", "toolpolicy",
             TOOL_POLICY.index(self.toolPolicy.get())
@@ -2246,13 +2184,11 @@ class ToolFrame(CNCRibbon.PageFrame):
 
     # -----------------------------------------------------------------------
     def policyChange(self):
-        # 		CNC.toolPolicy = int(TOOL_POLICY.index(self.toolPolicy.get()))
         b = self.toolPolicy.get()
         CNC.toolPolicy = int(TOOL_POLICY.index(b))
 
     # -----------------------------------------------------------------------
     def waitChange(self):
-        # 		CNC.toolWaitAfterProbe = int(TOOL_WAIT.index(self.toolWait.get()))
         b = self.toolWait.get()
         CNC.toolWaitAfterProbe = int(TOOL_WAIT.index(b))
 
@@ -2337,26 +2273,6 @@ class ToolFrame(CNCRibbon.PageFrame):
             return
         lines = self.app.cnc.toolChange(0)
         self.app.run(lines=lines)
-
-
-# =============================================================================
-# Help Frame
-# =============================================================================
-# class HelpFrame(CNCRibbon.PageFrame):
-# 	def __init__(self, master, app):
-# 		CNCRibbon.PageFrame.__init__(self, master, "Help", app)
-#
-# 		lframe = tkExtra.ExLabelFrame(self, text="Help", foreground="DarkBlue")
-# 		lframe.pack(side=TOP, fill=X)
-# 		frame = lframe.frame
-#
-# 		self.text = Label(frame,
-# 				text="One\nTwo\nThree",
-# 				image=Utils.icons["gear32"],
-# 				compound=TOP,
-# 				anchor=W,
-# 				justify=LEFT)
-# 		self.text.pack(fill=BOTH, expand=YES)
 
 
 # =============================================================================

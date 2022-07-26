@@ -18,4 +18,3 @@ bcncpath = os.path.join(os.path.dirname(
 
 print(f"bCNC runpy loader: {bcncpath}")
 runpy.run_path(bcncpath, run_name="__main__")
-# runpy.run_module('bCNC', run_name='__main__', alter_sys=True)

@@ -8,15 +8,15 @@
 # are met:
 #
 #  * Redistributions of source code must retain the above copyright
-# 	notice, this list of conditions and the following disclaimer.
+#       notice, this list of conditions and the following disclaimer.
 #  * Redistributions in binary form must reproduce the above copyright
-# 	notice, this list of conditions and the following disclaimer in
-# 	the documentation and/or other materials provided with the
-# 	distribution.
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
 #  * Neither the name of the pyglet nor the names of its
-# 	contributors may be used to endorse or promote products
-# 	derived from this software without specific prior written
-# 	permission.
+#       contributors may be used to endorse or promote products
+#       derived from this software without specific prior written
+#       permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -509,7 +509,6 @@ class TruetypeInfo:
         glyph.type_ = "simple"
         glyph.contoursEnd = []
         glyph.points = []
-        # glyph.size = glyph_size
 
         # add contours end
         for i in range(0, glyph_size.numContours):
@@ -546,7 +545,6 @@ class TruetypeInfo:
                     repeat_count -= 1
             i += 1
 
-        # c = len(flags)
         # Parse for xValues
         xValue = 0
         for i, f in enumerate(flags):
@@ -558,7 +556,7 @@ class TruetypeInfo:
                     xValue -= vx
             elif (
                 -(f + 1) & X_DELTA
-            ) > 0:  # ??????????  else if ( ~flag & deltaFlag ) -(N+1)
+            ) > 0:
                 vx, g_offset = self._get_data(">h", g_offset)  # int16
                 xValue += vx
             else:
@@ -575,7 +573,6 @@ class TruetypeInfo:
                     yValue += vy
                 else:
                     yValue -= vy
-            # ??????????  else if ( ~flag & deltaFlag )
             elif (-(f + 1) & Y_DELTA) > 0:
                 vy, g_offset = self._get_data(">h", g_offset)  # int16
                 yValue += vy
@@ -651,10 +648,9 @@ class TruetypeInfo:
         # Create glyph points
         ceOffset = 0
         for component in glyph.components:
-            # 			print component.glyphIndex
             subGlyph = self._read_glyph(component.glyphIndex)
             # apply transformation to points
-            # FIX ME: not all transformations (es. scale) are applied correctly
+            # FIXME: not all transformations (es. scale) are applied correctly
             for p in subGlyph.points:
                 tp = GlyphPoint(p.x, p.y)
                 tp.ON_CURVE = p.ON_CURVE

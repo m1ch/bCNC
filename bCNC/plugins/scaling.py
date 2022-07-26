@@ -52,9 +52,6 @@ class Tool(Plugin):
 
         A = xyz[0]
         B = xyz[1]
-        # 		xlength = B[0]-A[0]
-        # 		ylength = B[1]-A[1]
-        # 		zlength = B[2]-A[2]
         xnew = (B[0] - center[0]) * xscale + center[0]
         ynew = (B[1] - center[1]) * yscale + center[1]
         znew = min(B[2] * zscale, safe)
@@ -88,7 +85,6 @@ class Tool(Plugin):
             block = allBlocks[bid]
             if block.name() in ("Header", "Footer"):
                 continue
-            # if not block.enable : continue
             app.gcode.initPath(bid)
             for line in block:
                 try:
@@ -159,17 +155,9 @@ class Tool(Plugin):
         if self["zfeed"]:
             zfeed = self["zfeed"]
 
-        # zup = self["zup"]
-
         centered = self["centered"]
 
-        # 		zbeforecontact=surface+CNC.vars["zretract"]
-        # 		hardcrust = surface - CNC.vars["hardcrust"]
-        # 		feedbeforecontact = CNC.vars["feedbeforecontact"]/100.0
-        # 		hardcrustfeed = CNC.vars["hardcrustfeed"]/100.0
-
         # Get selected blocks from editor
-
         selBlocks = app.editor.getSelectedBlocks()
         if not selBlocks:
             app.setStatus(_("Scaling abort: Please select some path"))
@@ -185,22 +173,17 @@ class Tool(Plugin):
             else:
                 center = 0, 0
         print("center", center[0], center[1])
-        # 	if elements>=2:
-        # 		center=0,0
 
         # Get all segments from gcode
         allSegments = self.extractAllSegments(app, selBlocks)[0]
         name_block = self.extractAllSegments(app, selBlocks)[1]
-        # 		num_block = self.extractAllSegments(app,selBlocks)[2]
 
         # Create holes locations
         all_blocks = []
         for bidSegment in allSegments:
             if len(bidSegment) == 0:
                 continue
-            # 		all_blocks = []
             n = self["name"]
-            # 		if not n or n=="default": n="Trochoidal_3D"
             if elements > 1:
                 n = "scale "
             else:
@@ -211,8 +194,6 @@ class Tool(Plugin):
             bid_block = Block(n)
 
             for idx, segm in enumerate(bidSegment):
-                # if idx >= 0:
-                # bid_block.append("(idx "+str(idx)+" -------------- )")
                 info = self.scaling(segm, center, xscale, yscale, zscale)
                 if idx == 0:
                     bid_block.append(
@@ -239,10 +220,6 @@ class Tool(Plugin):
                                      + str(info[1]))
                     currentfeed = oldfeed = zfeed
                 else:
-                    # 	if B[5]>=0: #<< zsign
-                    # 		currentfeed=feed
-                    # 	else:
-                    # relationship
                     if info[4] >= 0:
                         currentfeed = feed
                     else:
@@ -275,7 +252,6 @@ class Tool(Plugin):
                 CNC.zsafe()
             )  # <<< Move rapid Z axis to the safe height in Stock Material
             all_blocks.append(bid_block)
-        # 	print "bid", bid_block.name(), bid_block,"*****************"
         self.finish_blocks(app, all_blocks, elements)
 
     # --------------------------------------------------------------
@@ -283,7 +259,6 @@ class Tool(Plugin):
     # Insert created blocks
     def finish_blocks(self, app, blocks, elements):
         active = app.activeBlock()
-        # 		if active==0: active=1
         if elements > 1:
             active = -2
         app.gcode.insBlocks(active + 1, blocks, "scale ")

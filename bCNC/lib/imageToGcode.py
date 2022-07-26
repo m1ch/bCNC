@@ -8,7 +8,7 @@
 # received a copy of the GNU General Public License along with image-to-gcode;
 # if not, write to the Free Software Foundation, Inc., 51 Franklin Street,
 # Fifth Floor, Boston, MA 02110-1301 USA
-##
+#
 # image-to-gcode.py is Copyright (C) 2005 Chris Radek
 # chris@timeguy.com
 # image-to-gcode.py is Copyright (C) 2006 Jeff Epler
@@ -408,7 +408,6 @@ class Converter:
             disable_arcs=self.disable_arcs,
         )
         g.begin()
-        # g.continuous(self.tolerance) #commented V0.7
         g.safety()
 
         if self.roughing_delta:
@@ -480,12 +479,10 @@ class Converter:
 
         for j in jrange:
             self.cnt = self.cnt + 1
-            # progress(self.cnt, self.cnt_total, self.START_TIME, self.BIG )
             y = (w1 - j - 1) * pixelsize + self.yoffset
             scan = []
             for i in irange:
                 self.BIG.update()
-                # if STOP_CALC: return
                 x = i * pixelsize + self.xoffset
                 milldata = (
                     i,
@@ -524,12 +521,10 @@ class Converter:
 
         for j in jrange:
             self.cnt = self.cnt + 1
-            # progress(self.cnt, self.cnt_total, self.START_TIME, self.BIG )
             x = j * pixelsize + self.xoffset
             scan = []
             for i in irange:
                 self.BIG.update()
-                # if STOP_CALC: return
                 y = (w1 - i - 1) * pixelsize + self.yoffset
                 milldata = (
                     i,
@@ -645,10 +640,8 @@ class ArcEntryCut:
             conv.g.flush()
             conv.g.lastgcode = None
             if cx > 0:
-                # conv.g.write("G3 X%f Z%f R%f" % (p1[0], p1[2], radius)) #G3
                 conv.g.write(f"G3 X{p1[0]:f} Z{p1[2]:f} I{I:f} K{K:f}")
             else:
-                # conv.g.write("G2 X%f Z%f R%f" % (p1[0], p1[2], radius)) #G2
                 conv.g.write(f"G2 X{p1[0]:f} Z{p1[2]:f} I{I:f} K{K:f}")
 
             conv.g.lastx = p1[0]
@@ -685,10 +678,8 @@ class ArcEntryCut:
             conv.g.flush()
             conv.g.lastgcode = None
             if cy > 0:
-                # conv.g.write("G2 Y%f Z%f R%f" % (p1[1], p1[2], radius)) #G2
                 conv.g.write(f"G2 Y{p1[1]:f} Z{p1[2]:f} J{J:f} K{K:f}")
             else:
-                # conv.g.write("G3 Y%f Z%f R%f" % (p1[1], p1[2], radius)) #G3
                 conv.g.write(f"G3 Y{p1[1]:f} Z{p1[2]:f} J{J:f} K{K:f}")
             conv.g.lastx = p1[0]
             conv.g.lasty = p1[1]
@@ -894,7 +885,6 @@ class Image_Matrix_Numpy:
         self.matrix = temp
 
     def height_calc(self, x, y, tool):
-        # to = self.t_offset
         ts = tool.width
         d = -1e100000
         m1 = self.matrix[y:y + ts, x:x + ts]
@@ -1264,14 +1254,10 @@ class Gcode:
     # This function write header and move to safety height
     def begin(self):
         self.write(self.header)
-        # self.write(self.units)
         if not self.disable_arcs:
             self.write("G91.1")
 
-        # self.safety()
-        # self.rapid(z=self.safetyheight)
         self.write(f"G0 Z{self.safetyheight:.4f}")
-        # ["G17 G40","G80 G90 G94 G91.1"]
 
     # If any 'cut' moves are stored up, send them to the simplification
     # algorithm and actually output them.
@@ -1303,19 +1289,6 @@ class Gcode:
         self.flush()
         self.safety()
         self.write(self.postscript)
-
-    #    """\
-    # Set exact path mode.  Note that unless self.tolerance is set to zero,
-    # the simplification algorithm may still skip over specified points."""
-    # def exactpath(self):
-    #    self.write("G61")
-
-    # Set continuous mode.
-    # def continuous(self, tolerance=0.0):       #commented V0.7
-    #    if tolerance > 0.0:                    #commented V0.7
-    #        self.write("G64 P%.4f" % tolerance)#commented V0.7
-    #    else:                                  #commented V0.7
-    #        self.write("G64")                  #commented V0.7
 
     def rapid(self, x=None, y=None, z=None, a=None):
         # "Perform a rapid move to the specified coordinates"

@@ -24,11 +24,6 @@ __name__ = _("slicemesh")
 __version__ = "0.0.6"
 
 
-# FIXME: not sure how to force bCNC to prefer importing from bCNC/lib to importing from system
-# 	if having conflicts with system libs, you can try this. It helped for me:
-# 	pip2 uninstall meshcut stl ply itertools utils python-utils
-# 	pip2 install scipy numpy
-
 # If needed trimesh supports following formats:
 # binary/ASCII STL, Wavefront OBJ, ASCII OFF, binary/ASCII PLY, GLTF/GLB 2.0, 3MF, XAML, 3DXML, etc.
 # https://github.com/mikedh/trimesh
@@ -174,7 +169,6 @@ Also note you can export resulting slices to DXF and SVG if needed.
             # loop over multiple layers if zstep > 0
             z = zmax
             while z >= zmin:
-                # print(_("Slicing %f / %f"%(z,zmax)))
                 self.app.setStatus(
                     _("Slicing {} {:f} in {:f} -> "
                       + "{:f} of {}").format(axis, z, zmin, zmax, file),
@@ -243,7 +237,6 @@ Also note you can export resulting slices to DXF and SVG if needed.
 
         # Contours to G-code
         for contour in contours:
-            # print(contour)
             gtype = 0
             for segment in contour:
                 block.append(
@@ -279,9 +272,6 @@ Also note you can export resulting slices to DXF and SVG if needed.
                 True,
             )
             D[i] = D[:, i] = np.sqrt(np.sum(np.square(verts - verts[i]), axis=1))
-            # for j in range(i,len(verts)):
-            # 	D[j][i] = D[i][j] = self.vert_dist(v,verts[j])
-            # 	#D[j][i] = D[i][j] = la.norm(verts[j]-v)
         return D
 
     def pdist_squareformed_numpy(self, a):
@@ -315,8 +305,6 @@ Also note you can export resulting slices to DXF and SVG if needed.
 
         # Test
         print(len(verts), len(D), len(D[0]))
-        # print(D)
-        # print(spdist.cdist(verts, verts))
 
         # Compute a mapping from old to new : for each input vert, store the
         # index of the new vert it will be merged into
@@ -346,7 +334,6 @@ Also note you can export resulting slices to DXF and SVG if needed.
         return new_verts, new_faces
 
     def load_stl(self, stl_fname):
-        # import stl
         m = stl.mesh.Mesh.from_file(stl_fname)
 
         # Flatten our vert array to Nx3 and generate corresponding faces array

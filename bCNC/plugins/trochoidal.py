@@ -79,13 +79,10 @@ class Tool(Plugin):
         else:
             arcg = "g3"
 
-        # print("go!")
         blocks = []
         # Loop over selected blocks
         for bid in app.editor.getSelectedBlocks():
-            # print(blocks[bid])
             path = app.gcode.toPath(bid)[0]
-            # print(path)
 
             # create new block which encorporates trochoidal path
             block = Block(
@@ -100,7 +97,6 @@ class Tool(Plugin):
             block.append("G1 Z0")
             # Loop over segments within path
             for segment in path:
-                # print(segment.A)
                 # create Block for circular entry into path
                 if entry:
                     eblock = Block("trochoid-in")

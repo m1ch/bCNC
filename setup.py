@@ -42,8 +42,6 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            #'bCNC = {package}.{module}:{main_function}',
-            #'bCNC = bCNC.bCNC:main',
             "bCNC = bCNC.__main__:main",
         ]
     },

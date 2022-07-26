@@ -24,38 +24,23 @@ class Tool(Plugin):
         self.icon = "flatpath"
         self.group = "CAM"  # <<< This is the name of group that plugin belongs
         self.oneshot = True
-        # Here we are creating the widgets presented to the user inside the plugin
-        # Name, Type , Default value, Description
-        # self.variables = [			#<<< Define a list of components for the GUI
-        # 	("name"    ,    "db" ,    "", _("Name"))							#used to store plugin settings in the internal database
-        # ]
-        # self.buttons.append("exe")  #<<< This is the button added at bottom to call the execute method below
 
     # ----------------------------------------------------------------------
     # This method is executed when user presses the plugin execute button
     # ----------------------------------------------------------------------
     def execute(self, app):
-        # print("go!")
         blocks = []
         for bid in app.editor.getSelectedBlocks():
             if len(app.gcode.toPath(bid)) < 1:
                 continue
 
-            # nblock = Block("flat "+app.gcode[bid].name())
-            # for i in app.gcode[bid]:
-            # 	nblock.append(re.sub(r"\s?z-?[0-9\.]+","",i))
-            # blocks.append(nblock)
-
             eblock = Block("flat " + app.gcode[bid].name())
             eblock = app.gcode.fromPath(app.gcode.toPath(bid), eblock)
             blocks.append(eblock)
 
-        # active = app.activeBlock()
-        # if active == 0: active+=1
         active = -1  # add to end
         app.gcode.insBlocks(
             active, blocks, "Shape flattened"
         )  # <<< insert blocks over active block in the editor
         app.refresh()  # <<< refresh editor
         app.setStatus(_("Generated: Flat"))  # <<< feed back result
-        # app.gcode.blocks.append(block)

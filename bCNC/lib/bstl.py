@@ -66,53 +66,9 @@ def normal(v1, v2, v3):
         else:
             absolut -= i
     if absolut == 0:
-        # print "this should not have happened!"
         return n
     else:
         return [n[0] / absolut, n[1] / absolut, n[2] / absolut]
-
-
-# simple function to create sets of three vertices
-# def triangulate(vertices):
-#     n = len(vertices)
-#     if n == 3:
-#         return vertices
-#     elif n < 3:
-#         # FIXME: facet not defined
-#         # FIXME: self outside of class
-#         facets = triangulate(facet)
-#         self.add_facets(facets)
-#     else:
-#         raise ValueError("wrong number of vertices")
-
-#     def add_facets(self, facets):
-#         # print "add %d facets" % len(facets)
-#         for facet in facets:
-#             self.add_facet(facet)
-
-#     def extrude(self, bottom, height):
-#         if len(bottom) < 3:
-#             raise ValueError("not a polygon")
-#         else:
-#             top = []
-
-#             for vertice in bottom:
-#                 top.append([vertice[0], vertice[1], vertice[2] + height])
-
-#             bottom.reverse()
-#             self.add_facet(bottom)
-#             bottom.reverse()
-
-#             for i in range(0, len(bottom) - 1):
-#                 self.add_facet([bottom[i], bottom[i + 1], top[i + 1], top[i]])
-#             self.add_facet(
-#                 [bottom[len(bottom) - 1],
-#                  bottom[0],
-#                  top[0],
-#                  top[len(bottom) - 1]]
-#             )
-
-#             self.add_facet(top)
 
 
 class ASCII_STL_Writer:

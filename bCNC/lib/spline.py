@@ -18,8 +18,8 @@ class CardinalSpline:
         # for A = 0.5
         #
         # Note: Vasilis
-        # 	The A parameter should be the fraction in t where
-        # 	the second derivative is zero
+        #       The A parameter should be the fraction in t where
+        #       the second derivative is zero
         self.setMatrix(A)
 
     # -----------------------------------------------------------------------
@@ -34,10 +34,10 @@ class CardinalSpline:
 
     # -----------------------------------------------------------------------
     # Evaluate Cardinal spline at position t
-    # @param P	  list or tuple with 4 points y positions
-    # @param t [0..1] fraction of interval from points 1..2
-    # @param k	  index of starting 4 elements in P
-    # @return spline evaluation
+    # @param P  list or tuple with 4 points y positions
+    # @param t  [0..1] fraction of interval from points 1..2
+    # @param k  index of starting 4 elements in P
+    # @return   spline evaluation
     # -----------------------------------------------------------------------
     def __call__(self, P, t, k=1):
         T = [t * t * t, t * t, t, 1.0]
@@ -109,27 +109,9 @@ class CubicSpline:
             else:
                 B[j] = 6.0 * (self.d(i) - self.d(j)) - hi * sN
 
-        # 		from pprint import pprint
-        # 		print "=========== A ============="
-        # 		pprint(A)
-        # 		print "=========== B ============="
-        # 		pprint(B)
-
-        # Solve by gauss elimination
-        # 		AA = bmath.Matrix(A)
-        # 		BB = []
-        # 		for b in B: BB.append([b])
-        # 		BB = bmath.Matrix(BB)
-        # 		print AA
-        # 		print BB
-        # 		AA.inv()
-        # 		print AA*BB
         self.s = bmath.gauss(A, B)
         self.s.insert(0, s1)
         self.s.append(sN)
-
-    # 		print ">> s <<"
-    # 		pprint(self.s)
 
     # -----------------------------------------------------------------------
     def h(self, i):
@@ -198,20 +180,17 @@ def spline2Polyline(xyz, degree, closed, segments, knots):
         xyz.extend(xyz[:degree])
         knots = None
     else:
-        # make base-1
         knots.insert(0, 0)
 
     npts = len(xyz)
 
     if degree < 1 or degree > 3:
-        # print "invalid degree"
         return None, None, None
 
     # order:
     k = degree + 1
 
     if npts < k:
-        # print "not enough control points"
         return None, None, None
 
     # resolution:
@@ -229,7 +208,6 @@ def spline2Polyline(xyz, degree, closed, segments, knots):
         b[i + 2] = pt[2]
         i += 3
 
-    # if periodic:
     if closed:
         _rbsplinu(npts, k, nseg, b, h, p, knots)
     else:
@@ -242,9 +220,6 @@ def spline2Polyline(xyz, degree, closed, segments, knots):
         x.append(p[i])
         y.append(p[i + 1])
         z.append(p[i + 2])
-
-    # 	for i,xyz in enumerate(zip(x,y,z)):
-    # 		print i,xyz
 
     return x, y, z
 
@@ -472,8 +447,6 @@ def _rbsplinu(npts, k, p1, b, h, p, x=None):
 if __name__ == "__main__":
     SPLINE_SEGMENTS = 20
     from .dxf import DXF
-
-    # 	from dxfwrite.algebra import CubicSpline, CubicBezierCurve
     dxf = DXF(sys.argv[1], "r")
     dxf.readFile()
     dxf.close()
@@ -486,5 +459,3 @@ if __name__ == "__main__":
                     True,
                     SPLINE_SEGMENTS,
                 )
-                # for a,b in zip(x,y):
-                # 	print a,b

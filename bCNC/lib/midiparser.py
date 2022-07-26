@@ -104,9 +104,7 @@ class MetaValues:
 def getNumber(theString, length):
     # MIDI uses big-endian for everything
     sum_ = 0
-    # print "Length: " + str(length) + "  strlen: " + str(len(theString))
     for i in range(length):
-        # sum = (sum *256) + int(str[i])
         sum_ = (sum_ << 8) + ord(theString[i])
     return sum_, theString[length:]
 
@@ -117,7 +115,6 @@ def getVariableLengthNumber(str_):
     while 1:
         x = ord(str_[i])
         i = i + 1
-        # sum = (sum * 127) + (x (mask) 127) # mask off the 7th bit
         sum_ = (sum_ << 7) + (x & 0x7F)
         # Is 7th bit clear?
         if not (x & 0x80):

@@ -19,16 +19,11 @@ class Tool(Plugin):
 
     def __init__(self, master):
         Plugin.__init__(self, master, "ClosePath")
-        # <<< This is the name of file used as icon for the ribbon button. It will be search in the "icons" subfolder
+        # <<< This is the name of file used as icon for the ribbon button.
+        #       It will be search in the "icons" subfolder
         self.icon = "closepath"
         self.group = "CAM"  # <<< This is the name of group that plugin belongs
         self.oneshot = True
-        # Here we are creating the widgets presented to the user inside the plugin
-        # Name, Type , Default value, Description
-        # self.variables = [			#<<< Define a list of components for the GUI
-        # 	("name"    ,    "db" ,    "", _("Name"))							#used to store plugin settings in the internal database
-        # ]
-        # self.buttons.append("exe")  #<<< This is the button added at bottom to call the execute method below
 
     # ----------------------------------------------------------------------
     # This method is executed when user presses the plugin execute button
@@ -43,11 +38,7 @@ class Tool(Plugin):
                 if not path.isClosed():
                     path.append(Segment(Segment.LINE, path[-1].B, path[0].A))
                 eblock = app.gcode.fromPath(path, eblock)
-            # blocks.append(eblock)
             app.gcode[bid] = eblock
 
-        # active=-1 #add to end
-        # app.gcode.insBlocks(active, blocks, "Path closed") #<<< insert blocks over active block in the editor
         app.refresh()  # <<< refresh editor
         app.setStatus(_("Generated: Closepath"))  # <<< feed back result
-        # app.gcode.blocks.append(block)

@@ -37,12 +37,6 @@ __email__ = "vvlachoudis@gmail.com"
 _TABFONT = ("Sans", "-14", "bold")
 _FONT = ("Sans", "-11")
 
-# _BACKGROUND_DISABLE = "#D6D2D0"
-# _BACKGROUND         = "White"
-# _BACKGROUND_GROUP   = "LightGray"
-# _BACKGROUND_GROUP2  = "#D0E0E0"
-# _FOREGROUND_GROUP   = "Black"
-
 _BACKGROUND_DISABLE = "#A6A2A0"
 _BACKGROUND = "#E6E2E0"
 _BACKGROUND_GROUP = "#B6B2B0"
@@ -68,7 +62,7 @@ class LabelGroup(Frame):
     def __init__(self, master, name, command=None, **kw):
         Frame.__init__(self, master, **kw)
         self.name = name
-        self.config(  # bg="Green",
+        self.config(
             background=_BACKGROUND, borderwidth=0, highlightthickness=0, pady=0
         )
 
@@ -80,7 +74,6 @@ class LabelGroup(Frame):
         # frame to insert the buttons
         self.frame = Frame(
             self,
-            # bg="Orange",
             background=_BACKGROUND,
             padx=0,
             pady=0,
@@ -309,14 +302,6 @@ class MenuGroup(LabelGroup):
 
 
 # =============================================================================
-# Context group for a specific item in the Ribbon
-# =============================================================================
-# class ContextGroup(LabelGroup):
-# 	def __init__(self, master, name, **kw):
-# 		LabelGroup.__init__(self, master, name, **kw)
-
-
-# =============================================================================
 # Page Tab buttons
 # =============================================================================
 class TabButton(Radiobutton):
@@ -399,9 +384,6 @@ class Page:  # <--- should be possible to be a toplevel as well
     # -----------------------------------------------------------------------
     def create(self):
         self.createPage()
-
-    # 		self.ribbonBindMotion()
-    # 		self.refresh()
 
     # -----------------------------------------------------------------------
     # FIXME XXX SHOULD BE REMOVED
@@ -702,9 +684,6 @@ class TabRibbonFrame(Frame):
     # Change ribbon and page
     # ----------------------------------------------------------------------
     def changePage(self, page=None):
-        # import traceback
-        # traceback.print_stack()
-
         if page is not None:
             if not isinstance(page, Page):
                 try:
@@ -732,41 +711,3 @@ class TabRibbonFrame(Frame):
         self.oldActive = page
         page.activate()
         self.event_generate("<<ChangePage>>", data=page.name)
-
-
-# 	#-----------------------------------------------------------------------
-# 	# Give focus to the tab on the left
-# 	#-----------------------------------------------------------------------
-# 	def _tabLeft(self, event=None):
-# 		slaves = self._tabFrame.pack_slaves()
-# 		try:
-# 			pos = slaves.index(event.widget)-1
-# 		except ValueError:
-# 			if event.widget is self.dynamic:
-# 				pos = len(slaves)-1
-# 			else:
-# 				return
-# 		if pos < 0: return	# Do not replace First tab
-# 		slaves[pos].select()
-# 		#self.changePage()
-# 		slaves[pos].focus_set()
-#
-# 	#-----------------------------------------------------------------------
-# 	# Give focus to the tab on the right
-# 	#-----------------------------------------------------------------------
-# 	def _tabRight(self, event=None):
-# 		slaves = self._tabFrame.pack_slaves()
-# 		try:
-# 			pos = slaves.index(event.widget)+1
-# 		except ValueError:
-# 			return
-# 		if pos < len(slaves):
-# 			slaves[pos].select()
-# 			#self.changePage()
-# 			slaves[pos].focus_set()
-# 		else:
-# 			# Open dynamic menu
-# 			self.dynamic.select()
-# 			self.dynamic.focus_set()
-# 			self.dynamicMenu()
-#

@@ -82,7 +82,6 @@ class Tool(Plugin):
             ("Z", "mm", 0.00, _("Z Initial")),
             ("CutDiam", "float", 1.50, _("Diameter Cut")),
             ("endmill", "db", "", _("End Mill")),
-            # 		("RadioHelix", "mm" ,  0.80, _("Helicoid Radius")),				#a variable that will be converted in mm/inch based on bCNC settting
             ("Pitch", "mm", 0.10, _("Drop by lap")),  # an integer variable
             ("Depth", "mm", 3.00, _("Final Depth")),  # a float value variable
             ("Mult_Feed_Z", "float", 1.0, _("Z Feed Multiplier")),
@@ -95,13 +94,7 @@ class Tool(Plugin):
             ),
             ("Entry", "Center,Edge", "Center", _("Entry and Exit")),
             ("ClearanceEntry", "mm", 0.0, _("If Eddge, Edge Clearance")),
-            #            ("ClearanceExit" ,"float", 0.2, _("Exit Edge Clearance")),
-            # 	        ("Clearance" ,"mm", 0.0, _("Entry and Exit Edge Clearance")),
             ("NoReturnToSafeZ", "bool", "False", _("End in the Deep")),
-            # 	("Text"    , "text" ,    "Free Text", _("Text description")),		#a text input box
-            # 	("CheckBox", "bool" ,  False, _("CheckBox description")),			#a true/false check box
-            # 	("OpenFile", "file" ,     "", _("OpenFile description")),			#a file chooser widget
-            # 	("ComboBox", "Item1,Item2,Item3" , "Item1", _("ComboBox description"))	#a multiple choice combo box
         ]
 
         # This is the button added at bottom to call the execute method below
@@ -131,7 +124,6 @@ class Tool(Plugin):
             block = allBlocks[bid]
             if block.name() in ("Header", "Footer"):
                 continue
-            # if not block.enable : continue
             app.gcode.initPath(bid)
             for line in block:
                 try:
@@ -198,7 +190,6 @@ class Tool(Plugin):
         if self["endmill"]:
             self.master["endmill"].makeCurrent(self["endmill"])
         toolDiam = CNC.vars["diameter"]
-        # Radio = self["RadioHelix"]
         pitch = self.fromMm("Pitch")
         Depth = self.fromMm("Depth")
         Mult_F_Z = self["Mult_Feed_Z"]
@@ -207,9 +198,6 @@ class Tool(Plugin):
         clearanceEntry = self.fromMm("ClearanceEntry")
         if clearanceEntry == "":
             clearanceEntry = 0
-        # 		clearanceExit = self["ClearanceExit"]
-        # 		if clearanceExit =="":
-        # 			clearanceExit =0
         clearance = clearanceEntry
         returnToSafeZ = 1
         noreturnToSafeZ = self["NoReturnToSafeZ"]
@@ -286,13 +274,9 @@ class Tool(Plugin):
                 _("Helical Abort: Entry Edge Clearence may be positive"))
             return
 
-        # 		elif clearanceExit < 0 or clearanceExit == "":
-        # 			app.setStatus(_("Helical Abort: Exit Edge Clearence may be positive"))
-        # 			return
         # ---------------------------------------------------------------------
         # Initialize blocks that will contain our gCode
         blocks = []
-        # block = Block(name)
         block = Block(
             p
             + str(cutDiam)
@@ -354,7 +338,7 @@ class Tool(Plugin):
                     y = yH
 
         # ---------------------------------------------------------------------
-        # 		 Init: Adjust feed and rapid move to Z safe
+        #  Init: Adjust feed and rapid move to Z safe
 
         if Mult_F_Z == "":
             Mult_F_Z = 1
@@ -371,7 +355,7 @@ class Tool(Plugin):
             CNC.zsafe()
         )  # <<< Move rapid Z axis to the safe height in Stock Material
 
-        # 		 Move rapid to X and Y coordinate
+        # Move rapid to X and Y coordinate
         if (
             helicalCut == "Helical Cut"
             or helicalCut == "Internal Right Thread"
@@ -394,19 +378,13 @@ class Tool(Plugin):
             block.append(CNC.grapid(x, y))
             block.append(CNC.grapid(x - Radio - clearance, y))
 
-        # cutFeed = int(cutFeed)
         block.append(CNC.fmt("f", cutFeed))  # <<< Set cut feed
-        # 	block.append(CNC.gline(x,y)
-        #    while (z < 1):
         block.append(CNC.zenter(z))
         block.append(CNC.gline(x - Radio, y))
-        # 	cutFeed = int((CNC.vars["cutfeed"]	+ CNC.vars["cutfeedz"])/2)	#<<< Get cut feed for the current material
-
-        # cutFeed = int(cutFeed)
         block.append(CNC.fmt("F", cutFeed))  # <<< Set cut feed
 
         # ---------------------------------------------------------------------
-        # 	Uncomment for first flat pass
+        # Uncomment for first flat pass
         if helicalCut == "Helical Cut":
             block.append(
                 CNC.gcode(
@@ -525,7 +503,6 @@ class Tool(Plugin):
                 block.append(CNC.gline(x - xse, y + yse))
 
             # Return to Z Safe
-            # 		if returnToSafeZ == 1:
             if (
                 helicalCut == "Helical Cut"
                 or helicalCut == "Internal Right Thread"

@@ -1,7 +1,7 @@
 # $Id$
 #
-# Author:	Vasilis.Vlachoudis@cern.ch
-# Date:	20-Aug-2015
+# Author:    Vasilis.Vlachoudis@cern.ch
+# Date:      20-Aug-2015
 
 import math
 
@@ -127,15 +127,11 @@ class Gear:
 
         block.append(CNC.grapid(first.x(), first.y()))
         block.append(CNC.zenter(0.0))
-        # print first.x(), first.y()
         for v in points:
             block.append(CNC.gline(v.x(), v.y()))
-            # print v.x(), v.y()
-        # print first.x(), first.y()
         block.append(CNC.gline(first.x(), first.y()))
         block.append(CNC.zsafe())
 
-        # block = Block("%s-center"%(self.name))
         block = Block(f"{self.name}-basecircle")
         block.enable = False
         block.append(CNC.grapid(Db / 2, 0.0))
@@ -184,5 +180,3 @@ if __name__ == "__main__":
     gear = Gear()
     gear.calc(12, math.radians(10), math.radians(10))
     gear.calc(36, math.radians(10), math.radians(10))
-# 	gear.calc(10, math.radians(10), math.radians(10))
-# b:scale(Coord(0,0),Coord(10,10))

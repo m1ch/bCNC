@@ -1,7 +1,7 @@
 # $Id$
 #
 # Author:  Attila Kolinger
-# Date:	   26.feb.2018.
+# Date:         26.feb.2018.
 
 import math
 

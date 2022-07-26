@@ -55,24 +55,23 @@ class Tool(Plugin):
                 "",
                 _("Feed rapid G0"),
                 "Defaults from config, if blank",
-            ),  # default = min(CNC.feedmax_x, CNC.feedmax_y)
+            ),
             (
                 "spinMin",
                 "int",
                 "",
                 _("Laser power minimum"),
                 "Defaults from config, if blank",
-            ),  # default = Utils.config.get("CNC","spindlemin")
+            ),
             (
                 "spinMax",
                 "int",
                 "",
                 _("Laser power maximum"),
                 "Defaults from config, if blank",
-            ),  # default = Utils.config.get("CNC","spindlemax")
+            ),
         ]
         self.buttons.append("exe")
-        # self.help = "Plugin: Driller\n"
 
     # Excellon Coordsconvert
     def coord2float(self, text, unitinch, decimals=0.001):
@@ -202,7 +201,6 @@ class Tool(Plugin):
             block = allBlocks[bid]
             if block.name() in ("Header", "Footer"):
                 continue
-            # if not block.enable : continue
             app.gcode.initPath(bid)
             for line in block:
                 try:
@@ -411,7 +409,6 @@ class Tool(Plugin):
                 if self.useCustom:
                     block.append(CNC.grapid(x=xH, y=yH) + CNC.fmt(" F", self.rFeed))
                 else:
-                    # block.append(CNC.zsafe()) # Moved up
                     block.append(CNC.grapid(xH, yH))
 
                 if peck != 0:

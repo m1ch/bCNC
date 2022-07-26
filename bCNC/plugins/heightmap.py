@@ -1,6 +1,6 @@
 # $Id$
 #
-# Author:	Filippo Rivato
+# Author:    Filippo Rivato
 # Date:     18 November 2015
 # Porting of image2gcode and based on dmap2gcode
 # Source was used from the following works:
@@ -107,7 +107,6 @@ class Tool(Plugin):
             Image_Matrix = Image_Matrix_Numpy
         else:
             Image_Matrix = Image_Matrix_List
-            # print "Install NumPy will speed up heightmap creation"
 
         MAT = Image_Matrix()
         MAT.FromImage(img, True)
@@ -233,7 +232,6 @@ class Tool(Plugin):
         ######################################################
         lace_bound_val = "None"  # "None","Secondary","Full"
         if lace_bound_val != "None" and rows and columns:
-            # 			slope = tan( Cont_Angle*pi/180 )
             slope = math.tan(Cont_Angle * math.pi / 180)
             if columns_first:
                 convert_rows = Reduce_Scan_Lace(convert_rows, slope, step + 1)
@@ -252,12 +250,6 @@ class Tool(Plugin):
         ######################################################
         #                START COMMON STUFF                  #
         ######################################################
-        # sunits = "mm"
-        # if units == "in":
-        #    units = 'G20'
-        # else:
-        #    units = 'G21'
-        # Units not used
         units = ""
 
         ######################################################

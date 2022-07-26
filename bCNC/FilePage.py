@@ -168,20 +168,6 @@ class OptionsGroup(CNCRibbon.ButtonGroup):
         CNCRibbon.ButtonGroup.__init__(self, master, N_("Options"), app)
         self.grid3rows()
 
-        # 		# ---
-        # 		col,row=0,0
-        # 		b = Ribbon.LabelButton(self.frame, #self.page, "<<Config>>",
-        # 				text=_("Config"),
-        # 				image=Utils.icons["config32"],
-        # command=self.app.preferences,
-        # 				state=DISABLED,
-        # 				compound=TOP,
-        # 				anchor=W,
-        # 				background=Ribbon._BACKGROUND)
-        # 		b.grid(row=row, column=col, rowspan=3, padx=0, pady=0,
-        #               sticky=NS)
-        # 		tkExtra.Balloon.set(b, _("Open configuration dialog"))
-
         # ===
         col, row = 1, 0
         b = Ribbon.LabelButton(
@@ -338,7 +324,6 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
         )
         self.ctrlCombo.grid(row=row, column=col + 1, sticky=EW)
         tkExtra.Balloon.set(self.ctrlCombo, _("Select controller board"))
-        # self.ctrlCombo.fill(sorted(Utils.CONTROLLER.keys()))
         self.ctrlCombo.fill(self.app.controllerList())
         self.ctrlCombo.set(app.controller)
         self.addWidget(self.ctrlCombo)
@@ -367,7 +352,6 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
         tkExtra.Balloon.set(self.comrefBtn, _("Refresh list of serial ports"))
 
         # ---
-        # col += 2
         row = 0
 
         self.connectBtn = Ribbon.LabelButton(
@@ -386,8 +370,6 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
 
     # -----------------------------------------------------------------------
     def ctrlChange(self):
-        # self.app.controller = Utils.CONTROLLER.get(self.ctrlCombo.get(), 0)
-        # print("selected",self.ctrlCombo.get())
         self.app.controllerSet(self.ctrlCombo.get())
 
     # -----------------------------------------------------------------------

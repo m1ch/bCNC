@@ -200,7 +200,6 @@ class Probe:
                     self.add(*read(f))
         except Exception:
             raise
-            # print "Error reading probe file",self.filename
         f.close()
 
     # ----------------------------------------------------------------------
@@ -469,8 +468,6 @@ class Orient:
     # -----------------------------------------------------------------------
     def __init__(self):
         self.markers = []  # list of points pairs (xm, ym, x, y)
-        # xm,ym = machine x,y mpos
-        # x, y  = desired or gcode location
         self.paths = []
         self.errors = []
         self.filename = ""
@@ -545,7 +542,7 @@ class Orient:
     #       |  y1   x1  0 1 | | s  |    | ym1 |
     #       |  x2  -y2  1 0 | | xo |    | xm2 |
     #       |  y2   x2  0 1 | \ yo /  = | ym2 |
-    # 	      ...                   ..
+    #          ...                   ..
     #       |  xn  -yn  1 0 |           | xmn |
     #       \  yn   xn  0 1 /           \ ymn /
     #
@@ -574,16 +571,11 @@ class Orient:
         except Exception:
             raise Exception("Unable to solve system")
 
-        # print "c,s,xo,yo=",c,s,xo,yo
-
         # Normalize the coefficients
         r = sqrt(c * c + s * s)  # length should be 1.0
         if abs(r - 1.0) > 0.1:
             raise Exception("Resulting system is too skew")
 
-        # 		print "r=",r
-        # xo /= r
-        # yo /= r
         self.phi = atan2(s, c)
 
         if abs(self.phi) < TOLERANCE:
@@ -1201,7 +1193,7 @@ class CNC:
 
     # ----------------------------------------------------------------------
     # @return line,comment
-    # 	line broken in a list of commands,
+    #   line broken in a list of commands,
     #       None,"" if empty or comment
     #       else compiled expressions,""
     # ----------------------------------------------------------------------
@@ -1305,7 +1297,6 @@ class CNC:
                         except Exception:
                             # FIXME show the error!!!!
                             pass
-                        # out.append("<<"+expr+">>")
                         expr = ""
                     else:
                         expr += ch
@@ -1370,7 +1361,6 @@ class CNC:
     # Create path for one g command
     # ----------------------------------------------------------------------
     def motionStart(self, cmds):
-        # print "\n<<<",cmds
         self.mval = 0  # reset m command
         for cmd in cmds:
             c = cmd[0].upper()
@@ -1557,13 +1547,6 @@ class CNC:
             else:
                 return yc, zc
 
-        # Error checking
-        # err = abs(self.rval - math.sqrt((self.xval-xc)**2 +
-        #       (self.yval-yc)**2 + (self.zval-zc)**2))
-        # if err/self.rval>0.001:
-        # print "Error invalid arc", self.xval, self.yval, self.zval, err
-        # return xc,yc,zc
-
     # ----------------------------------------------------------------------
     # Create path for one g command
     # ----------------------------------------------------------------------
@@ -1658,14 +1641,6 @@ class CNC:
             self.totalTime = self.pval
 
         elif self.gcode in (81, 82, 83, 85, 86, 89):  # Canned cycles
-            # print "x=",self.x
-            # print "y=",self.y
-            # print "z=",self.z
-            # print "dx=",self.dx
-            # print "dy=",self.dy
-            # print "dz=",self.dz
-            # print "abs=",self.absolute,"retract=",self.retractz
-
             # FIXME Assuming only on plane XY
             if self.absolute:
                 # FIXME is it correct?
@@ -1678,8 +1653,6 @@ class CNC:
             else:
                 clearz = self.z + self.rval
                 drill = clearz + self.dz
-            # print "clearz=",clearz
-            # print "drill=",drill
 
             x, y, z = self.x, self.y, self.z
             xyz.append((x, y, z))
@@ -1703,22 +1676,12 @@ class CNC:
                 z = clearz
                 xyz.append((x, y, z))  # ???
 
-        # for a in xyz: print a
-
         return xyz
 
     # ----------------------------------------------------------------------
     # move to end position
     # ----------------------------------------------------------------------
     def motionEnd(self):
-        # print "x=",self.x
-        # print "y=",self.y
-        # print "z=",self.z
-        # print "dx=",self.dx
-        # print "dy=",self.dy
-        # print "dz=",self.dz
-        # print "abs=",self.absolute,"retract=",self.retractz
-
         if self.gcode in (0, 1, 2, 3):
             self.x = self.xval
             self.y = self.yval
@@ -1956,23 +1919,14 @@ class CNC:
     # code to expand G80-G89 macro code - canned cycles
     # example:
     # code to expand G83 code - peck drilling cycle
-    # format:	(G98 / G99 opt.) G83 X~ Y~ Z~ A~ R~ L~ Q~
-    # example:	N150 G98 G83 Z-1.202 R18. Q10. F50.
-    # 			...
-    # 			G80
+    # format:   (G98 / G99 opt.) G83 X~ Y~ Z~ A~ R~ L~ Q~
+    # example:  N150 G98 G83 Z-1.202 R18. Q10. F50.
+    #           ...
+    #           G80
     # Notes: G98, G99, Z, R, Q, F are unordered parameters
     # ----------------------------------------------------------------------
     def macroGroupG8X(self):
         lines = []
-
-        # print "x=",self.x
-        # print "y=",self.y
-        # print "z=",self.z
-        # print "dx=",self.dx
-        # print "dy=",self.dy
-        # print "dz=",self.dz
-        # print "abs=",self.absolute,"retract=",self.retractz
-
         # FIXME Assuming only on plane XY
         if self.absolute:
             # FIXME is it correct?
@@ -1987,8 +1941,6 @@ class CNC:
             clearz = self.z + self.rval
             retract = clearz
             drill = clearz + self.dz
-        # print "clearz=",clearz
-        # print "drill=",drill
 
         if self.gcode == 83:  # peck drilling
             peck = self.qval
@@ -2038,9 +1990,6 @@ class CNC:
 
             if self.gcode == 86:
                 lines.append("M3")  # restart spindle???
-        # print "-"*50
-        # for a in lines: print a
-        # print "-"*50
         return lines
 
 
@@ -2051,8 +2000,8 @@ class CNC:
 #   above the working surface
 #
 # Inherits from list and contains:
-# 	- a list list of gcode lines
-# 	- (imported shape)
+#   - a list list of gcode lines
+#   - (imported shape)
 # =============================================================================
 class Block(list):
     def __init__(self, name=None):
@@ -2351,8 +2300,6 @@ class GCode:
         self.blocks = []  # list of blocks
         self.vars.clear()
         self.undoredo.reset()
-        # 		self.probe.init()
-
         self._lastModified = 0
         self._modified = False
 
@@ -2406,7 +2353,6 @@ class GCode:
         elif isinstance(line, types.CodeType):
             import traceback  # noqa: F401
 
-            # traceback.print_stack()
             v = self.vars
             v["os"] = os
             v["app"] = app
@@ -2564,7 +2510,6 @@ class GCode:
         dxf.convert2Polylines()
         dxf.expandBlocks()
 
-        # import time; start = time.time()
         empty = len(self.blocks) == 0
         if empty:
             self.addBlockFromString("Header", self.header)
@@ -2607,33 +2552,14 @@ class GCode:
 
                 # Can be time consuming
                 if GCode.LOOP_MERGE:
-                    # 					print "Loop merge"
                     longest.mergeLoops(opath)
 
                 undoinfo.extend(self.importPath(None, longest, None, enable))
-            # 				d = longest.direction()
-            # 				bid = len(self.blocks)-1
-            # 				if d==0:
-            # 					undoinfo.extend(self.addBlockOperationUndo(bid,"O"))
-            # 				elif d==1:
-            # 					undoinfo.extend(self.addBlockOperationUndo(bid,"CW"))
-            # 				elif d==-1:
-            # 					undoinfo.extend(self.addBlockOperationUndo(bid,"CCW"))
 
             undoinfo.extend(self.importPath(None, opath, None, enable))
-        # 			d = opath.direction()
-        # 			bid = len(self.blocks)-1
-        # 			if d==0:
-        # 				undoinfo.extend(self.addBlockOperationUndo(bid,"O"))
-        # 			elif d==1:
-        # 				undoinfo.extend(self.addBlockOperationUndo(bid,"CW"))
-        # 			elif d==-1:
-        # 				undoinfo.extend(self.addBlockOperationUndo(bid,"CCW"))
 
-        # print "Loading time:", time.time()-start
         if empty:
             self.addBlockFromString("Footer", self.footer)
-        # self.addUndo(undoinfo)
         return True
 
     # ----------------------------------------------------------------------
@@ -2707,10 +2633,7 @@ class GCode:
     # Load SVG file into gcode
     # ----------------------------------------------------------------------
     def importSVG(self, filename):
-        # try:
         svgcode = SVGcode(filename)
-        # except Exception:
-        # 	return False
 
         empty = len(self.blocks) == 0
         if empty:
@@ -2762,8 +2685,6 @@ class GCode:
 
         # Get bounding box of document
         minx, miny, maxx, maxy = self.getMargins()
-        # centerx = (minx+maxx)/2
-        # centery = (miny+maxy)/2
 
         svg.write(
             "<!-- SVG generated by bCNC: "
@@ -2775,7 +2696,6 @@ class GCode:
             f"{((maxx - minx) * scale) + padding * 2} "
             f"{((maxy - miny) * scale) + padding * 2}\">\n"
         )
-        # svg.write('\t<path d="M %s %s L %s %s" stroke="%s" stroke-width="%s" fill="none" />\n'%(minx*scale, -miny*scale, maxx*scale, -maxy*scale, "pink", 2)) #Bounding box debug
 
         def svgLine(scale, px, py, type_="L"):
             return f"\t{type_} {px * scale} {py * scale}\n"
@@ -2789,8 +2709,6 @@ class GCode:
             if gcode == 2:
                 if ephi <= sphi + 1e-10:
                     ephi += 2.0 * math.pi
-                # dxf.arc(xc,yc,self.cnc.rval, math.degrees(ephi), math.degrees(sphi),name)
-                # return('\tM %s %s A %s %s %s %s %s %s %s\n'%(ax*scale, ay*scale, r*scale, r*scale, 0, arcSweep, 1, bx*scale, by*scale))
                 return "\tA {} {} {} {} {} {} {}\n".format(
                     r * scale,
                     r * scale,
@@ -2803,8 +2721,6 @@ class GCode:
             else:
                 if ephi <= sphi + 1e-10:
                     ephi += 2.0 * math.pi
-                # dxf.arc(xc,yc,self.cnc.rval, math.degrees(sphi), math.degrees(ephi),name)
-                # return('\tM %s %s A %s %s %s %s %s %s %s\n'%(ax*scale, ay*scale, r*scale, r*scale, 0, arcSweep, 0, bx*scale, by*scale))
                 return "\tA {} {} {} {} {} {} {}\n".format(
                     r * scale,
                     r * scale,
@@ -2895,7 +2811,6 @@ class GCode:
                     f"stroke-width=\"{width}\" fill=\"none\" />\n"
                 )
 
-        # dxf.writeEOF()
         svg.write("</svg>\n")
         svg.close()
         return True
@@ -2981,8 +2896,8 @@ class GCode:
 
     # ----------------------------------------------------------------------
     # create a block from Path
-    # @param z	I       ending depth
-    # @param zstart	I       starting depth
+    # @param z      I       ending depth
+    # @param zstart I       starting depth
     # ----------------------------------------------------------------------
     def fromPath(
         self,
@@ -3136,7 +3051,6 @@ class GCode:
                 block.append(f"g0 {self.fmt('z', max(zh, ztab), 7)}")
 
             # Begin pass
-            # if comments: block.append("(pass %f)"%(max(zh, ztab)))
             if comments:
                 block.append("(entered)")
 
@@ -3282,12 +3196,10 @@ class GCode:
     # Undo/Redo operations
     # ----------------------------------------------------------------------
     def undo(self):
-        # print ">u>",self.undoredo.undoText()
         self.undoredo.undo()
 
     # ----------------------------------------------------------------------
     def redo(self):
-        # print ">r>",self.undoredo.redoText()
         self.undoredo.redo()
 
     # ----------------------------------------------------------------------
@@ -3520,7 +3432,6 @@ class GCode:
     # ----------------------------------------------------------------------
     def delBlockLinesUndo(self, bid):
         lines = [x for x in self.blocks[bid]]
-        # list(self.blocks[bid])[:])
         undoinfo = (self.insBlockLinesUndo, bid, lines)
         del self.blocks[bid]
         return undoinfo
@@ -3646,72 +3557,6 @@ class GCode:
             undoinfo.append(self.setBlockLinesUndo(bid, lines))
         if undoinfo:
             self.addUndo(undoinfo)
-
-    # ----------------------------------------------------------------------
-    # Merge or split blocks depending on motion
-    #
-    # Each block should start with a rapid move and end with a rapid move
-    # ----------------------------------------------------------------------
-    # 	def correctBlocks(self):
-    # 		# Working in place tricky
-    # 		bid = 0	# block index
-    # 		while bid < len(self.blocks):
-    # 			block = self.blocks[bid]
-    # 			li = 0	# line index
-    # 			prefix = True
-    # 			suffix = False
-    # 			lastg0 = None
-    # 			while li < len(block):
-    # 				line = block[li]
-    # 				cmds = CNC.parseLine(line)
-    # 				if cmds is None:
-    # 					li += 1
-    # 					continue
-    #
-    # 				self.cnc.motionStart(cmds)
-    #
-    # 				# move
-    # 				if self.gcode in (1,2,3):
-    # 					if prefix is None: prefix = li-1
-    #
-    # 				# rapid movement
-    # 				elif self.gcode == 0:
-    # 					lastg0 = li
-    # 					if prefix is not None: suffix = li
-    #
-    # 					# moving up = end of block
-    # 					if self.cnc.dz > 0.0:
-    # 						if suffix:
-    # 							# Move all subsequent lines to a new block
-    # 							#self.blocks.append(Block())
-    # 							pass
-    # 				self.cnc.motionEnd()
-
-    # ----------------------------------------------------------------------
-    # Start a new iterator
-    # ----------------------------------------------------------------------
-    # 	def __iter__(self):
-    # 		self._iter = 0	#self._iter_start
-    # 		self._iter_block = self.blocks[self._iter]
-    # 		self._iter_block_i = 0
-    # 		self._iter_end   = len(self.blocks)
-    # 		return self
-    #
-    # 	#----------------------------------------------------------------------
-    # 	# Next iterator item
-    # 	#----------------------------------------------------------------------
-    # 	def next(self):
-    # 		if self._iter >= self._iter_end: raise StopIteration()
-    #
-    # 		while self._iter_block_i >= len(self._iter_block):
-    # 			self._iter += 1
-    # 			if self._iter >= self._iter_end: raise StopIteration()
-    # 			self._iter_block = self.blocks[self._iter]
-    # 			self._iter_block_i = 0
-    #
-    # 		item = self._iter_block[self._iter_block_i]
-    # 		self._iter_block_i += 1
-    # 		return item
 
     # ----------------------------------------------------------------------
     # Return string representation of whole file
@@ -3917,12 +3762,12 @@ class GCode:
 
     # ----------------------------------------------------------------------
     # Perform a cut on a path an add it to block
-    # @param newblock O	block to add the cut paths
-    # @param block	I	existing block
-    # @param path	I	path to cut
-    # @param z	I	starting z surface
-    # @param depth	I	ending depth
-    # @param stepz	I	stepping in z
+    # @param newblock O block to add the cut paths
+    # @param block  I   existing block
+    # @param path   I   path to cut
+    # @param z      I   starting z surface
+    # @param depth  I   ending depth
+    # @param stepz  I   stepping in z
     # ----------------------------------------------------------------------
     def cutPath(
         self,
@@ -4250,9 +4095,7 @@ class GCode:
                         exitpoint,
                         springPass,
                     )
-                # newblock.append("( ---------- cut-here ---------- )")
             if newblock:
-                # del newblock[-1] #remove trailing cut-here
                 undoinfo.append(self.addBlockOperationUndo(bid, opname))
                 undoinfo.append(self.setBlockLinesUndo(bid, newblock))
         self.addUndo(undoinfo)
@@ -4301,12 +4144,12 @@ class GCode:
 
     # ----------------------------------------------------------------------
     # Create tabs to selected blocks
-    # @param ntabs	number of tabs
-    # @param dtabs	distance between tabs
-    # @param dx	width of tabs
-    # @param dy	depth of tabs
-    # @param z	height of tabs
-    # @param isl	create tabs in form of islands?
+    # @param ntabs  number of tabs
+    # @param dtabs  distance between tabs
+    # @param dx     width of tabs
+    # @param dy     depth of tabs
+    # @param z      height of tabs
+    # @param isl    create tabs in form of islands?
     # ----------------------------------------------------------------------
     def createTabs(self, items, ntabs, dtabs, dx, dy, z, circ=True):
         msg = None
@@ -4393,11 +4236,11 @@ class GCode:
 
     # ----------------------------------------------------------------------
     # Change cut direction
-    # 1	CW
-    # -1	CCW
-    # 2	Conventional = CW for inside profiles and pockets,
+    # 1     CW
+    # -1    CCW
+    # 2     Conventional = CW for inside profiles and pockets,
     #                  CCW for outside profiles
-    # -2	Climb = CCW for inside profiles and pockets,
+    # -2    Climb = CCW for inside profiles and pockets,
     #               CW for outside profiles
     # ----------------------------------------------------------------------
     def cutDirection(self, items, direction=-1):
@@ -4474,7 +4317,6 @@ class GCode:
                 self.blocks[bid].color = None
 
             undoinfo.append(self.addBlockOperationUndo(bid, tag, remove))
-            # undoinfo.append(self.setBlockLinesUndo(bid, block))
 
         self.addUndo(undoinfo)
 
@@ -4576,9 +4418,8 @@ class GCode:
     # Generate a pocket path
     # ----------------------------------------------------------------------
     def _pocket(self, path, diameter, stepover, depth):
-        # FIXME: recursions are slow and shall be avoided! Replace recursion via a loop!
-
-        # print "_pocket",depth
+        # FIXME: recursions are slow and shall be avoided! Replace recursion
+        #        via a loop!
 
         # python's internal recursion limit hit us before bCNC's
         # limit came to place
@@ -4601,8 +4442,6 @@ class GCode:
             return None
 
         opath.intersectSelf()
-        # 		print
-        # 		print "INTERSECT=",opath
         opath.removeExcluded(path, offset)
         opath.removeZeroLength(abs(offset) / 100.0)
         opath = opath.split2contours()
@@ -4616,7 +4455,7 @@ class GCode:
             if not pin:
                 newpath.append(pout)
 
-            # else:	# FIXME
+            # else: # FIXME
             # 1. Find closest node that we can move with
             #    a straight line without intersecting the path
             # 2. rotate the pout to start from this node
@@ -4736,13 +4575,9 @@ class GCode:
                 continue
             newpath = []
             for path in self.toPath(bid):
-                # 				if name is not None:
-                # 				newname = Block.operationName(path.name, name)
                 explain = "Tr "
                 if offset > 0:
-                    explain += "out "  # n +="out "
-                # 				elif offset==0:
-                # 					n +=" on "
+                    explain += "out "
                 elif offset < 0:
                     explain += "in "
                 explain += str(cutDiam)
@@ -4762,29 +4597,20 @@ class GCode:
                             msg += "\n"
                         msg += m
 
-                # 				print "ORIGINAL\n",path
                 # Remove tiny segments
                 path.removeZeroLength(abs(offset) / 100.0)
                 # Convert very small arcs to lines
                 path.convert2Lines(abs(offset) / 10.0)
                 D = path.direction()
-                # 				print "Path Direction:",D
                 if D == 0:
                     D = 1
-                # 				print "ZERO\n",path
                 opath = path.offset(D * offset, newname)
-                # 				print "OFFSET\n",opath
                 if opath:
                     opath.intersectSelf()
-                    # 					print "INTERSECT\n",opath
                     opath.removeExcluded(path, D * offset)
-                    # 					print "EXCLUDE\n",opath
                     opath.removeZeroLength(abs(offset) / 100.0)
-                # 					print "REMOVE\n",opath
                 opath = opath.split2contours()
                 if opath:
-                    # 					if adaptative:
-                    # 					if overcut:
                     if overcut is True or adaptative is True:
                         for p in opath:
                             p.trochovercut(
@@ -4808,16 +4634,6 @@ class GCode:
         del blocks[:]
         blocks.extend(newblocks)
 
-        # 		if tabsnumber !=0:
-        # def createTabs(self, items,
-        # ntabs, dtabs, dx, dy, z, circ=True):
-        # 	self.createTabs(reversed(blocks),1,    0,     1,  0,  -1.2,1)
-        # def cut(self, items,      depth=None,
-        # stepz=None, surface=None, feed=None, feedz=None,
-        # cutFromTop=False, helix=False, helixBottom=True,
-        # ramp=0, islandsLeave=False, islandsCut=False,
-        # islandsSelectedOnly=True, exitpoint=None, springPass=False,
-        # islandsCompensate=False):
         self.cut(
             reversed(blocks),
             targetDepth,
@@ -4858,13 +4674,9 @@ class GCode:
                 continue
             newpath = []
             for path in self.toPath(bid):
-                # 				if name is not None:
-                # 				newname = Block.operationName(path.name, name)
                 explain = "Clear "
                 if offset > 0:
-                    explain += "out "  # n +="out "
-                # 				elif offset==0:
-                # 					n +=" on "
+                    explain += "out "
                 elif offset < 0:
                     explain += "in "
                 explain += str(cutDiam)
@@ -4884,30 +4696,20 @@ class GCode:
                             msg += "\n"
                         msg += m
 
-                # 				print "ORIGINAL\n",path
                 # Remove tiny segments
                 path.removeZeroLength(abs(offset) / 100.0)
                 # Convert very small arcs to lines
                 path.convert2Lines(abs(offset) / 10.0)
                 D = path.direction()
-                # 				print "Path Direction:",D
                 if D == 0:
                     D = 1
-                # 				print "ZERO\n",path
                 opath = path.offset(D * offset, newname)
-                # 				print "OFFSET\n",opath
                 if opath:
                     opath.intersectSelf()
-                    # 					print "INTERSECT\n",opath
                     opath.removeExcluded(path, D * offset)
-                    # 					print "EXCLUDE\n",opath
                     opath.removeZeroLength(abs(offset) / 100.0)
-                # 					print "REMOVE\n",opath
                 opath = opath.split2contours()
                 if opath:
-                    # 			if adaptative:
-                    # 			if overcut:
-                    # 			if overcut == True or adaptative == True:
                     for p in opath:
                         p.two_bit_adaptative_cut(
                             D * offset, overcut, adaptative, adaptedRadius
@@ -4927,7 +4729,6 @@ class GCode:
         self.addUndo(undoinfo)
 
         # return new blocks inside the blocks list
-        # 	del blocks[:]
         blocks.extend(newblocks)
         return msg
 
@@ -4947,7 +4748,6 @@ class GCode:
             self.cnc.motionEnd()
 
         # FIXME: doesn't work; lid not defined
-
         # New lines to append
         pos = 1  # pos = lid + 1
         block.insert(pos, f"g0 {self.fmt('x', self.cnc.x + radius)}")
@@ -5083,8 +4883,8 @@ class GCode:
 
     # ----------------------------------------------------------------------
     # Transform (rototranslate) position with the following function:
-    # 	 xn = c*x - s*y + xo
-    # 	 yn = s*x + c*y + yo
+    #   xn = c*x - s*y + xo
+    #   yn = s*x + c*y + yo
     # it is like the rotate but the rotation center is not defined
     # ----------------------------------------------------------------------
     def transformFunc(self, new, old, relative, c, s, xo, yo):
@@ -5199,12 +4999,8 @@ class GCode:
         # Loop over all blocks
         self.initPath()
         newlines = []
-        # last = None
         last = -1  # line location when it was last raised with dx=dy=0.0
 
-        # for line in self.iterate():
-        # for bid,block in enumerate(self.blocks):
-        # 	for li,line in enumerate(block):
         for line in self.lines():
             # step id
             # 0 - normal cutting z<0
@@ -5218,29 +5014,13 @@ class GCode:
             if self.cnc.dx == 0.0 and self.cnc.dy == 0.0:
                 if self.cnc.z > 0.0 and self.cnc.dz > 0.0:
                     last = len(newlines)
-                    # last = bid, li
-
-                # elif self.cnc.z<0.0 and self.cnc.dz<0.0 and last is not None:
                 elif self.cnc.z < 0.0 and self.cnc.dz < 0.0 and last >= 0:
-                    # comment out all lines from last
-                    # lb, ll = last
-                    # while bid!=lb or li!=ll:
-                    # 	b = self.blocks[lb]
-                    # 	line = b[ll]
-                    # 	if line and line[0] not in ("(","%"):
-                    # 		undoinfo.append(b.setLineUndo(ll,"(%s)"%(line)))
-                    # 	ll += 1
-                    # 	if ll>=len(b):
-                    # 		lb += 1
-                    # 		ll = 0
-                    # last = None
                     for i in range(last, len(newlines)):
                         s = newlines[i]
                         if s and s[0] != "(":
                             newlines[i] = f"({s})"
                     last = -1
             else:
-                # last = None
                 last = -1
             newlines.append(line)
             self.cnc.motionEnd()
@@ -5282,8 +5062,6 @@ class GCode:
                 dx /= CNC.feedmax_x
                 dy /= CNC.feedmax_y
                 matrix[i][j] = sqrt(dx * dx + dy * dy)
-        # from pprint import pprint
-        # pprint(matrix)
 
         best = [0]
         unvisited = list(range(1, n))
@@ -5298,7 +5076,6 @@ class GCode:
                     mindist = d
                     si = i
             best.append(unvisited.pop(si))
-        # print "best=",best
 
         undoinfo = []
         for i in range(len(best)):
@@ -5306,9 +5083,7 @@ class GCode:
             if i == b:
                 continue
             ptr = best.index(i)
-            # swap i,b in items
             undoinfo.append(self.swapBlockUndo(items[i], items[b]))
-            # swap i,ptr in best
             best[i], best[ptr] = best[ptr], best[i]
         self.addUndo(undoinfo, "Optimize")
 
@@ -5316,7 +5091,6 @@ class GCode:
     # Use probe information to modify the g-code to autolevel
     # ----------------------------------------------------------------------
     def compile(self, queue, stopFunc=None):
-        # lines  = [self.cnc.startup]
         paths = []
 
         def add(line, path):
@@ -5351,7 +5125,6 @@ class GCode:
                     cmds = CNC.breakLine(cmds)
                 else:
                     # either CodeType or tuple, list[] append at it as is
-                    # lines.append(cmds)
                     if (isinstance(cmds, types.CodeType)
                             or isinstance(cmds, int)):
                         add(cmds, None)
@@ -5380,8 +5153,6 @@ class GCode:
                     if not xyz:
                         # while auto-levelling, do not ignore non-movement
                         # commands, just append the line as-is
-                        # lines.append(line)
-                        # paths.append(None)
                         add(line, None)
                     else:
                         extra = ""
@@ -5469,24 +5240,3 @@ class GCode:
                 add("".join(newcmd), (i, j))
 
         return paths
-
-
-# if __name__=="__main__":
-# 	orient = Orient()
-# 	orient.add(  0,  0, 100, 50)
-# 	orient.add( 50, 10, 150, 60)
-# 	orient.add(100, 20, 200, 70)
-# 	phi,xo,yo = orient.solve()
-# 	print phi,degrees(phi),xo,yo
-#
-# 	orient.clear()
-# 	orient.add(  0,  0, -50, 100)
-# 	orient.add( 50, 10, -60, 150)
-# 	orient.add(100, 20, -70, 200)
-# 	phi,xo,yo = orient.solve()
-# 	print phi,degrees(phi),xo,yo
-#
-# 	import pdb; pdb.set_trace()
-# 	#print Block.operationName("door","in")
-# 	print Block.operationName("door [in:2,cut:0.1]","cut:0.5")
-# 	print Block.operationName("door [in:2,cut:0.1]","in")

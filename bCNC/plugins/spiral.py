@@ -1,7 +1,7 @@
 # $Id$
 #
-# Author:	T Marks
-# Date:	2020/04/14
+# Author:    T Marks
+# Date:      2020/04/14
 
 import math
 import sys  # Trouble Shooting Only!
@@ -157,9 +157,7 @@ class Spiral:
                 return
 
             while currentZ >= (ZStart + ReduceDepth):
-                # sys.stdout.write("~~~~~%s,%s,%s,%s,%s!"%(currentZ,ZStart,ReduceDepth,EvenCutDepths,VerticalCount))
                 while currentR < 360:
-                    # sys.stdout.write("~~~~~%s,%s,%s,%s,%s!"%(currentR,Stepover,currentX,currentY,VerticalCount))
 
                     # Plunge in
                     gP.append(1)
@@ -389,13 +387,11 @@ class Spiral:
                         CNC.grapidABC(
                             x, y, z, r, CNC.vars["wb"], CNC.vars["wc"])
                     )
-                    # sys.stdout.write("%s,%s,%s,%s,%s"%(g,x,y,z,r))
                 else:
                     block.append(
                         CNC.glineABC(
                             x, y, z, r, CNC.vars["wb"], CNC.vars["wc"])
                     )
-                    # sys.stdout.write("%s,%s,%s,%s,%s"%(g,x,y,z,r))
             elif RotAxis == "B":
                 if g == 0:
                     block.append(

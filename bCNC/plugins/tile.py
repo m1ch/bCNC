@@ -1,7 +1,7 @@
 # $Id$
 #
-# Author:	Vasilis.Vlachoudis@cern.ch
-# Date:	20-Aug-2015
+# Author:    Vasilis.Vlachoudis@cern.ch
+# Date:      20-Aug-2015
 
 from ToolsPage import Plugin
 from tkinter import messagebox
@@ -56,7 +56,6 @@ class Tool(Plugin):
 
         pos = blocks[-1]  # insert position
 
-        # undoinfo = []
         y = 0.0
         pos += 1
         for j in range(self["ny"]):

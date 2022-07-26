@@ -253,7 +253,6 @@ class DROFrame(CNCRibbon.PageFrame):
                 "Right-Click to clear alarm/errors"
             ),
         )
-        # self.state.bind("<Button-3>", lambda e,s=self : s.event_generate("<<AlarmClear>>"))
         self.state.bind("<Button-3>", self.stateMenu)
 
         row += 1
@@ -445,7 +444,6 @@ class DROFrame(CNCRibbon.PageFrame):
         tkExtra.Balloon.set(b, _("Set WPOS to mouse location"))
         self.addWidget(b)
 
-        # col += 2
         b = Button(
             f,
             text=_("Move Gantry"),
@@ -456,7 +454,6 @@ class DROFrame(CNCRibbon.PageFrame):
             padx=2,
             pady=1,
         )
-        # b.grid(row=row, column=col, pady=0, sticky=EW)
         b.pack(side=RIGHT, fill=X, expand=YES)
         tkExtra.Balloon.set(b, _("Move gantry to mouse location [g]"))
         self.addWidget(b)
@@ -589,12 +586,6 @@ class DROFrame(CNCRibbon.PageFrame):
             self.app.mcontrol._wcsSet(None, None, value, None, None, None)
         except Exception:
             pass
-
-    # ----------------------------------------------------------------------
-    # def wcsSet(self, x, y, z): self.app.mcontrol._wcsSet(x, y, z)
-
-    # ----------------------------------------------------------------------
-    # def _wcsSet(self, x, y, z): self.app.mcontrol._wcsSet(x, y, z)
 
     # ----------------------------------------------------------------------
     def showState(self):
@@ -898,12 +889,6 @@ class abcDROFrame(CNCRibbon.PageExLabelFrame):
             pass
 
     # ----------------------------------------------------------------------
-    # def wcsSet(self, x, y, z): self.app.mcontrol._wcsSet(x, y, z)
-
-    # ----------------------------------------------------------------------
-    # def _wcsSet(self, x, y, z): self.app.mcontrol._wcsSet(x, y, z)
-    # ----------------------------------------------------------------------
-
     def showState(self):
         err = CNC.vars["errline"]
         if err:
@@ -1176,9 +1161,7 @@ class ControlFrame(CNCRibbon.PageExLabelFrame):
         tkExtra.Balloon.set(b, _("Decrease step by 1 unit"))
         self.addWidget(b)
 
-        # self.grid_columnconfigure(6,weight=1)
         try:
-            # self.grid_anchor(CENTER)
             self.tk.call("grid", "anchor", self, CENTER)
         except TclError:
             pass
@@ -1263,12 +1246,10 @@ class ControlFrame(CNCRibbon.PageExLabelFrame):
         self.step.set(f"{s:.4g}")
         if self.zstep is self.step or zs is None:
             self.event_generate("<<Status>>", data=_("Step: {:g}").format(s))
-            # data=(_("Step: %g")%(s)))
         else:
             self.zstep.set(f"{zs:.4g}")
             self.event_generate(
                 "<<Status>>", data=_("Step: {:g}  Zstep: {:g} ").format(s, zs))
-            # data=(_("Step: %g    Zstep:%g ")%(s,zs)))
 
     # ----------------------------------------------------------------------
     @staticmethod
@@ -1648,9 +1629,7 @@ class abcControlFrame(CNCRibbon.PageExLabelFrame):
         tkExtra.Balloon.set(b, _("Decrease step by 1 unit"))
         self.addWidget(b)
 
-        # self.grid_columnconfigure(6,weight=1)
         try:
-            #    self.grid_anchor(CENTER)
             self.tk.call("grid", "anchor", self, CENTER)
         except TclError:
             pass
@@ -1728,7 +1707,6 @@ class abcControlFrame(CNCRibbon.PageExLabelFrame):
 
     def go2abcorigin(self, event=None):
         self.sendGCode("G90")
-        # self.sendGCode("G0A%d"%(CNC.vars['safe']))
         self.sendGCode("G0B0C0")
         self.sendGCode("G0A0")
 
@@ -1737,13 +1715,11 @@ class abcControlFrame(CNCRibbon.PageExLabelFrame):
         self.step.set(f"{s:.4g}")
         if self.astep is self.step or aas is None:
             self.event_generate("<<Status>>", data=_("Step: {:g}").format(s))
-            # data=(_("Step: %g")%(s)))
         else:
             self.astep.set(f"{aas:.4g}")
             self.event_generate(
                 "<<Status>>", data=_("Step: {:g}   Astep:{:g} ").format(s, aas)
             )
-            # data=(_("Step: %g    Zstep:%g ")%(s,zs)))
 
     # ----------------------------------------------------------------------
     @staticmethod
@@ -2256,10 +2232,8 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
 
     # ----------------------------------------------------------------------
     def setTLO(self, event=None):
-        # if self._probeUpdate: return
         try:
             tlo = float(self.tlo.get())
-            # print("G43.1Z%g"%(tlo))
             self.sendGCode(f"G43.1Z{tlo:g}")
             self.app.mcontrol.viewParameters()
             self.event_generate("<<CanvasFocus>>")

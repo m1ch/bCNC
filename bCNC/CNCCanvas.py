@@ -60,7 +60,6 @@ try:
     # Resampling image based on PIL library and converting to RGB.
     # options possible: NEAREST, BILINEAR, BICUBIC, ANTIALIAS
     RESAMPLE = Image.NEAREST  # resize type
-    # RESAMPLE = Image.BILINEAR	# resize type
 except Exception:
     from tkinter import Image
     numpy = None
@@ -141,20 +140,12 @@ MOUSE_CURSOR = {
     ACTION_SELECT_AREA: "right_ptr",
     ACTION_PAN: "fleur",
     ACTION_ORIGIN: "cross",
-    # 	ACTION_ORBIT         : "exchange",
-    # 	ACTION_ZOOM_IN       : "sizing",
-    # 	ACTION_ZOOM_OUT      : "sizing",
-    # 	ACTION_ZOOM_ON       : "sizing",
-    # 	ACTION_VIEW_CENTER   : "cross",
-    # 	ACTION_VIEW_MOVE     : "fleur",
-    # 	ACTION_VIEW_ROTATE   : "exchange",
     ACTION_MOVE: "hand1",
     ACTION_ROTATE: "exchange",
     ACTION_GANTRY: "target",
     ACTION_WPOS: "diamond_cross",
     ACTION_RULER: "tcross",
     ACTION_ADDORIENT: "tcross",
-    # 	ACTION_EDIT          : "pencil",
 }
 
 
@@ -210,18 +201,6 @@ class CNCCanvas(Canvas):
         self.bind("<Control-Key-Down>", self.panDown)
 
         self.bind("<Escape>", self.actionCancel)
-        # 		self.bind('<Key-a>',		lambda e,s=self : s.event_generate("<<SelectAll>>"))
-        # 		self.bind('<Key-A>',		lambda e,s=self : s.event_generate("<<SelectNone>>"))
-        # 		self.bind('<Key-e>',		lambda e,s=self : s.event_generate("<<Expand>>"))
-        # 		self.bind('<Key-f>',		self.fit2Screen)
-        # 		self.bind('<Key-g>',		self.setActionGantry)
-        # 		self.bind('<Key-l>',		lambda e,s=self : s.event_generate("<<EnableToggle>>"))
-        # 		self.bind('<Key-m>',		self.setActionMove)
-        # 		self.bind('<Key-n>',		lambda e,s=self : s.event_generate("<<ShowInfo>>"))
-        # 		self.bind('<Key-o>',		self.setActionOrigin)
-        # 		self.bind('<Key-r>',		self.setActionRuler)
-        # 		self.bind('<Key-s>',		self.setActionSelect)
-        # 		self.bind('<Key-x>',		self.setActionPan)
         self.bind("<Key>", self.handleKey)
 
         self.bind("<Control-Key-S>", self.cameraSave)
@@ -229,14 +208,6 @@ class CNCCanvas(Canvas):
 
         self.bind("<Control-Key-equal>", self.menuZoomIn)
         self.bind("<Control-Key-minus>", self.menuZoomOut)
-
-        # 		self.bind('<Control-Key-x>',	self.cut)
-        # 		self.bind('<Control-Key-c>',	self.copy)
-        # 		self.bind('<Control-Key-v>',	self.paste)
-
-        # 		self.bind('<Key-space>',	self.commandFocus)
-        # 		self.bind('<Control-Key-space>',self.commandFocus)
-        # 		self.bind('<Control-Key-a>',	self.selectAll)
 
         self.x0 = 0.0
         self.y0 = 0.0
@@ -299,7 +270,6 @@ class CNCCanvas(Canvas):
 
         self._orientSelected = None
 
-        # self.config(xscrollincrement=1, yscrollincrement=1)
         self.reset()
         self.initPosition()
 
@@ -321,18 +291,14 @@ class CNCCanvas(Canvas):
         nargs["width"] += winc
 
         # calculate color
-        # cbg = self.winfo_rgb(CANVAS_COLOR)
         cbg = self.winfo_rgb(self.cget("bg"))
         cfg = list(self.winfo_rgb(nargs["fill"]))
-        # print cbg, cfg
         cfg[0] = (cfg[0] + cbg[0] * cw) / (cw + 1)
         cfg[1] = (cfg[1] + cbg[1] * cw) / (cw + 1)
         cfg[2] = (cfg[2] + cbg[2] * cw) / (cw + 1)
         nargs["fill"] = "#{:02x}{:02x}{:02x}".format(
             int(cfg[0] / 256), int(cfg[1] / 256), int(cfg[2] / 256)
         )
-        # nargs['fill'] = '#AAA'
-        # print cfg, nargs['fill']
 
         return nargs
 
@@ -352,7 +318,6 @@ class CNCCanvas(Canvas):
     # Set status message
     # ----------------------------------------------------------------------
     def status(self, msg):
-        # self.event_generate("<<Status>>", data=msg)
         self.event_generate("<<Status>>", data=msg)
 
     # ----------------------------------------------------------------------
@@ -422,7 +387,6 @@ class CNCCanvas(Canvas):
         ):
             self.setAction(ACTION_SELECT)
             return "break"
-        # self.draw()
 
     # ----------------------------------------------------------------------
     def setActionSelect(self, event=None):
@@ -527,7 +491,6 @@ class CNCCanvas(Canvas):
         self._orientSelected = len(self.gcode.orient)
         self.gcode.orient.add(CNC.vars["wx"], CNC.vars["wy"], u, v)
         self.event_generate("<<OrientSelect>>", data=self._orientSelected)
-        # self.drawOrient()
         self.setAction(ACTION_SELECT)
 
     # ----------------------------------------------------------------------
@@ -543,9 +506,6 @@ class CNCCanvas(Canvas):
             return
 
         elif self.action == ACTION_SELECT:
-            # if event.state & CONTROLSHIFT_MASK == CONTROLSHIFT_MASK:
-            # self._mouseAction = ACTION_SELECT
-            # else:
             self._mouseAction = ACTION_SELECT_SINGLE
 
         elif self.action in (ACTION_MOVE, ACTION_RULER):
@@ -699,7 +659,6 @@ class CNCCanvas(Canvas):
             ACTION_SELECT_AREA,
         ):
             if self._mouseAction == ACTION_SELECT_AREA:
-                # if event.state & SHIFT_MASK == 0:
                 if self._x < event.x:  # From left->right enclosed
                     closest = self.find_enclosed(
                         self.canvasx(self._x),
@@ -726,19 +685,19 @@ class CNCCanvas(Canvas):
             elif self._mouseAction in (ACTION_SELECT_SINGLE,
                                        ACTION_SELECT_DOUBLE):
                 closest = self.find_closest(
-                    self.canvasx(event.x), self.canvasy(event.y), CLOSE_DISTANCE
+                    self.canvasx(event.x),
+                    self.canvasy(event.y),
+                    CLOSE_DISTANCE
                 )
                 items = []
                 for i in closest:
                     try:
                         items.append(self._items[i])
-                        # i = None
                     except KeyError:
                         tags = self.gettags(i)
                         if "Orient" in tags:
                             self.selectMarker(i)
                             return
-                        # i = self.find_below(i)
                         pass
             if not items:
                 return
@@ -765,7 +724,6 @@ class CNCCanvas(Canvas):
 
     # ----------------------------------------------------------------------
     def double(self, event):
-        # self.app.selectBlocks()
         self._mouseAction = ACTION_SELECT_DOUBLE
 
     # ----------------------------------------------------------------------
@@ -779,10 +737,6 @@ class CNCCanvas(Canvas):
         i = self.canvasx(event.x)
         j = self.canvasy(event.y)
         x, y, z = self.canvas2xyz(i, j)
-    # 		for bid in blocks:
-    # 			for path in self.gcode.toPath(bid):
-    # 				print path
-    # 				print path.isInside(P)
 
     # ----------------------------------------------------------------------
     # Snap to the closest point if any
@@ -902,7 +856,6 @@ class CNCCanvas(Canvas):
         y = self._ty
         zoom = self.__tzoom
 
-        # def zoomCanvas(self, x, y, zoom):
         self.__tzoom = 1.0
 
         self.zoom *= zoom
@@ -986,16 +939,10 @@ class CNCCanvas(Canvas):
         except Exception:
             return
 
-        # print("BBCALC ", bbox_width, bbox_height)
-        # print("canvas ", self.winfo_width(), self.winfo_height())
-        # print("ZX, ZY ", zx, zy)
-
         if zx > 0.98:
             self.__tzoom = min(zx, zy)
         else:
             self.__tzoom = max(zx, zy)
-
-        #####
 
         self._tx = self._ty = 0
         self._zoomCanvas()
@@ -1427,7 +1374,7 @@ class CNCCanvas(Canvas):
     # ----------------------------------------------------------------------
     # Parse and draw the file from the editor to g-code commands
     # ----------------------------------------------------------------------
-    def draw(self, view=None):  # , lines):
+    def draw(self, view=None):
         if self._inDraw:
             return
         self._inDraw = True
@@ -1451,7 +1398,6 @@ class CNCCanvas(Canvas):
         self.drawProbe()
         self.drawOrient()
         self.drawAxes()
-        # 		self.tag_lower(self._workarea)
         if self._gantry1:
             self.tag_raise(self._gantry1)
         if self._gantry2:
@@ -1703,7 +1649,6 @@ class CNCCanvas(Canvas):
     # ----------------------------------------------------------------------
     def drawOrient(self, event=None):
         self.delete("Orient")
-        # if not self.draw_probe: return
         if self.view in (VIEW_XZ, VIEW_YZ):
             return
 
@@ -1833,7 +1778,6 @@ class CNCCanvas(Canvas):
             self.tag_lower(item)
 
         # Draw image map if numpy exists
-        # if numpy is not None and probe.matrix and self.view == VIEW_XY:
         if (
             numpy is not None
             and probe.matrix
@@ -1844,10 +1788,6 @@ class CNCCanvas(Canvas):
             lw = array.min()
             hg = array.max()
             mx = max(abs(hg), abs(lw))
-            # print "matrix=",probe.matrix
-            # print "size=",array.size
-            # print "array=",array
-            # print "Limits:", lw, hg, mx
             # scale should be:
             #  -mx   .. 0 .. mx
             #  -127     0    127
@@ -1873,8 +1813,6 @@ class CNCCanvas(Canvas):
                     palette.append(0xFF)
                     palette.append(0xFF)
                     palette.append(0xFF)
-                # print ">>", x,i,palette[-3], palette[-2], palette[-1]
-            # print "palette size=",len(palette)/3
             array = numpy.floor((array - lw) / (hg - lw) * 255)
             self._probeImage = Image.fromarray(
                 array.astype(numpy.int16)).convert("L")
@@ -2198,12 +2136,10 @@ class CanvasFrame(Frame):
         self.draw_axes.set(bool(int(Utils.getBool("Canvas", "axes", True))))
         self.draw_grid.set(bool(int(Utils.getBool("Canvas", "grid", True))))
         self.draw_margin.set(bool(int(Utils.getBool("Canvas", "margin", True))))
-        # self.draw_probe.set(   bool(int(Utils.getBool("Canvas", "probe",   False))))
         self.draw_paths.set(bool(int(Utils.getBool("Canvas", "paths", True))))
         self.draw_rapid.set(bool(int(Utils.getBool("Canvas", "rapid", True))))
         self.draw_workarea.set(
             bool(int(Utils.getBool("Canvas", "workarea", True))))
-        # self.draw_camera.set(  bool(int(Utils.getBool("Canvas", "camera",  False))))
 
         self.view.set(Utils.getStr("Canvas", "view", VIEWS[0]))
 
@@ -2237,7 +2173,6 @@ class CanvasFrame(Frame):
         Utils.setBool("Canvas", "paths", self.draw_paths.get())
         Utils.setBool("Canvas", "rapid", self.draw_rapid.get())
         Utils.setBool("Canvas", "workarea", self.draw_workarea.get())
-        # Utils.setBool("Canvas", "camera",  self.draw_camera.get())
 
     # ----------------------------------------------------------------------
     # Canvas toolbar FIXME XXX should be moved to CNCCanvas
@@ -2299,24 +2234,6 @@ class CanvasFrame(Frame):
         )
         tkExtra.Balloon.set(b, _("Pan viewport [X]"))
         b.pack(side=LEFT)
-
-        # 		b = Radiobutton(toolbar, image=Utils.icons["gantry"],
-        # 					indicatoron=FALSE,
-        # 					variable=self.canvas.actionVar,
-        # 					value=ACTION_GANTRY,
-        # 					command=self.canvas.setActionGantry)
-        # 		tkExtra.Balloon.set(b, _("Move gantry [g]"))
-        # 		self.addWidget(b)
-        # 		b.pack(side=LEFT)
-        #
-        # 		b = Radiobutton(toolbar, image=Utils.icons["origin"],
-        # 					indicatoron=FALSE,
-        # 					variable=self.canvas.actionVar,
-        # 					value=ACTION_WPOS,
-        # 					command=self.canvas.setActionWPOS)
-        # 		tkExtra.Balloon.set(b, _("Set WPOS to mouse location"))
-        # 		self.addWidget(b)
-        # 		b.pack(side=LEFT)
 
         b = Radiobutton(
             toolbar,

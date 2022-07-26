@@ -30,7 +30,6 @@ class Tool(Plugin):
         # <<< This is the name of file used as icon for the ribbon button. It will be search in the "icons" subfolder
         self.icon = "dragknife"
         self.group = "CAM_Core"  # <<< This is the name of group that plugin belongs
-        # self.oneshot = True
         # Here we are creating the widgets presented to the user inside the plugin
         # Name, Type , Default value, Description
         self.variables = [  # <<< Define a list of components for the GUI
@@ -219,12 +218,9 @@ This fact introduces the need for preprocessing the g-code to account with that 
             eblock = app.gcode.fromPath(npath)
             blocks.append(eblock)
 
-        # active = app.activeBlock()
-        # if active == 0: active+=1
         active = -1  # add to end
         app.gcode.insBlocks(
             active, blocks, "Dragknife"
         )  # <<< insert blocks over active block in the editor
         app.refresh()  # <<< refresh editor
         app.setStatus(_("Generated: Dragknife"))  # <<< feed back result
-        # app.gcode.blocks.append(block)

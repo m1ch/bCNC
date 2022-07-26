@@ -83,8 +83,6 @@ iniUser = os.path.expanduser(f"~/.{__prg__}")
 hisFile = os.path.expanduser(f"~/.{__prg__}.history")
 
 
-# dirty way of substituting the "_" on the builtin namespace
-# __builtin__.__dict__["_"] = gettext.translation('bCNC', 'locale', fallback=True).ugettext
 _ = gettext.translation(
     "bCNC", os.path.join(prgpath, "locale"), fallback=True
 ).gettext
@@ -92,7 +90,6 @@ _ = gettext.translation(
 
 def N_(message):
     return message
-
 
 __www__ = "https://github.com/vlachoudis/bCNC"
 __contribute__ = (
@@ -502,7 +499,6 @@ def comports(include_links=True):
 # =============================================================================
 def addException():
     global errors
-    # self.widget._report_exception()
     try:
         typ, val, tb = sys.exc_info()
         traceback.print_exception(typ, val, tb)
@@ -535,11 +531,6 @@ class CallWrapper:
             if self.subst:
                 args = self.subst(*args)
             return self.func(*args)
-        # One possible fix is to make an external file for the wrapper
-        # and import depending the version
-        # except SystemExit, msg:	# python2.4 syntax
-        # except SystemExit as msg:	# python3 syntax
-        # 	raise SystemExit(msg)
         except SystemExit:  # both
             raise SystemExit(sys.exc_info()[1])
         except KeyboardInterrupt:
@@ -743,7 +734,6 @@ class UserButton(Ribbon.LabelButton):
         self.cnc = cnc
         self.button = button
         self.get()
-        # self.bind("<Control-Button-1>", self.edit)
         self.bind("<Button-3>", self.edit)
         self.bind("<Control-Button-1>", self.edit)
         self["command"] = self.execute
@@ -756,8 +746,6 @@ class UserButton(Ribbon.LabelButton):
             return
         name = self.name()
         self["text"] = name
-        # if icon == "":
-        # 	icon = icons.get("empty","")
         self["image"] = icons.get(self.icon(), icons["material"])
         self["compound"] = LEFT
         tooltip = self.tooltip()

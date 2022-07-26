@@ -43,7 +43,6 @@ class Tool(Plugin):
     # This method is executed when user presses the plugin execute button
     # ----------------------------------------------------------------------
     def execute(self, app):
-        # print("go!")
         blocks = []
         for bid in app.editor.getSelectedBlocks():
             if len(app.gcode.toPath(bid)) < 1:
@@ -60,12 +59,9 @@ class Tool(Plugin):
             eblock.append("G0 Z10")
             blocks.append(eblock)
 
-        # active = app.activeBlock()
-        # if active == 0: active+=1
         active = -1  # add to end
         app.gcode.insBlocks(
             active, blocks, "Center created"
         )  # <<< insert blocks over active block in the editor
         app.refresh()  # <<< refresh editor
         app.setStatus(_("Generated: Center"))  # <<< feed back result
-        # app.gcode.blocks.append(block)

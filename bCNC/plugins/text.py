@@ -1,6 +1,6 @@
 # $Id$
 #
-# Author:	Filippo Rivato
+# Author:    Filippo Rivato
 # Date: December 2015
 
 from CNC import CNC, Block
@@ -184,6 +184,5 @@ class Tool(Plugin):
         img_as_ascii = "".join(ch for ch in img_as_ascii)
         output = ""
         for c in range(0, len(img_as_ascii), new_width):
-            # print img_as_ascii[c:c+new_width]
             output += img_as_ascii[c:c + new_width] + "\n"
         return output

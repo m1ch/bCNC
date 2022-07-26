@@ -51,7 +51,6 @@ class Tool(Plugin):
             ),
             ("overcut", "bool", 0, _("Overcut")),
             ("targetDepth", "mm", -1, _("Target Depth")),
-            # 			("depthIncrement",  "mm",                  1, _("Depth Increment")),
             ("depthIncrement", "mm", 1, _("Depth Increment")),
             (
                 "tabsnumber",
@@ -62,7 +61,6 @@ class Tool(Plugin):
             ),
             ("tabsWidth", "mm", 1, _("Tabs Diameter"), "Not available yet"),
             ("tabsHeight", "mm", 1, _("Tabs Height"), "Not available yet"),
-            # 			("mintrochdiam", "float",                10, _("Minimal trochoid in % tool"))
         ]
         self.buttons.append("exe")
 
@@ -76,8 +74,6 @@ class Tool(Plugin):
             self.master["endmill"].makeCurrent(self["endmill"])
 
         targetDepth = self["targetDepth"]
-        # 		if targetDepth=="":
-        # 			targetDepth=CNC.vars["surface"]
         depthIncrement = self["depthIncrement"]
         if depthIncrement == "":
             depthIncrement = 10
@@ -86,7 +82,6 @@ class Tool(Plugin):
         tabsHeight = self["tabsHeight"]
 
         trochcutdiam = self.fromMm("trochcutdiam")
-        # 		mintrochdiameter = CNC.vars["diameter"]*(1+self["mintrochdiam"]/100.0)
         mintrochdiameter = CNC.vars["diameter"]
         cornerradius = (trochcutdiam - mintrochdiameter) / 2.0
         direction = self["direction"]

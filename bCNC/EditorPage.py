@@ -217,15 +217,6 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
 
         # ---
         col, row = 0, 0
-        # 		b = Ribbon.LabelButton(self.frame, app, "<<Add>>",
-        # 				image=Utils.icons["add"],
-        # 				text=_("Add"),
-        # 				compound=LEFT,
-        # 				anchor=W,
-        # 				background=Ribbon._BACKGROUND)
-        # 		b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
-        # 		tkExtra.Balloon.set(b, _("Insert a new block or line of code [Ins or Ctrl-Enter]"))
-        # 		self.addWidget(b)
         b = Ribbon.LabelButton(
             self.frame,
             self.app,
@@ -305,8 +296,6 @@ class EditGroup(CNCRibbon.ButtonMenuGroup):
             self.app,
             "<<EnableToggle>>",
             image=Utils.icons["toggle"],
-            # text=_("Toggle"),
-            # compound=LEFT,
             anchor=W,
             background=Ribbon._BACKGROUND,
         )
@@ -633,10 +622,6 @@ class TransformGroup(CNCRibbon.ButtonGroup):
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Mirror vertically Y=-Y selected gcode"))
         self.addWidget(b)
-
-
-# 		submenu.add_command(label=_("Rotate command"), underline=0,
-# 			command=lambda s=self:s.insertCommand("ROTATE ang x0 y0", False))
 
 
 # =============================================================================

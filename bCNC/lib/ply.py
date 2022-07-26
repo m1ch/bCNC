@@ -17,7 +17,6 @@ def load_ply(fileobj):
     line = nextline()
     assert line.startswith("element vertex")
     nverts = int(line.split()[2])
-    # print 'nverts : ', nverts
     assert nextline() == "property float x"
     assert nextline() == "property float y"
     assert nextline() == "property float z"
@@ -25,7 +24,6 @@ def load_ply(fileobj):
 
     assert line.startswith("element face")
     nfaces = int(line.split()[2])
-    # print 'nfaces : ', nfaces
     assert nextline() == "property list uchar int vertex_indices"
     line = nextline()
     has_texcoords = line == "property list uchar float texcoord"
@@ -56,7 +54,6 @@ def load_ply(fileobj):
                     (float(vals[9]), float(vals[10])),
                 ]
             )
-            # faces_uv.append([float(v) for v in vals[5:]])
         else:
             assert len(vals) == 4
     return verts, faces, faces_uv

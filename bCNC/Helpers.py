@@ -22,25 +22,10 @@ if getattr(sys, "frozen", False):
 def to_zip(*args, **kwargs):
     return list(zip(*args, **kwargs))
 
-# dirty way of substituting the "_" on the builtin namespace
-# __builtin__.__dict__["_"] = gettext.translation('bCNC', 'locale', fallback=True).ugettext
-# builtins._ = gettext.translation(
-#     "bCNC", os.path.join(prgpath, "locale"), fallback=True
-# ).gettext
-
-
 def _(txt):
     return gettext.translation(
         __prg__, os.path.join(prgpath, "locale"), fallback=True
     ).gettext(txt)
-
-
-# def msg(message):
-#     return message
-
-
-# builtins.N_ = msg
-# builtins.N_ = lambda message: message
 
 def N_(message):
     return message

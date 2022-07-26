@@ -4141,7 +4141,6 @@ class QuadraticBezier(Curve):
                 + (4 * C * A - B**2) * log((2 * A2 + BA + Sabc) / (BA + C2))
             ) / (4 * A32)
         except (ZeroDivisionError, ValueError):
-            # a_dot_b = a.real * b.real + a.imag * b.imag
             if abs(a) < 1e-10:
                 s = abs(b)
             else:
@@ -7884,7 +7883,6 @@ class SVG(Group):
             """
             SVG element parsing parses the job compiling any parsed elements into their compiled object forms.
             """
-            # print(event, elem)
             if event == "start":
                 stack.append((context, values))
                 if (
@@ -8073,7 +8071,6 @@ class SVG(Group):
                     SVG_TAG_TITLE,
                     SVG_TAG_TSPAN,
                 ):
-                    # <style>, <text>, <desc>, <title>
                     continue
                 else:
                     # SVG Unknown object return as element.

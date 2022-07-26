@@ -1,7 +1,7 @@
 # $Id$
 #
-# Author:	Vasilis.Vlachoudis@cern.ch
-# Date:	20-Aug-2015
+# Author:    Vasilis.Vlachoudis@cern.ch
+# Date:      20-Aug-2015
 
 import math
 
@@ -74,10 +74,10 @@ class Box:
 
     # ----------------------------------------------------------------------
     # Draw a zig zag line
-    # @param pos	starting position
-    # @param lstep	longitudinal step
-    # @param tstep	transverse step
-    # @param n	number of steps
+    # @param pos    starting position
+    # @param lstep  longitudinal step
+    # @param tstep  transverse step
+    # @param n      number of steps
     # ----------------------------------------------------------------------
     def zigZagLine(self, block, pos, du, dv, U, V, n, extra=0.0):
         sgn = math.copysign(1.0, n)
@@ -87,18 +87,11 @@ class Box:
         # round edges in the inner teeth
         if self.r > 0.0:
             overcut = self.overcut
-            # rd = (sqrt(2.)-1.0) * self.r
             rd = (1.0 - 1.0 / sqrt(2.0)) * (1.0 + self.overcutAdd) * self.r
         else:
             overcut = None
 
         for i in range(n):
-            # 			if sgn<0.0 and overcut=="U":
-            # 				pos -= self.r*U
-            # 				block.append(CNC.glinev(1, pos, self.feed))
-            # 				pos += self.r*U
-            # 				block.append(CNC.glinev(1, pos))
-
             x = du
             if sgn < 0.0 and n > 1:
                 if 0 < i < n - 1:
@@ -116,12 +109,6 @@ class Box:
                 block.append(CNC.glinev(1, pos, self.feed))
             else:
                 block.append(CNC.glinev(1, pos))
-
-            # 			if sgn<0.0 and overcut=="U":
-            # 				pos += self.r*U
-            # 				block.append(CNC.glinev(1, pos))
-            # 				pos -= self.r*U
-            # 				block.append(CNC.glinev(1, pos))
 
             if self.r > 0.0:
                 if sgn < 0.0:
@@ -179,10 +166,13 @@ class Box:
         return pos
 
     # ----------------------------------------------------------------------
-    # @param x0,y0		starting position
-    # @param dx,dyz		width/height of box (if negative inside, positive outside)
-    # @param nx,ny		number of teeth (negative to start from internal, positive for external)
-    # @param ex,ey		additional space for x and y not included in the sx/y calculation
+    # @param x0,y0      starting position
+    # @param dx,dyz     width/height of box
+    #                   (if negative inside, positive outside)
+    # @param nx,ny      number of teeth (negative to start from internal,
+    #                   positive for external)
+    # @param ex,ey      additional space for x and y not included in the sx/y
+    #                   calculation
     # ----------------------------------------------------------------------
     def _rectangle(self, block, x0, y0, dx, dy, nx, ny, ex=0.0, ey=0.0):
         block.append(f"(  Location: {x0:g},{y0:g} )")
@@ -199,7 +189,6 @@ class Box:
         pos -= self.r * Vector.Y  # r*V
         block.append(CNC.gcode(0, zip("XY", pos[:2])))
         z = self.surface
-        # for z in frange(self.surface-self.stepz, self.surface-self.thick, -self.stepz):
         last = False
         while True:
             if self.cut:
@@ -398,30 +387,17 @@ class Tool(Plugin):
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
     import sys
-
-    # 	box = Box(90., 60., 30.)
-    # 	box.thick = 5.0
-    # 	box.stepz = 5
-    # 	box.setTool(0.0)
-    # 	box.setNTeeth(3, 3, 3)
-    # 	box.make()
-
-    # 	box = Box(120.0, 75.0, 30.0)
     box = Box(71.0, 62.0, 52.0)
     box.thick = 3.0
     box.feed = 1000
     box.feedz = 500
     box.stepz = 1.5
-    # 	box.setNTeeth(7, 5, 3)
     box.setNTeeth(5, 5, 3)
 
     box.setTool(3.175)
     box.setTool(0.0)
-    # 	box.overcut = 'V'
     box.overcut = "D"
     blocks = box.make()
-    # 	d = 0.0; box._rectangle(0.,0.,100., 50., NX, NY)
-    # 	d = 4.0; box._rectangle(0.,0.,100., 50., NX, NY)
 
     def dump(filename):
         try:

@@ -29,8 +29,8 @@
 # LIABILITY OR OTHERWISE, ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 #
-# Author:	Vasilis.Vlachoudis@cern.ch
-# Date:	02-Aug-2006
+# Author:   Vasilis.Vlachoudis@cern.ch
+# Date:     02-Aug-2006
 
 import subprocess
 import sys
@@ -82,14 +82,14 @@ __email__ = "Vasilis.Vlachoudis@cern.ch"
 # dialog somehow gets destroyed, -1 is returned.
 #
 # Arguments:
-# w -		Window to use for dialog top-level.
-# title -	Title to display in dialog's decorative frame.
-# text -	Message to display in dialog.
-# bitmap -	Bitmap to display in dialog (empty string means none).
-# default -	Index of button that is to display the default ring
-# 		(-1 means none).
-# args -	One or more strings to display in buttons across the
-# 		bottom of the dialog box.
+# w -       Window to use for dialog top-level.
+# title -   Title to display in dialog's decorative frame.
+# text -    Message to display in dialog.
+# bitmap -  Bitmap to display in dialog (empty string means none).
+# default - Index of button that is to display the default ring
+#           (-1 means none).
+# args -    One or more strings to display in buttons across the
+#           bottom of the dialog box.
 # =============================================================================
 class Dialog(Toplevel):
     def __init__(self, master=None, cnf={}, **kw):
@@ -102,18 +102,11 @@ class Dialog(Toplevel):
 
         cnf = _cnfmerge((cnf, kw))
 
-        # Fill the top part with bitmap and message (use the option
-        # database for -wraplength and -font so that they can be
-        # overridden by the caller).
-        # self.option_add("*Dialog.msg.wrapLength","3i","widgetDefault")
-        # self.option_add("*Dialog.msg.font","TkCaptionFont","widgetDefault")
-
         fbot = Frame(self, relief=RAISED, bd=1)
         ftop = Frame(self, relief=RAISED, bd=1)
         fbot.pack(side=BOTTOM, fill=BOTH)
         ftop.pack(side=TOP, fill=BOTH, expand=YES)
         self.tk.call("grid", "anchor", fbot._w, CENTER)
-        # self.grid_anchor(CENTER)
 
         lbl = Label(
             ftop, text=cnf["text"], wraplength="3i",
@@ -413,8 +406,6 @@ class Printer(Toplevel):
         self.copiesVar = IntVar()
         self.copiesVar.set(Printer.copies)
 
-        # self.geometry('+265+230')
-
         # -----
         frame = LabelFrame(self, text="Print To")
         frame.pack(side=TOP, fill=BOTH, expand=YES)
@@ -628,7 +619,6 @@ class Printer(Toplevel):
             cmd += " -# %d" % (Printer.copies)
         else:
             cmd = cmd.replace("%#", f"{int(Printer.copies)}")
-        # print "Printing command=\"%s\""%(cmd)
         return cmd
 
     # --------------------------------------------------------------------
@@ -704,7 +694,6 @@ class ProgressDialog(Toplevel):
         self.bar.setProgress(pos)
         if text is not None:
             self.label["text"] = text
-        # self.update_idletasks()
         self.update()
         return self.ended
 
@@ -724,7 +713,5 @@ if __name__ == "__main__":
     root = Tk()
     sd = Printer(root)
     sd = FindReplaceDialog(root)
-    # print("FindReplace=",sd.show(None,"Hello"))
     d = InputDialog(root, "Title", "Message Line1\nMessage Line2")
-    # print("Input=",d.show())
     root.mainloop()

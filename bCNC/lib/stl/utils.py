@@ -12,7 +12,6 @@ def b(s, encoding="ascii", errors="replace"):  # pragma: no cover
             return bytes(s, encoding, errors)
         else:
             return s
-        # return bytes(s, encoding, errors)
 
 
 def s(s):  # pragma: no cover
