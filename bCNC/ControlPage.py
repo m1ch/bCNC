@@ -48,7 +48,6 @@ import tkExtra
 import Unicode
 import Utils
 from CNC import DISTANCE_MODE, FEED_MODE, PLANE, WCS
-# from Sender import ERROR_CODES
 from _GenericGRBL import ERROR_CODES
 
 from Helpers import _, N_

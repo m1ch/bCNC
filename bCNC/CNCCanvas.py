@@ -44,7 +44,7 @@ from tkinter import (
 )
 import tkinter
 
-from lib import bmath
+import bmath
 import Camera
 import tkExtra
 import Utils
