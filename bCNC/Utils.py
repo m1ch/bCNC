@@ -615,8 +615,6 @@ class ReportDialog(Toplevel):
         )
         b.pack(side=RIGHT)
 
-        from Helpers import __version__, __date__
-
         # Fill report
         txt = [
             f"Program     : {__prg__}",

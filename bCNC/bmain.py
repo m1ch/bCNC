@@ -139,21 +139,19 @@ FILETYPES = [
 
 geometry = None
 
+
 # =============================================================================
 # Main Application window
 # =============================================================================
-
-
-class Application(Toplevel, Sender):
-    def __init__(self, master, **kw):
-        Toplevel.__init__(self, master, **kw)
+class Application(Tk, Sender):
+    def __init__(self, **kw):
+        Tk.__init__(self, **kw)
         Sender.__init__(self)
 
-        if sys.platform == "win32":
-            self.iconbitmap(f"{Utils.prgpath}\\bCNC.ico")
-        else:
-            self.iconbitmap(f"@{Utils.prgpath}/bCNC.xbm")
-            # iconbitmap left here for legacy purposes, remove in future
+        Utils.loadIcons()
+        tkinter.CallWrapper = Utils.CallWrapper
+        tkExtra.bindClasses(self)
+
         photo = PhotoImage(file=f"{Utils.prgpath}/bCNC.png")
         self.iconphoto(True, photo)
         self.title(f"{Utils.__prg__} {__version__} {__platform_fingerprint__}")
@@ -283,8 +281,8 @@ class Application(Toplevel, Sender):
         if errors:
             messagebox.showwarning(
                 "bCNC configuration",
-                f"The following pages \"{' '.join(errors)}\" are found in your "
-                "${HOME}/.bCNC initialization "
+                f"The following pages \"{' '.join(errors)}\" are found in "
+                "your ${HOME}/.bCNC initialization "
                 "file, which are either spelled wrongly or "
                 "no longer exist in bCNC",
                 parent=self,
@@ -641,7 +639,6 @@ class Application(Toplevel, Sender):
         self.destroy()
         if Utils.errors and Utils._errorReport:
             Utils.ReportDialog.sendErrorReport()
-        tk.destroy()
 
     # ---------------------------------------------------------------------
     def configWidgets(self, var, value):
@@ -690,6 +687,23 @@ class Application(Toplevel, Sender):
     def checkUpdates(self):
         # Find bCNC version
         Updates.CheckUpdateDialog(self, __version__)
+
+    # ----------------------------------------------------------------------
+    # Show the error message, if no serial is present
+    # ----------------------------------------------------------------------
+    def showSerialError(self):
+        messagebox.showerror(
+            _("python serial missing"),
+            _(
+                "ERROR: Please install the python pyserial module\n"
+                "Windows:\n\tC:\\PythonXX\\Scripts\\easy_install pyserial\n"
+                "Mac:\tpip install pyserial\n"
+                "Linux:\tsudo apt-get install python-serial\n"
+                "\tor yum install python-serial\n"
+                "\tor dnf install python-pyserial"
+            ),
+            parent=self,
+        )
 
     # -----------------------------------------------------------------------
     def loadShortcuts(self):
@@ -829,10 +843,6 @@ class Application(Toplevel, Sender):
         toplevel = Toplevel(self)
         toplevel.transient(self)
         toplevel.title(_("About {} v{}").format(Utils.__prg__, __version__))
-        if sys.platform == "win32":
-            self.iconbitmap(f"{Utils.prgpath}\\bCNC.ico")
-        else:
-            self.iconbitmap(f"@{Utils.prgpath}/bCNC.xbm")
 
         bg = "#707070"
         fg = "#ffffff"
@@ -1716,7 +1726,8 @@ class Application(Toplevel, Sender):
             if not self.editor.curselection():
                 messagebox.showinfo(
                     _("Optimize"),
-                    _("Please select the blocks of gcode you want to optimize."),
+                    _("Please select the blocks of gcode you want "
+                      + "to optimize."),
                     parent=self,
                 )
             else:
@@ -1968,7 +1979,8 @@ class Application(Toplevel, Sender):
         if not items:
             messagebox.showwarning(
                 _("Nothing to do"),
-                _("Operation {} requires some gcode to be selected").format(cmd),
+                _("Operation {} requires some gcode to be selected").format(
+                    cmd),
                 parent=self,
             )
             return
@@ -2025,7 +2037,12 @@ class Application(Toplevel, Sender):
 
     # -----------------------------------------------------------------------
     def profile(
-        self, direction=None, offset=0.0, overcut=False, name=None, pocket=False
+        self,
+        direction=None,
+        offset=0.0,
+        overcut=False,
+        name=None,
+        pocket=False,
     ):
         tool = self.tools["EndMill"]
         ofs = self.tools.fromMm(tool["diameter"]) / 2.0
@@ -2830,197 +2847,6 @@ class Application(Toplevel, Sender):
     # -----------------------------------------------------------------------
     def set(self, section, item, value):
         return Utils.config.set(section, item, value)
-
-
-# -----------------------------------------------------------------------------
-def usage(rc):
-    sys.stdout.write(
-        f"{Utils.__prg__} V{__version__} [{__date__}] "
-        + f"{__platform_fingerprint__}\n"
-    )
-    sys.stdout.write(f"{__author__} <{__email__}>\n\n")
-    sys.stdout.write("Usage: [options] [filename...]\n\n")
-    sys.stdout.write("Options:\n")
-    sys.stdout.write("\t-b # | --baud #\t\tSet the baud rate\n")
-    sys.stdout.write("\t-d\t\t\tEnable developer features\n")
-    sys.stdout.write("\t-D\t\t\tDisable developer features\n")
-    sys.stdout.write("\t-f | --fullscreen\tEnable fullscreen mode\n")
-    sys.stdout.write("\t-g #\t\t\tSet the default geometry\n")
-    sys.stdout.write("\t-h | -? | --help\tThis help page\n")
-    sys.stdout.write("\t-i # | --ini #\t\tAlternative ini file for testing\n")
-    sys.stdout.write("\t-l | --list\t\tList all recently opened files\n")
-    sys.stdout.write("\t-p # | --pendant #\tOpen pendant to specified port\n")
-    sys.stdout.write("\t-P\t\t\tDo not start pendant\n")
-    sys.stdout.write("\t-r | --recent\t\tLoad the most recent file opened\n")
-    sys.stdout.write("\t-R #\t\t\tLoad the recent file matching the argument\n")
-    sys.stdout.write("\t-s # | --serial #\tOpen serial port specified\n")
-    sys.stdout.write("\t-S\t\t\tDo not open serial port\n")
-    sys.stdout.write("\t--run\t\t\tDirectly run the file once loaded\n")
-    sys.stdout.write("\n")
-    sys.exit(rc)
-
-
-# -----------------------------------------------------------------------------
-tk = None
-application = None
-
-
-def main(optlist, args):
-    global tk
-    global application
-
-    tk = Tk()
-    tk.withdraw()
-
-    tkinter.CallWrapper = Utils.CallWrapper
-
-    tkExtra.bindClasses(tk)
-    Utils.loadIcons()
-
-    recent = None
-    run = False
-    fullscreen = False
-    for opt, val in optlist:
-        if opt in ("-h", "-?", "--help"):
-            usage(0)
-        elif opt in ("-i", "--ini"):
-            Utils.iniUser = val
-            Utils.loadConfiguration()
-        elif opt == "-d":
-            CNC.developer = True
-        elif opt == "-D":
-            CNC.developer = False
-        elif opt in ("-r", "-R", "--recent", "-l", "--list"):
-            if opt in ("-r", "--recent"):
-                r = 0
-            elif opt in ("--list", "-l"):
-                r = -1
-            else:
-                try:
-                    r = int(val) - 1
-                except Exception:
-                    # Scan in names
-                    for r in range(Utils._maxRecent):
-                        filename = Utils.getRecent(r)
-                        if filename is None:
-                            break
-                        fn, ext = os.path.splitext(os.path.basename(filename))
-                        if fn == val:
-                            break
-                    else:
-                        r = 0
-            if r < 0:
-                # display list of recent files
-                maxlen = 10
-                for i in range(Utils._maxRecent):
-                    try:
-                        filename = Utils.getRecent(i)
-                    except Exception:
-                        continue
-                    maxlen = max(maxlen, len(os.path.basename(filename)))
-
-                sys.stdout.write("Recent files:\n")
-                for i in range(Utils._maxRecent):
-                    filename = Utils.getRecent(i)
-                    if filename is None:
-                        break
-                    d = os.path.dirname(filename)
-                    fn = os.path.basename(filename)
-                    sys.stdout.write(f"  {i + 1:2d}: {fn:<{maxlen}}  {d}\n")
-
-                try:
-                    sys.stdout.write("Select one: ")
-                    r = int(sys.stdin.readline()) - 1
-                except Exception:
-                    pass
-            try:
-                recent = Utils.getRecent(r)
-            except Exception:
-                pass
-
-        elif opt in ("-f", "--fullscreen"):
-            fullscreen = True
-
-        elif opt == "-p":
-            pass  # startPendant()
-
-        elif opt == "-P":
-            pass  # stopPendant()
-
-        elif opt == "--pendant":
-            pass  # startPendant on port
-
-        elif opt == "--run":
-            run = True
-
-    palette = {"background": tk.cget("background")}
-
-    color_count = 0
-    custom_color_count = 0
-    for color_name in (
-        "background",
-        "foreground",
-        "activeBackground",
-        "activeForeground",
-        "disabledForeground",
-        "highlightBackground",
-        "highlightColor",
-        "selectBackground",
-        "selectForeground",
-    ):
-        color2 = Utils.getStr("Color", "global." + color_name.lower(), None)
-        color_count += 1
-        if (color2 is not None) and (color2.strip() != ""):
-            palette[color_name] = color2.strip()
-            custom_color_count += 1
-
-            if color_count == 0:
-                tkExtra.GLOBAL_CONTROL_BACKGROUND = color2
-            elif color_count == 1:
-                tkExtra.GLOBAL_FONT_COLOR = color2
-
-    if custom_color_count > 0:
-        print("Changing palette")
-        tk.tk_setPalette(**palette)
-
-    # Start application
-    application = Application(tk)
-
-    if fullscreen:
-        application.attributes("-fullscreen", True)
-
-    # Parse remaining arguments except files
-    if recent:
-        args.append(recent)
-    for fn in args:
-        application.load(fn)
-
-    if serial is None:
-        messagebox.showerror(
-            _("python serial missing"),
-            _(
-                "ERROR: Please install the python pyserial module\n"
-                "Windows:\n\tC:\\PythonXX\\Scripts\\easy_install pyserial\n"
-                "Mac:\tpip install pyserial\n"
-                "Linux:\tsudo apt-get install python-serial\n"
-                "\tor yum install python-serial\n"
-                "\tor dnf install python-pyserial"
-            ),
-            parent=application,
-        )
-        if Updates.need2Check():
-            application.checkUpdates()
-
-    if run:
-        application.run()
-
-    try:
-        tk.mainloop()
-    except KeyboardInterrupt:
-        application.quit()
-
-    application.close()
-    Utils.saveConfiguration()
 
 
 if __name__ == "__main__":
