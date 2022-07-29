@@ -23,7 +23,8 @@ import Pendant
 import rexx
 import Utils
 from Helpers import _
-from CNC import CNC, MSG, UPDATE, WAIT, GCode
+from CNC import CNC, MSG, UPDATE, WAIT
+from GCode import GCode
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "vvlachoudis@gmail.com"
