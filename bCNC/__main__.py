@@ -5,10 +5,23 @@ import sys
 import getopt
 
 PRGPATH = os.path.abspath(os.path.dirname(__file__))
-sys.path.append(PRGPATH)
-sys.path.append(os.path.join(PRGPATH, "lib"))
-sys.path.append(os.path.join(PRGPATH, "plugins"))
-sys.path.append(os.path.join(PRGPATH, "controllers"))
+sys.path.insert(1, os.path.join(PRGPATH, "lib"))
+sys.path.insert(1, os.path.join(PRGPATH, "plugins"))
+sys.path.insert(1, os.path.join(PRGPATH, "controllers"))
+
+sys.stdout.write("=" * 80 + "\n")
+sys.stdout.write(
+    "WARNING: bCNC was resently ported to only support \n"
+    + "python3.8 and newer.\n"
+)
+sys.stdout.write(
+    "Most things seem to work reasonably well.\n"
+)
+sys.stdout.write(
+    "Please report any issues to: "
+    + "https://github.com/vlachoudis/bCNC/issues\n"
+)
+sys.stdout.write("=" * 80 + "\n")
 
 
 # -----------------------------------------------------------------------------
@@ -208,19 +221,5 @@ def main():
     application.close()
     Utils.saveConfiguration()
 
-
-sys.stdout.write("=" * 80 + "\n")
-sys.stdout.write(
-    "WARNING: bCNC was resently ported to only support \n"
-    + "python3.8 and newer.\n"
-)
-sys.stdout.write(
-    "Most things seem to work reasonably well.\n"
-)
-sys.stdout.write(
-    "Please report any issues to: "
-    + "https://github.com/vlachoudis/bCNC/issues\n"
-)
-sys.stdout.write("=" * 80 + "\n")
 
 main()

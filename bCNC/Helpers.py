@@ -23,10 +23,11 @@ def to_zip(*args, **kwargs):
     return list(zip(*args, **kwargs))
 
 
-def _(txt):
-    return gettext.translation(
-        __prg__, os.path.join(prgpath, "locale"), fallback=True
-    ).gettext(txt)
+_ = gettext.translation(
+        __prg__,
+        os.path.join(prgpath, "locale"),
+        fallback=True,
+    ).gettext
 
 
 def N_(message):
