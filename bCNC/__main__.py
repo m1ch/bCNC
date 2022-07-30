@@ -2,7 +2,7 @@
 
 import os
 import sys
-import getopt
+import argparse
 
 PRGPATH = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(1, os.path.join(PRGPATH, "lib"))
@@ -24,38 +24,103 @@ sys.stdout.write(
 sys.stdout.write("=" * 80 + "\n")
 
 
-# -----------------------------------------------------------------------------
-def usage(rc):
+def get_arguments() -> argparse.Namespace:
     import Utils
-    wrt = sys.stdout.write
-    wrt(
-        f"{Utils.__prg__} V{Utils.__version__} [{Utils.__date__}] "
-        + f"{Utils.__platform_fingerprint__}\n"
+    """Get parsed passed in arguments."""
+
+    parser = argparse.ArgumentParser(
+        prog=Utils.__prg__,
+        description=f"{Utils.__prg__} - a CAM tool and g-code sender",
+        epilog="If restart is requested, exits with code 23",
     )
-    wrt(f"{Utils.__author__} <{Utils.__email__}>\n\n")
-    wrt("Usage: [options] [filename...]\n\n")
-    wrt("Options:\n")
-    wrt("\t-b # | --baud #\t\tSet the baud rate\n")
-    wrt("\t-d\t\t\tEnable developer features\n")
-    wrt("\t-D\t\t\tDisable developer features\n")
-    wrt("\t-f | --fullscreen\tEnable fullscreen mode\n")
-    wrt("\t-g #\t\t\tSet the default geometry\n")
-    wrt("\t-h | -? | --help\tThis help page\n")
-    wrt("\t-i # | --ini #\t\tAlternative ini file for testing\n")
-    wrt("\t-l | --list\t\tList all recently opened files\n")
-    wrt("\t-p # | --pendant #\tOpen pendant to specified port\n")
-    wrt("\t-P\t\t\tDo not start pendant\n")
-    wrt("\t-r | --recent\t\tLoad the most recent file opened\n")
-    wrt("\t-R #\t\t\tLoad the recent file matching the argument\n")
-    wrt("\t-s # | --serial #\tOpen serial port specified\n")
-    wrt("\t-S\t\t\tDo not open serial port\n")
-    wrt("\t--run\t\t\tDirectly run the file once loaded\n")
-    wrt("\n")
-    sys.exit(rc)
+
+    parser.add_argument("file", type=str,
+                        nargs='*',
+                        help="Path to a g-Code file")
+    parser.add_argument("--version", action="version",
+                        version=Utils.__version__)
+    developer = parser.add_mutually_exclusive_group()
+    developer.add_argument("-d", action="store_true",
+                           help="Enable developer features")
+    developer.add_argument("-D", action="store_true",
+                           help="Disable developer features")
+    parser.add_argument("-f", "--fullscreen", action="store_true",
+                        help="Enable fullscreen mode")
+    parser.add_argument("-g", type=str,
+                        metavar="path_to_ini_file",
+                        help="Set the default geometry")
+    parser.add_argument("-i", "--ini",
+                        help="Alternative ini file for testing")
+    parser.add_argument("-l", "--list", action="store_true",
+                        help="List all recently opened files")
+    parser.add_argument("-r", "--recent", action="store_true",
+                        help="Load the most recent file opened")
+    # NOTE: R is not available in original arguments
+    # parser.add_argument("-R", action="store_true",
+    #                     help="Load the recent file matching the argument")
+    # NOTE: pendant options are ignored in original parser
+    # pendant = parser.add_mutually_exclusive_group()
+    # pendant.add_argument("-p", "--pendant",
+    #                      # metavar="path_to_ini_file",
+    #                      help="Open pendant to specified port")
+    # pendant.add_argument("-P", action="store_true",
+    #                      help="Do not start pendant")
+    ser = parser.add_mutually_exclusive_group()
+    ser.add_argument("-s", "--serial", type=str,
+                     help="Open serial port specified")
+    ser.add_argument("-S", action="store_true",
+                     help="Do not open serial port")
+    parser.add_argument("-b", "--baud", type=int,
+                        help="Set the baud rate")
+    parser.add_argument("--run", action="store_true",
+                        help="Directly run the file once loaded")
+    parser.add_argument("-v", "--verbose", action="store_true",
+                        help="increase output verbosity")
+
+    arguments = parser.parse_args()
+
+    return arguments
+
+
+def select_recent_file():
+    import Utils
+
+    # display list of recent files
+    maxlen = 10
+    for i in range(Utils._maxRecent):
+        try:
+            filename = Utils.getRecent(i)
+        except Exception:
+            continue
+        maxlen = max(maxlen, len(os.path.basename(filename)))
+
+    sys.stdout.write("Recent files:\n")
+    num_recent = 0
+    for i in range(Utils._maxRecent):
+        filename = Utils.getRecent(i)
+        num_recent = i
+        if filename is None:
+            break
+        d = os.path.dirname(filename)
+        fn = os.path.basename(filename)
+        sys.stdout.write(f"  {i + 1:2d}: {fn:<{maxlen}}  {d}\n")
+
+    sys.stdout.write("\nSelect one: \n")
+    try:
+        r = int(sys.stdin.readline()) - 1
+    except Exception:
+        r = -1
+    if r < 0 or r > num_recent:
+        sys.stderr.write(
+            f"\nERROR: Only integers from 1 to {num_recent+1} "
+            + "are allowed! \n")
+        sys.exit(1)
+
+    return r
 
 
 # -----------------------------------------------------------------------------
-def main():
+def main() -> int:
     import bmain
     import tkExtra
     import Utils
@@ -67,101 +132,34 @@ def main():
         serial = None
         print("testing mode, could not import serial")
 
-    # Parse arguments
-    try:
-        optlist, args = getopt.getopt(
-            sys.argv[1:],
-            "?b:dDfhi:g:rlpPSs:",
-            [
-                "help",
-                "ini=",
-                "fullscreen",
-                "recent",
-                "list",
-                "pendant=",
-                "serial=",
-                "baud=",
-                "run",
-            ],
-        )
-    except getopt.GetoptError:
-        usage(1)
+    exit_code = 0
 
-    recent = None
-    run = False
-    fullscreen = False
-    for opt, val in optlist:
-        if opt in ("-h", "-?", "--help"):
-            usage(0)
-        elif opt in ("-i", "--ini"):
-            Utils.iniUser = val
-            Utils.loadConfiguration()
-        elif opt == "-d":
-            CNC.developer = True
-        elif opt == "-D":
-            CNC.developer = False
-        elif opt in ("-r", "-R", "--recent", "-l", "--list"):
-            if opt in ("-r", "--recent"):
-                r = 0
-            elif opt in ("--list", "-l"):
-                r = -1
-            else:
-                try:
-                    r = int(val) - 1
-                except Exception:
-                    # Scan in names
-                    for r in range(Utils._maxRecent):
-                        filename = Utils.getRecent(r)
-                        if filename is None:
-                            break
-                        fn, ext = os.path.splitext(os.path.basename(filename))
-                        if fn == val:
-                            break
-                    else:
-                        r = 0
-            if r < 0:
-                # display list of recent files
-                maxlen = 10
-                for i in range(Utils._maxRecent):
-                    try:
-                        filename = Utils.getRecent(i)
-                    except Exception:
-                        continue
-                    maxlen = max(maxlen, len(os.path.basename(filename)))
+    args = get_arguments()
 
-                sys.stdout.write("Recent files:\n")
-                for i in range(Utils._maxRecent):
-                    filename = Utils.getRecent(i)
-                    if filename is None:
-                        break
-                    d = os.path.dirname(filename)
-                    fn = os.path.basename(filename)
-                    sys.stdout.write(f"  {i + 1:2d}: {fn:<{maxlen}}  {d}\n")
+    recent = args.recent
+    run = args.run
+    fullscreen = args.fullscreen
 
-                try:
-                    sys.stdout.write("Select one: ")
-                    r = int(sys.stdin.readline()) - 1
-                except Exception:
-                    pass
-            try:
-                recent = Utils.getRecent(r)
-            except Exception:
-                pass
+    if args.ini:
+        Utils.iniUser = args.ini
+        Utils.loadConfiguration()
 
-        elif opt in ("-f", "--fullscreen"):
-            fullscreen = True
+    CNC.developer = args.d
 
-        elif opt == "-p":
-            pass  # startPendant()
+    r = -1
+    if args.recent:
+        print("resent")
+        r = 0
+    elif args.list:
+        r = select_recent_file()
 
-        elif opt == "-P":
-            pass  # stopPendant()
-
-        elif opt == "--pendant":
-            pass  # startPendant on port
-
-        elif opt == "--run":
-            run = True
+    if r >= 0:
+        try:
+            recent = Utils.getRecent(r)
+        except Exception:
+            sys.stderr.write(
+                "\nERROR: There is no recent file available!\n")
+            sys.exit(1)
 
     application = bmain.Application(className=f"  {Utils.__prg__}  ")
 
@@ -198,11 +196,10 @@ def main():
     if fullscreen:
         application.attributes("-fullscreen", True)
 
-    # Parse remaining arguments except files
-    if recent:
-        args.append(recent)
-    for fn in args:
+    for fn in args.file:
         application.load(fn)
+    if recent:
+        application.load(recent)
 
     if serial is None:
         application.showSerialError()
@@ -221,5 +218,8 @@ def main():
     application.close()
     Utils.saveConfiguration()
 
+    return exit_code
 
-main()
+
+if __name__ == "__main__":
+    sys.exit(main())
