@@ -7,7 +7,6 @@ import math
 
 from CNC import CNC, Block
 from ToolsPage import Plugin
-from Helpers import _
 
 __author__ = "Carlos Garcia Saura"
 __email__ = "@CarlosGS"

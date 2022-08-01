@@ -1251,6 +1251,8 @@ class Controller(_Base):
 # =============================================================================
 class Tools:
     def __init__(self, gcode):
+        from pydoc import locate
+
         self.gcode = gcode
         self.inches = False
         self.digits = 4
@@ -1285,13 +1287,15 @@ class Tools:
         # Find plugins in the plugins directory and load them
         for f in glob.glob(f"{__prgpath__}/plugins/*.py"):
             name, ext = os.path.splitext(os.path.basename(f))
+
             try:
-                exec(f"import {name}")
-                tool = eval(f"{name}.Tool(self)")
-                self.addTool(tool)
+                my_class = locate(f"plugins.{name}.Tool")
             except (ImportError, AttributeError):
                 typ, val, tb = sys.exc_info()
                 traceback.print_exception(typ, val, tb)
+                return
+            tool = my_class(self)
+            self.addTool(tool)
 
     # ----------------------------------------------------------------------
     def addTool(self, tool):

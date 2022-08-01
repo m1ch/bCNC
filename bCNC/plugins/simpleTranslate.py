@@ -6,7 +6,6 @@
 from tkinter import messagebox
 
 from ToolsPage import Plugin
-from Helpers import _
 
 __author__ = "DodoLaSaumure"
 __email__ = ""

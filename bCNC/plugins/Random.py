@@ -7,7 +7,6 @@ import random
 
 from ToolsPage import Plugin
 from tkinter import messagebox
-from Helpers import _
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"

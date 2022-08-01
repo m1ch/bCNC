@@ -1,6 +1,5 @@
 from CNC import CNC, Block
 from ToolsPage import Plugin
-from Helpers import _
 
 __author__ = "kswiorek"
 __email__ = "ks@baskijski.net"

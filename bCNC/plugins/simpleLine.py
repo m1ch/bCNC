@@ -6,7 +6,6 @@
 from bmath import Vector
 from CNC import CNC, Block
 from ToolsPage import Plugin
-from Helpers import _
 
 __author__ = "DodoLaSaumure"
 __email__ = ""

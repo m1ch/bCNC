@@ -5,7 +5,6 @@
 
 from CNC import CNC, Block
 from ToolsPage import Plugin
-from Helpers import _
 
 __author__ = "Filippo Rivato"
 __email__ = "f.rivato@gmail.com"

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+from pydoc import Helper
 import sys
 import argparse
 
@@ -93,8 +94,6 @@ def get_arguments() -> argparse.Namespace:
 
 
 def select_recent_file():
-    import Utils
-
     # display list of recent files
     maxlen = 10
     for i in range(_maxRecent):
@@ -156,7 +155,7 @@ def main() -> int:
     gconfig.load_configuration()
 
     # DEBUG: print the entire config
-    gconfig.print_configuration()
+    # gconfig.print_configuration()
 
     CNC.developer = args.d
 

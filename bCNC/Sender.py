@@ -134,12 +134,6 @@ class Sender:
             name, _ = os.path.splitext(os.path.basename(f))
             if name[0] == "_":
                 continue
-            try:
-                exec(f"import {name}")
-                self.controllers[name] = eval(f"{name}.Controller(self)")
-            except (ImportError, AttributeError):
-                typ, val, tb = sys.exc_info()
-                traceback.print_exception(typ, val, tb)
 
     # ----------------------------------------------------------------------
     def controllerList(self):
@@ -147,10 +141,16 @@ class Sender:
 
     # ----------------------------------------------------------------------
     def controllerSet(self, ctl):
-        if ctl in self.controllers.keys():
-            self.controller = ctl
-            CNC.vars["controller"] = ctl
-            self.mcontrol = self.controllers[ctl]
+        # FIXME: Only one controller gets loaded, clean up the code!
+        ctl_path = gconfig.getcontrollers(ctl)
+        if not ctl_path:
+            return  # controller does not exist
+        from pydoc import locate
+        my_class = locate(f"controllers.{ctl}.Controller")
+        self.controllers[ctl] = my_class(self)
+        self.controller = ctl
+        CNC.vars["controller"] = ctl
+        self.mcontrol = self.controllers[ctl]
 
     # ----------------------------------------------------------------------
     def quit(self, event=None):

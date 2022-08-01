@@ -8,6 +8,8 @@ from globalConstants import (
     __iniSystem__,
     __iniUser__,
     __LANGUAGES__,
+    __controllerpath__,
+    __pluginpath__,
     _maxRecent,
 )
 
@@ -46,6 +48,44 @@ _FONT_SECTION = "Font"
 # language = ""
 
 gettext.install(True, localedir=None)
+
+
+def _search_controllers():
+    import glob
+    # import traceback
+
+    controllers = {}
+    for f in glob.glob(f"{__controllerpath__}/*.py"):
+        name, _ = os.path.splitext(os.path.basename(f))
+        if name[0] == "_":
+            continue
+        controllers[name] = f
+        # try:
+        #     exec(f"import {name}")
+        #     self.controllers[name] = eval(f"{name}.Controller(self)")
+        # except (ImportError, AttributeError):
+        #     typ, val, tb = sys.exc_info()
+        #     traceback.print_exception(typ, val, tb)
+    return(controllers)
+
+
+def _search_plugins():
+    import glob
+    # import traceback
+
+    plugins = {}
+    for f in glob.glob(f"{__prgpath__}/plugins/*.py"):
+        name, _ = os.path.splitext(os.path.basename(f))
+        if name[0] == "_":
+            continue
+        plugins[name] = f
+        # try:
+        #     exec(f"import {name}")
+        #     self.controllers[name] = eval(f"{name}.Controller(self)")
+        # except (ImportError, AttributeError):
+        #     typ, val, tb = sys.exc_info()
+        #     traceback.print_exception(typ, val, tb)
+    return(plugins)
 
 
 # -----------------------------------------------------------------------------
@@ -108,19 +148,32 @@ class Config(configparser.ConfigParser):
         except Exception:
             _errorReport = self.getint("Connection", "errorreport", 1)
 
+        # Find available controllers
+        controllers = _search_controllers()
+        self.add_section("_controllers")
+        for name, path in controllers.items():
+            self.set('_controllers', name, path)
+
+        # FIXME: Find available plugins
+
+        # initiate translation
         language = self.getstr(__prg__, "language")
         localedir = os.path.join(__prgpath__, "locale")
+        # No translation needed if 'en' is selected!
+        if language == 'en':
+            return
 
         if not language:
-            import locale
-            loc = locale.getlocale()
-            print(f"default language: {loc}")
-            if loc not in __LANGUAGES__:
-                loc = "_".split(loc)[0]
-            if loc in __LANGUAGES__:
-                language = loc
-            else:
-                return
+            # import locale
+            # loc = locale.getlocale()
+            # print(f"default language: {loc}")
+            # if loc not in __LANGUAGES__:
+            #     loc = "_".split(loc)[0]
+            # if loc in __LANGUAGES__:
+            #     language = loc
+            # else:
+            #     return
+            return # FIXME: Check wether locale shall be used as default?
         lang = gettext.translation(
             __prg__,
             localedir,
@@ -149,6 +202,7 @@ class Config(configparser.ConfigParser):
         config = configparser.ConfigParser()
         config.read(__iniSystem__)
 
+        # Remove options that are in default ini
         for section in self.sections():
             for item, value in self.items(section):
                 try:
@@ -157,6 +211,11 @@ class Config(configparser.ConfigParser):
                         newconfig.remove_option(section, item)
                 except (NoOptionError, NoSectionError):
                     pass
+
+        # Remove internal options
+        for section in newconfig.sections():
+            if section[0] == '_':
+                newconfig.remove_section(section)
 
         f = open(self._user_ini, "w")
         newconfig.write(f)
@@ -293,6 +352,23 @@ class Config(configparser.ConfigParser):
     def getlanguage(self):
         language = self.getstr(__prg__, "language")
         return __LANGUAGES__.get(language, "")
+
+    def getcontrollers(self, name=None):
+        if not name:
+            controllers = {}
+            for key, value in self.items("_controllers"):
+                controllers[key] = value
+            return controllers
+        try:
+            return self.getstr("_controllers", name)
+        except Exception:
+            return None
+
+    def getcontrollerslist(self):
+        controllers = {}
+        for key, value in self.items("_controllers"):
+            controllers[key] = value
+        return sorted(controllers.keys())
 
 
 config = Config()

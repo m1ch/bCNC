@@ -10,7 +10,6 @@ import time
 
 from CNC import CCW, CNC, CW, Block
 from ToolsPage import Plugin
-from Helpers import _
 
 __author__ = "Gonzalo Cobos Bergillos"
 __email__ = "gcobos@gmail.com"

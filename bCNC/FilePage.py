@@ -327,7 +327,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
         )
         self.ctrlCombo.grid(row=row, column=col + 1, sticky=EW)
         tkExtra.Balloon.set(self.ctrlCombo, _("Select controller board"))
-        self.ctrlCombo.fill(self.app.controllerList())
+        self.ctrlCombo.fill(gconfig.getcontrollerslist())
         self.ctrlCombo.set(app.controller)
         self.addWidget(self.ctrlCombo)
 

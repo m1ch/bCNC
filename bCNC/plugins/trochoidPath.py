@@ -12,7 +12,6 @@
 
 from CNC import CNC  # , Block  # << without this error it does not find CNC.vars
 from ToolsPage import Plugin
-from Helpers import _
 
 __author__ = "Mario Basz"
 __email__ = "mariob_1960@yahoo.com.ar"

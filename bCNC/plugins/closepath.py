@@ -1,9 +1,9 @@
 # Author: @harvie Tomas Mudrunka
 # Date: 7 july 2018
 
-from CNC import Block, Segment
+from CNC import Block
+from bpath import Segment
 from ToolsPage import Plugin
-from Helpers import _
 
 __author__ = "@harvie Tomas Mudrunka"
 # __email__  = ""
