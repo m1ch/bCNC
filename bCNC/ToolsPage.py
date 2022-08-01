@@ -42,7 +42,7 @@ import tkExtra
 import Unicode
 import Utils
 from CNC import CNC
-from Helpers import _, N_
+from Helpers import N_
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"

@@ -11,7 +11,6 @@ from bmath import (
 )
 from CNC import CNC, Block
 from ToolsPage import Plugin
-from Helpers import _
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"

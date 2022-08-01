@@ -50,7 +50,7 @@ import tkExtra
 import Utils
 from CNC import CNC, Block
 
-from Helpers import _, N_
+from Helpers import N_
 
 __author__ = Utils.__author__
 __email__ = Utils.__email__

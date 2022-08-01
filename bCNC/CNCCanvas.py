@@ -50,8 +50,6 @@ import tkExtra
 import Utils
 from CNC import CNC
 
-from Helpers import _
-
 # Probe mapping we need PIL and numpy
 try:
     from PIL import Image, ImageTk

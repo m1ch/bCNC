@@ -10,7 +10,6 @@ from math import (
 from bpath import EPS, Path, eq
 from CNC import Block
 from ToolsPage import Plugin
-from Helpers import _
 
 __author__ = "@harvie Tomas Mudrunka"
 # __email__  = ""

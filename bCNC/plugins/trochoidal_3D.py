@@ -22,7 +22,6 @@ from tkinter import EXCEPTION
 
 from CNC import CNC, Block
 from ToolsPage import Plugin
-from Helpers import _
 
 __author__ = "Mario S Basz"
 __email__ = "mariob_1960@yaho.com.ar"

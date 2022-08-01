@@ -22,7 +22,6 @@ from queue import (
 import Pendant
 import rexx
 import Utils
-from Helpers import _
 from CNC import CNC, MSG, UPDATE, WAIT, GCode
 
 __author__ = "Vasilis Vlachoudis"

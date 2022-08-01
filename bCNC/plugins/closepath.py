@@ -3,7 +3,6 @@
 
 from CNC import Block, Segment
 from ToolsPage import Plugin
-from Helpers import _
 
 __author__ = "@harvie Tomas Mudrunka"
 # __email__  = ""

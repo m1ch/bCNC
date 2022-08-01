@@ -11,7 +11,6 @@ from bmath import Vector
 from bpath import Path, Segment, eq
 from CNC import CNC
 from ToolsPage import Plugin
-from Helpers import _
 
 __author__ = "@harvie Tomas Mudrunka"
 # __email__  = ""

@@ -7,7 +7,6 @@ from tkinter import messagebox
 
 from bpath import Path, Segment
 from ToolsPage import Plugin
-from Helpers import _
 
 __author__ = "@DodoLaSaumure  (Pierre Klein)"
 

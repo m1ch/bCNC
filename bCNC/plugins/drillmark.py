@@ -8,7 +8,6 @@ import math
 # Here import the libraries you need, these are necessary to modify the code
 from CNC import CNC, Block
 from ToolsPage import Plugin
-from Helpers import _
 
 __author__ = "Attila Kolinger"
 # <<< here put an email where plugins users can contact you

@@ -80,8 +80,6 @@ from Sender import NOT_CONNECTED, STATECOLOR, STATECOLORDEF, Sender
 from TerminalPage import TerminalPage
 from ToolsPage import Tools, ToolsPage
 
-from Helpers import _
-
 Utils.loadConfiguration()
 
 __version__ = Utils.__version__

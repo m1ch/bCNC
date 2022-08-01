@@ -45,7 +45,6 @@ from tkinter import (
 )
 import tkinter.font as tkfont
 import configparser
-import builtins
 
 import Ribbon
 import tkExtra
@@ -216,12 +215,12 @@ def loadConfiguration(systemOnly=False):
         language = getStr(__prg__, "language")
         if language:
             # replace language
-            builtins._ = gettext.translation(
-                "bCNC",
+            lang = gettext.translation(
+                __prg__,
                 os.path.join(prgpath, "locale"),
-                fallback=True,
-                languages=[language],
-            ).gettext
+                languages=[language]
+            )
+            lang.install()
 
 
 # -----------------------------------------------------------------------------

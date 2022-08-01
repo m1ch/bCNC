@@ -24,7 +24,7 @@ import CNCRibbon
 import Ribbon
 import tkExtra
 import Utils
-from Helpers import _, N_
+from Helpers import N_
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "vvlachoudis@gmail.com"

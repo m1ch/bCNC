@@ -5,7 +5,6 @@ import re
 import time
 
 from CNC import CNC, WCS
-from Helpers import _
 
 # GRBLv1
 SPLITPAT = re.compile(r"[:,]")

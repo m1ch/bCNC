@@ -32,7 +32,6 @@ from imageToGcode import (
     ball_tool,
 )
 from ToolsPage import Plugin
-from Helpers import _
 
 __author__ = "Filippo Rivato"
 __email__ = "f.rivato@gmail.com"

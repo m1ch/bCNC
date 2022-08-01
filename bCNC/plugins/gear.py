@@ -8,7 +8,6 @@ import math
 from bmath import Vector
 from CNC import CNC, CW, Block
 from ToolsPage import Plugin
-from Helpers import _
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"

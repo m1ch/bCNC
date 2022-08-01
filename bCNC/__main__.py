@@ -4,6 +4,8 @@ import os
 import sys
 import getopt
 
+import Helpers # required for translation
+
 PRGPATH = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(PRGPATH)
 sys.path.append(os.path.join(PRGPATH, "lib"))
