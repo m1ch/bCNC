@@ -40,6 +40,7 @@ from tkinter import (
     messagebox,
 )
 
+from globalConfig import config as gconfig
 from CNC import CNC
 import CNCRibbon
 import Ribbon
@@ -50,7 +51,7 @@ import Utils
 from CNC import DISTANCE_MODE, FEED_MODE, PLANE, WCS
 from _GenericGRBL import ERROR_CODES
 
-from Helpers import _, N_
+from globalVariables import N_
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "vvlachoudis@gmail.com"
@@ -151,7 +152,7 @@ class UserGroup(CNCRibbon.ButtonGroup):
         CNCRibbon.ButtonGroup.__init__(self, master, "User", app)
         self.grid3rows()
 
-        n = Utils.getInt("Buttons", "n", 6)
+        n = gconfig.getint("Buttons", "n", 6)
         for i in range(1, n):
             b = Utils.UserButton(
                 self.frame, self.app, i, anchor=W,
@@ -226,9 +227,10 @@ class DROFrame(CNCRibbon.PageFrame):
     def __init__(self, master, app):
         CNCRibbon.PageFrame.__init__(self, master, "DRO", app)
 
-        DROFrame.dro_status = Utils.getFont("dro.status", DROFrame.dro_status)
-        DROFrame.dro_wpos = Utils.getFont("dro.wpos", DROFrame.dro_wpos)
-        DROFrame.dro_mpos = Utils.getFont("dro.mpos", DROFrame.dro_mpos)
+        DROFrame.dro_status = gconfig.getfont("dro.status",
+                                              DROFrame.dro_status)
+        DROFrame.dro_wpos = gconfig.getfont("dro.wpos", DROFrame.dro_wpos)
+        DROFrame.dro_mpos = gconfig.getfont("dro.mpos", DROFrame.dro_mpos)
 
         row = 0
         col = 0
@@ -617,10 +619,12 @@ class abcDROFrame(CNCRibbon.PageExLabelFrame):
         frame = Frame(self())
         frame.pack(side=TOP, fill=X)
 
-        abcDROFrame.dro_status = Utils.getFont(
+        abcDROFrame.dro_status = gconfig.getfont(
             "dro.status", abcDROFrame.dro_status)
-        abcDROFrame.dro_wpos = Utils.getFont("dro.wpos", abcDROFrame.dro_wpos)
-        abcDROFrame.dro_mpos = Utils.getFont("dro.mpos", abcDROFrame.dro_mpos)
+        abcDROFrame.dro_wpos = gconfig.getfont(
+            "dro.wpos", abcDROFrame.dro_wpos)
+        abcDROFrame.dro_mpos = gconfig.getfont(
+            "dro.mpos", abcDROFrame.dro_mpos)
 
         row = 0
         col = 0
@@ -1053,15 +1057,15 @@ class ControlFrame(CNCRibbon.PageExLabelFrame):
             frame, width=6, background=tkExtra.GLOBAL_CONTROL_BACKGROUND
         )
         self.step.grid(row=row, column=col, columnspan=2, sticky=EW)
-        self.step.set(Utils.config.get("Control", "step"))
+        self.step.set(gconfig.get("Control", "step"))
         self.step.fill(
-            map(float, Utils.config.get("Control", "steplist").split()))
+            map(float, gconfig.get("Control", "steplist").split()))
         tkExtra.Balloon.set(self.step, _("Step for every move operation"))
         self.addWidget(self.step)
 
         # -- Separate zstep --
         try:
-            zstep = Utils.config.get("Control", "zstep")
+            zstep = gconfig.get("Control", "zstep")
             self.zstep = tkExtra.Combobox(
                 frame, width=4, background=tkExtra.GLOBAL_CONTROL_BACKGROUND
             )
@@ -1069,7 +1073,7 @@ class ControlFrame(CNCRibbon.PageExLabelFrame):
             self.zstep.set(zstep)
             zsl = [_NOZSTEP]
             zsl.extend(
-                map(float, Utils.config.get("Control", "zsteplist").split()))
+                map(float, gconfig.get("Control", "zsteplist").split()))
             self.zstep.fill(zsl)
             tkExtra.Balloon.set(self.zstep, _("Step for Z move operation"))
             self.addWidget(self.zstep)
@@ -1078,17 +1082,17 @@ class ControlFrame(CNCRibbon.PageExLabelFrame):
 
         # Default steppings
         try:
-            self.step1 = Utils.getFloat("Control", "step1")
+            self.step1 = gconfig.getfloat("Control", "step1")
         except Exception:
             self.step1 = 0.1
 
         try:
-            self.step2 = Utils.getFloat("Control", "step2")
+            self.step2 = gconfig.getfloat("Control", "step2")
         except Exception:
             self.step2 = 1
 
         try:
-            self.step3 = Utils.getFloat("Control", "step3")
+            self.step3 = gconfig.getfloat("Control", "step3")
         except Exception:
             self.step3 = 10
 
@@ -1167,9 +1171,9 @@ class ControlFrame(CNCRibbon.PageExLabelFrame):
 
     # ----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.setFloat("Control", "step", self.step.get())
+        gconfig.setstr("Control", "step", self.step.get())
         if self.zstep is not self.step:
-            Utils.setFloat("Control", "zstep", self.zstep.get())
+            gconfig.setstr("Control", "zstep", self.zstep.get())
 
     # ----------------------------------------------------------------------
     # Jogging
@@ -1519,16 +1523,16 @@ class abcControlFrame(CNCRibbon.PageExLabelFrame):
             frame, width=6, background=tkExtra.GLOBAL_CONTROL_BACKGROUND
         )
         self.step.grid(row=row, column=col, columnspan=2, sticky=EW)
-        self.step.set(Utils.config.get("abcControl", "step"))
+        self.step.set(gconfig.get("abcControl", "step"))
         self.step.fill(
-            map(float, Utils.config.get("abcControl", "abcsteplist").split())
+            map(float, gconfig.get("abcControl", "abcsteplist").split())
         )
         tkExtra.Balloon.set(self.step, _("Step for every move operation"))
         self.addWidget(self.step)
 
         # -- Separate astep --
         try:
-            astep = Utils.config.get("abcControl", "astep")
+            astep = gconfig.get("abcControl", "astep")
             self.astep = tkExtra.Combobox(
                 frame, width=4, background=tkExtra.GLOBAL_CONTROL_BACKGROUND
             )
@@ -1537,7 +1541,7 @@ class abcControlFrame(CNCRibbon.PageExLabelFrame):
             asl = [_NOASTEP]
             asl.extend(
                 map(float,
-                    Utils.config.get("abcControl", "asteplist").split()))
+                    gconfig.get("abcControl", "asteplist").split()))
             self.astep.fill(asl)
             tkExtra.Balloon.set(self.astep, _("Step for A move operation"))
             self.addWidget(self.astep)
@@ -1546,17 +1550,17 @@ class abcControlFrame(CNCRibbon.PageExLabelFrame):
 
         # Default steppings
         try:
-            self.step1 = Utils.getFloat("abcControl", "step1")
+            self.step1 = gconfig.getfloat("abcControl", "step1")
         except Exception:
             self.step1 = 0.1
 
         try:
-            self.step2 = Utils.getFloat("abcControl", "step2")
+            self.step2 = gconfig.getfloat("abcControl", "step2")
         except Exception:
             self.step2 = 1
 
         try:
-            self.step3 = Utils.getFloat("abcControl", "step3")
+            self.step3 = gconfig.getfloat("abcControl", "step3")
         except Exception:
             self.step3 = 10
 
@@ -1635,9 +1639,9 @@ class abcControlFrame(CNCRibbon.PageExLabelFrame):
 
     # ----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.setFloat("abcControl", "step", self.step.get())
+        gconfig.setstr("abcControl", "step", self.step.get())
         if self.astep is not self.step:
-            Utils.setFloat("abcControl", "astep", self.astep.get())
+            gconfig.setstr("abcControl", "astep", self.astep.get())
 
     # ----------------------------------------------------------------------
     # Jogging
@@ -2104,8 +2108,8 @@ class StateFrame(CNCRibbon.PageExLabelFrame):
             command=self.spindleControl,
             showvalue=True,
             orient=HORIZONTAL,
-            from_=Utils.config.get("CNC", "spindlemin"),
-            to_=Utils.config.get("CNC", "spindlemax"),
+            from_=gconfig.get("CNC", "spindlemin"),
+            to_=gconfig.get("CNC", "spindlemax"),
         )
         tkExtra.Balloon.set(b, _("Set spindle RPM"))
         b.grid(row=row, column=col, sticky=EW, columnspan=3)

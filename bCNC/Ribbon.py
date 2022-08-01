@@ -29,7 +29,6 @@ from tkinter import (
 
 import Utils
 import tkExtra
-from Helpers import _
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "vvlachoudis@gmail.com"

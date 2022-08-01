@@ -25,7 +25,7 @@ import Ribbon
 import tkExtra
 import Utils
 
-from Helpers import _, N_
+from globalVariables import N_
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "vvlachoudis@gmail.com"
@@ -35,6 +35,9 @@ try:
 except Exception:
     print("Using fallback Utils.comports()!")
     from Utils import comports
+
+from globalConstants import _maxRecent
+from globalConfig import config as gconfig
 
 BAUDS = [2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400]
 
@@ -47,8 +50,8 @@ class _RecentMenuButton(Ribbon.MenuButton):
     # ----------------------------------------------------------------------
     def createMenu(self):
         menu = Menu(self, tearoff=0, activebackground=Ribbon._ACTIVE_COLOR)
-        for i in range(Utils._maxRecent):
-            filename = Utils.getRecent(i)
+        for i in range(_maxRecent):
+            filename = gconfig.getrecent(i)
             if filename is None:
                 break
             path = os.path.dirname(filename)
@@ -292,7 +295,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
         tkExtra.Balloon.set(
             self.portCombo, _("Select (or manual enter) port to connect")
         )
-        self.portCombo.set(Utils.getStr("Connection", "port"))
+        self.portCombo.set(gconfig.getstr("Connection", "port"))
         self.addWidget(self.portCombo)
 
         self.comportRefresh()
@@ -308,7 +311,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
         self.baudCombo.grid(row=row, column=col + 1, sticky=EW)
         tkExtra.Balloon.set(self.baudCombo, _("Select connection baud rate"))
         self.baudCombo.fill(BAUDS)
-        self.baudCombo.set(Utils.getStr("Connection", "baud", "115200"))
+        self.baudCombo.set(gconfig.getstr("Connection", "baud", "115200"))
         self.addWidget(self.baudCombo)
 
         # ---
@@ -335,7 +338,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
         b.grid(row=row, column=col, columnspan=2, sticky=W)
         tkExtra.Balloon.set(
             b, _("Connect to serial on startup of the program"))
-        self.autostart.set(Utils.getBool("Connection", "openserial"))
+        self.autostart.set(gconfig.getbool("Connection", "openserial"))
         self.addWidget(b)
 
         # ---
@@ -432,10 +435,11 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
     # -----------------------------------------------------------------------
     def saveConfig(self):
         # Connection
-        Utils.setStr("Connection", "controller", self.app.controller)
-        Utils.setStr("Connection", "port", self.portCombo.get().split("\t")[0])
-        Utils.setStr("Connection", "baud", self.baudCombo.get())
-        Utils.setBool("Connection", "openserial", self.autostart.get())
+        gconfig.setstr("Connection", "controller", self.app.controller)
+        gconfig.setstr(
+            "Connection", "port", self.portCombo.get().split("\t")[0])
+        gconfig.setstr("Connection", "baud", self.baudCombo.get())
+        gconfig.setbool("Connection", "openserial", self.autostart.get())
 
 
 # =============================================================================

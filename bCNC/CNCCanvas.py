@@ -44,13 +44,12 @@ from tkinter import (
 )
 import tkinter
 
+from globalConfig import config as gconfig
 import bmath
 import Camera
 import tkExtra
 import Utils
 from CNC import CNC
-
-from Helpers import _
 
 # Probe mapping we need PIL and numpy
 try:
@@ -2133,46 +2132,53 @@ class CanvasFrame(Frame):
         global CAMERA_COLOR, PROBE_TEXT_COLOR, CANVAS_COLOR
         global DRAW_TIME
 
-        self.draw_axes.set(bool(int(Utils.getBool("Canvas", "axes", True))))
-        self.draw_grid.set(bool(int(Utils.getBool("Canvas", "grid", True))))
-        self.draw_margin.set(bool(int(Utils.getBool("Canvas", "margin", True))))
-        self.draw_paths.set(bool(int(Utils.getBool("Canvas", "paths", True))))
-        self.draw_rapid.set(bool(int(Utils.getBool("Canvas", "rapid", True))))
+        self.draw_axes.set(bool(int(gconfig.getbool("Canvas", "axes", True))))
+        self.draw_grid.set(bool(int(gconfig.getbool("Canvas", "grid", True))))
+        self.draw_margin.set(
+            bool(int(gconfig.getbool("Canvas", "margin", True))))
+        self.draw_paths.set(
+            bool(int(gconfig.getbool("Canvas", "paths", True))))
+        self.draw_rapid.set(
+            bool(int(gconfig.getbool("Canvas", "rapid", True))))
         self.draw_workarea.set(
-            bool(int(Utils.getBool("Canvas", "workarea", True))))
+            bool(int(gconfig.getbool("Canvas", "workarea", True))))
 
-        self.view.set(Utils.getStr("Canvas", "view", VIEWS[0]))
+        self.view.set(gconfig.getstr("Canvas", "view", VIEWS[0]))
 
-        DRAW_TIME = Utils.getInt("Canvas", "drawtime", DRAW_TIME)
+        DRAW_TIME = gconfig.getint("Canvas", "drawtime", DRAW_TIME)
 
-        INSERT_COLOR = Utils.getStr("Color", "canvas.insert", INSERT_COLOR)
-        GANTRY_COLOR = Utils.getStr("Color", "canvas.gantry", GANTRY_COLOR)
-        MARGIN_COLOR = Utils.getStr("Color", "canvas.margin", MARGIN_COLOR)
-        GRID_COLOR = Utils.getStr("Color", "canvas.grid", GRID_COLOR)
-        BOX_SELECT = Utils.getStr("Color", "canvas.selectbox", BOX_SELECT)
-        ENABLE_COLOR = Utils.getStr("Color", "canvas.enable", ENABLE_COLOR)
-        DISABLE_COLOR = Utils.getStr("Color", "canvas.disable", DISABLE_COLOR)
-        SELECT_COLOR = Utils.getStr("Color", "canvas.select", SELECT_COLOR)
-        SELECT2_COLOR = Utils.getStr("Color", "canvas.select2", SELECT2_COLOR)
-        PROCESS_COLOR = Utils.getStr("Color", "canvas.process", PROCESS_COLOR)
-        MOVE_COLOR = Utils.getStr("Color", "canvas.move", MOVE_COLOR)
-        RULER_COLOR = Utils.getStr("Color", "canvas.ruler", RULER_COLOR)
-        CAMERA_COLOR = Utils.getStr("Color", "canvas.camera", CAMERA_COLOR)
-        PROBE_TEXT_COLOR = Utils.getStr(
+        INSERT_COLOR = gconfig.getstr("Color", "canvas.insert", INSERT_COLOR)
+        GANTRY_COLOR = gconfig.getstr("Color", "canvas.gantry", GANTRY_COLOR)
+        MARGIN_COLOR = gconfig.getstr("Color", "canvas.margin", MARGIN_COLOR)
+        GRID_COLOR = gconfig.getstr("Color", "canvas.grid", GRID_COLOR)
+        BOX_SELECT = gconfig.getstr("Color", "canvas.selectbox", BOX_SELECT)
+        ENABLE_COLOR = gconfig.getstr("Color", "canvas.enable", ENABLE_COLOR)
+        DISABLE_COLOR = gconfig.getstr(
+            "Color", "canvas.disable", DISABLE_COLOR)
+        SELECT_COLOR = gconfig.getstr("Color", "canvas.select", SELECT_COLOR)
+        SELECT2_COLOR = gconfig.getstr(
+            "Color", "canvas.select2", SELECT2_COLOR)
+        PROCESS_COLOR = gconfig.getstr(
+            "Color", "canvas.process", PROCESS_COLOR)
+        MOVE_COLOR = gconfig.getstr("Color", "canvas.move", MOVE_COLOR)
+        RULER_COLOR = gconfig.getstr("Color", "canvas.ruler", RULER_COLOR)
+        CAMERA_COLOR = gconfig.getstr("Color", "canvas.camera", CAMERA_COLOR)
+        PROBE_TEXT_COLOR = gconfig.getstr(
             "Color", "canvas.probetext", PROBE_TEXT_COLOR)
-        CANVAS_COLOR = Utils.getStr("Color", "canvas.background", CANVAS_COLOR)
+        CANVAS_COLOR = gconfig.getstr(
+            "Color", "canvas.background",  CANVAS_COLOR)
 
     # ----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.setInt("Canvas", "drawtime", DRAW_TIME)
-        Utils.setStr("Canvas", "view", self.view.get())
-        Utils.setBool("Canvas", "axes", self.draw_axes.get())
-        Utils.setBool("Canvas", "grid", self.draw_grid.get())
-        Utils.setBool("Canvas", "margin", self.draw_margin.get())
-        Utils.setBool("Canvas", "probe", self.draw_probe.get())
-        Utils.setBool("Canvas", "paths", self.draw_paths.get())
-        Utils.setBool("Canvas", "rapid", self.draw_rapid.get())
-        Utils.setBool("Canvas", "workarea", self.draw_workarea.get())
+        gconfig.setstr("Canvas", "drawtime", DRAW_TIME)
+        gconfig.setstr("Canvas", "view", self.view.get())
+        gconfig.setbool("Canvas", "axes", self.draw_axes.get())
+        gconfig.setbool("Canvas", "grid", self.draw_grid.get())
+        gconfig.setbool("Canvas", "margin", self.draw_margin.get())
+        gconfig.setbool("Canvas", "probe", self.draw_probe.get())
+        gconfig.setbool("Canvas", "paths", self.draw_paths.get())
+        gconfig.setbool("Canvas", "rapid", self.draw_rapid.get())
+        gconfig.setbool("Canvas", "workarea", self.draw_workarea.get())
 
     # ----------------------------------------------------------------------
     # Canvas toolbar FIXME XXX should be moved to CNCCanvas

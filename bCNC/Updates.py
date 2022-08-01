@@ -28,9 +28,10 @@ from tkinter import (
     LabelFrame,
 )
 
+from globalConfig import config as gconfig
 import tkExtra
 import Utils
-from Helpers import _
+from globalConstants import __prg__
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "vvlachoudis@gmail.com"
@@ -90,7 +91,7 @@ class CheckUpdateDialog(Toplevel):
         la.grid(row=0, column=0, sticky=E, pady=1)
 
         # Last check
-        lastCheck = Utils.getInt(Utils.__prg__, "lastcheck", 0)
+        lastCheck = gconfig.getint(__prg__, "lastcheck", 0)
         if lastCheck == 0:
             lastCheckStr = "unknown"
         else:
@@ -103,7 +104,7 @@ class CheckUpdateDialog(Toplevel):
         la = Label(frame, text=_("Interval (days):"))
         la.grid(row=1, column=0, sticky=E, pady=1)
 
-        checkInt = Utils.getInt(Utils.__prg__, "checkinterval", 30)
+        checkInt = gconfig.getint(__prg__, "checkinterval", 30)
         self.checkInterval = IntVar()
         self.checkInterval.set(checkInt)
 
@@ -189,12 +190,12 @@ class CheckUpdateDialog(Toplevel):
                 text=_("Error {} in connection").format(r.status))
 
         # Save today as lastcheck date
-        Utils.config.set(Utils.__prg__, "lastcheck", str(int(time.time())))
+        gconfig.set(__prg__, "lastcheck", str(int(time.time())))
 
     # ----------------------------------------------------------------------
     def later(self):
         # Save today as lastcheck date
-        Utils.config.set(Utils.__prg__, "lastcheck", str(int(time.time())))
+        gconfig.set(__prg__, "lastcheck", str(int(time.time())))
         self.close()
 
     # ----------------------------------------------------------------------
@@ -207,8 +208,8 @@ class CheckUpdateDialog(Toplevel):
     # ----------------------------------------------------------------------
     def close(self, event=None):
         try:
-            Utils.config.set(
-                Utils.__prg__, "checkinterval",
+            gconfig.set(
+                __prg__, "checkinterval",
                 str(int(self.checkInterval.get()))
             )
         except TypeError:
@@ -220,11 +221,11 @@ class CheckUpdateDialog(Toplevel):
 # Check if interval has passed from last check
 # -----------------------------------------------------------------------------
 def need2Check():
-    lastCheck = Utils.getInt(Utils.__prg__, "lastcheck", 0)
+    lastCheck = gconfig.getint(__prg__, "lastcheck", 0)
     if lastCheck == 0:  # Unknown
         return True
 
-    checkInt = Utils.getInt(Utils.__prg__, "checkinterval", 30)
+    checkInt = gconfig.getint(__prg__, "checkinterval", 30)
     if checkInt == 0:  # Check never
         return False
 
@@ -235,6 +236,6 @@ def need2Check():
 if __name__ == "__main__":
     tk = Tk()
     Utils.loadIcons()
-    Utils.loadConfiguration()
+    gconfig.load_configuration()
     dlg = CheckUpdateDialog(tk, 0)
     tk.mainloop()

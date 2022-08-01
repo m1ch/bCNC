@@ -43,17 +43,16 @@ from tkinter import (
     messagebox,
 )
 
+from globalConfig import config as gconfig
 import Camera
 import CNCRibbon
 import Ribbon
 import tkExtra
 import Utils
+from globalConstants import __author__, __email__
 from CNC import CNC, Block
 
-from Helpers import _, N_
-
-__author__ = Utils.__author__
-__email__ = Utils.__email__
+from globalVariables import N_
 
 PROBE_CMD = [
     _("G38.2 stop on contact else error"),
@@ -418,19 +417,20 @@ class ProbeCommonFrame(CNCRibbon.PageFrame):
 
     # -----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.setFloat("Probe",
+        gconfig.setstr("Probe",
                        "fastfeed", ProbeCommonFrame.fastProbeFeed.get())
-        Utils.setFloat("Probe", "feed", ProbeCommonFrame.probeFeed.get())
-        Utils.setFloat("Probe", "tlo", ProbeCommonFrame.tlo.get())
-        Utils.setFloat("Probe", "cmd",
+        gconfig.setstr("Probe", "feed", ProbeCommonFrame.probeFeed.get())
+        gconfig.setstr("Probe", "tlo", ProbeCommonFrame.tlo.get())
+        gconfig.setstr("Probe", "cmd",
                        ProbeCommonFrame.probeCmd.get().split()[0])
 
     # -----------------------------------------------------------------------
     def loadConfig(self):
-        ProbeCommonFrame.fastProbeFeed.set(Utils.getFloat("Probe", "fastfeed"))
-        ProbeCommonFrame.probeFeed.set(Utils.getFloat("Probe", "feed"))
-        ProbeCommonFrame.tlo.set(Utils.getFloat("Probe", "tlo"))
-        cmd = Utils.getStr("Probe", "cmd")
+        ProbeCommonFrame.fastProbeFeed.set(gconfig.getfloat("Probe",
+                                                            "fastfeed"))
+        ProbeCommonFrame.probeFeed.set(gconfig.getfloat("Probe", "feed"))
+        ProbeCommonFrame.tlo.set(gconfig.getfloat("Probe", "tlo"))
+        cmd = gconfig.getstr("Probe", "cmd")
         for p in PROBE_CMD:
             if p.split()[0] == cmd:
                 ProbeCommonFrame.probeCmd.set(p)
@@ -861,19 +861,19 @@ class ProbeFrame(CNCRibbon.PageFrame):
 
     # -----------------------------------------------------------------------
     def loadConfig(self):
-        self.probeXdir.set(Utils.getStr("Probe", "x"))
-        self.probeYdir.set(Utils.getStr("Probe", "y"))
-        self.probeZdir.set(Utils.getStr("Probe", "z"))
-        self.diameter.set(Utils.getStr("Probe", "center"))
-        self.warn = Utils.getBool("Warning", "probe", self.warn)
+        self.probeXdir.set(gconfig.getstr("Probe", "x"))
+        self.probeYdir.set(gconfig.getstr("Probe", "y"))
+        self.probeZdir.set(gconfig.getstr("Probe", "z"))
+        self.diameter.set(gconfig.getstr("Probe", "center"))
+        self.warn = gconfig.getbool("Warning", "probe", self.warn)
 
     # -----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.setFloat("Probe", "x", self.probeXdir.get())
-        Utils.setFloat("Probe", "y", self.probeYdir.get())
-        Utils.setFloat("Probe", "z", self.probeZdir.get())
-        Utils.setFloat("Probe", "center", self.diameter.get())
-        Utils.setBool("Warning", "probe", self.warn)
+        gconfig.setstr("Probe", "x", self.probeXdir.get())
+        gconfig.setstr("Probe", "y", self.probeYdir.get())
+        gconfig.setstr("Probe", "z", self.probeZdir.get())
+        gconfig.setstr("Probe", "center", self.diameter.get())
+        gconfig.setbool("Warning", "probe", self.warn)
 
     # -----------------------------------------------------------------------
     def updateProbe(self):
@@ -1349,29 +1349,29 @@ class AutolevelFrame(CNCRibbon.PageFrame):
 
     # -----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.setFloat("Probe", "xmin", self.probeXmin.get())
-        Utils.setFloat("Probe", "xmax", self.probeXmax.get())
-        Utils.setInt("Probe", "xn", self.probeXbins.get())
-        Utils.setFloat("Probe", "ymin", self.probeYmin.get())
-        Utils.setFloat("Probe", "ymax", self.probeYmax.get())
-        Utils.setInt("Probe", "yn", self.probeYbins.get())
-        Utils.setFloat("Probe", "zmin", self.probeZmin.get())
-        Utils.setFloat("Probe", "zmax", self.probeZmax.get())
+        gconfig.setstr("Probe", "xmin", self.probeXmin.get())
+        gconfig.setstr("Probe", "xmax", self.probeXmax.get())
+        gconfig.setstr("Probe", "xn", self.probeXbins.get())
+        gconfig.setstr("Probe", "ymin", self.probeYmin.get())
+        gconfig.setstr("Probe", "ymax", self.probeYmax.get())
+        gconfig.setstr("Probe", "yn", self.probeYbins.get())
+        gconfig.setstr("Probe", "zmin", self.probeZmin.get())
+        gconfig.setstr("Probe", "zmax", self.probeZmax.get())
 
     # -----------------------------------------------------------------------
     def loadConfig(self):
-        self.probeXmin.set(Utils.getFloat("Probe", "xmin"))
-        self.probeXmax.set(Utils.getFloat("Probe", "xmax"))
-        self.probeYmin.set(Utils.getFloat("Probe", "ymin"))
-        self.probeYmax.set(Utils.getFloat("Probe", "ymax"))
-        self.probeZmin.set(Utils.getFloat("Probe", "zmin"))
-        self.probeZmax.set(Utils.getFloat("Probe", "zmax"))
+        self.probeXmin.set(gconfig.getfloat("Probe", "xmin"))
+        self.probeXmax.set(gconfig.getfloat("Probe", "xmax"))
+        self.probeYmin.set(gconfig.getfloat("Probe", "ymin"))
+        self.probeYmax.set(gconfig.getfloat("Probe", "ymax"))
+        self.probeZmin.set(gconfig.getfloat("Probe", "zmin"))
+        self.probeZmax.set(gconfig.getfloat("Probe", "zmax"))
 
         self.probeXbins.delete(0, END)
-        self.probeXbins.insert(0, max(2, Utils.getInt("Probe", "xn", 5)))
+        self.probeXbins.insert(0, max(2, gconfig.getint("Probe", "xn", 5)))
 
         self.probeYbins.delete(0, END)
-        self.probeYbins.insert(0, max(2, Utils.getInt("Probe", "yn", 5)))
+        self.probeYbins.insert(0, max(2, gconfig.getint("Probe", "yn", 5)))
         self.change(False)
 
     # -----------------------------------------------------------------------
@@ -1750,27 +1750,27 @@ class CameraFrame(CNCRibbon.PageFrame):
 
     # -----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.setStr("Camera", "aligncam_anchor", self.location.get())
-        Utils.setFloat("Camera", "aligncam_d", self.diameter.get())
-        Utils.setFloat("Camera", "aligncam_scale", self.scale.get())
-        Utils.setFloat("Camera", "aligncam_dx", self.dx.get())
-        Utils.setFloat("Camera", "aligncam_dy", self.dy.get())
-        Utils.setFloat("Camera", "aligncam_z", self.z.get())
-        Utils.setFloat("Camera", "aligncam_rotation", self.rotation.get())
-        Utils.setFloat("Camera", "aligncam_xcenter", self.xcenter.get())
-        Utils.setFloat("Camera", "aligncam_ycenter", self.ycenter.get())
+        gconfig.setstr("Camera", "aligncam_anchor", self.location.get())
+        gconfig.setstr("Camera", "aligncam_d", self.diameter.get())
+        gconfig.setstr("Camera", "aligncam_scale", self.scale.get())
+        gconfig.setstr("Camera", "aligncam_dx", self.dx.get())
+        gconfig.setstr("Camera", "aligncam_dy", self.dy.get())
+        gconfig.setstr("Camera", "aligncam_z", self.z.get())
+        gconfig.setstr("Camera", "aligncam_rotation", self.rotation.get())
+        gconfig.setstr("Camera", "aligncam_xcenter", self.xcenter.get())
+        gconfig.setstr("Camera", "aligncam_ycenter", self.ycenter.get())
 
     # -----------------------------------------------------------------------
     def loadConfig(self):
-        self.location.set(Utils.getStr("Camera", "aligncam_anchor"))
-        self.diameter.set(Utils.getFloat("Camera", "aligncam_d"))
-        self.scale.set(Utils.getFloat("Camera", "aligncam_scale"))
-        self.dx.set(Utils.getFloat("Camera", "aligncam_dx"))
-        self.dy.set(Utils.getFloat("Camera", "aligncam_dy"))
-        self.z.set(Utils.getFloat("Camera", "aligncam_z", ""))
-        self.rotation.set(Utils.getFloat("Camera", "aligncam_rotation"))
-        self.xcenter.set(Utils.getFloat("Camera", "aligncam_xcenter"))
-        self.ycenter.set(Utils.getFloat("Camera", "aligncam_ycenter"))
+        self.location.set(gconfig.getstr("Camera", "aligncam_anchor"))
+        self.diameter.set(gconfig.getfloat("Camera", "aligncam_d"))
+        self.scale.set(gconfig.getfloat("Camera", "aligncam_scale"))
+        self.dx.set(gconfig.getfloat("Camera", "aligncam_dx"))
+        self.dy.set(gconfig.getfloat("Camera", "aligncam_dy"))
+        self.z.set(gconfig.getfloat("Camera", "aligncam_z", ""))
+        self.rotation.set(gconfig.getfloat("Camera", "aligncam_rotation"))
+        self.xcenter.set(gconfig.getfloat("Camera", "aligncam_xcenter"))
+        self.ycenter.set(gconfig.getfloat("Camera", "aligncam_ycenter"))
         self.updateValues()
 
     # -----------------------------------------------------------------------
@@ -2084,43 +2084,43 @@ class ToolFrame(CNCRibbon.PageFrame):
 
     # -----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.setInt(
+        gconfig.setstr(
             "Probe", "toolpolicy",
             TOOL_POLICY.index(self.toolPolicy.get())
         )
-        Utils.setInt(
+        gconfig.setstr(
             "Probe", "toolwait",
             TOOL_WAIT.index(self.toolWait.get())
         )
 
-        Utils.setFloat("Probe", "toolchangex", self.changeX.get())
-        Utils.setFloat("Probe", "toolchangey", self.changeY.get())
-        Utils.setFloat("Probe", "toolchangez", self.changeZ.get())
+        gconfig.setstr("Probe", "toolchangex", self.changeX.get())
+        gconfig.setstr("Probe", "toolchangey", self.changeY.get())
+        gconfig.setstr("Probe", "toolchangez", self.changeZ.get())
 
-        Utils.setFloat("Probe", "toolprobex", self.probeX.get())
-        Utils.setFloat("Probe", "toolprobey", self.probeY.get())
-        Utils.setFloat("Probe", "toolprobez", self.probeZ.get())
+        gconfig.setstr("Probe", "toolprobex", self.probeX.get())
+        gconfig.setstr("Probe", "toolprobey", self.probeY.get())
+        gconfig.setstr("Probe", "toolprobez", self.probeZ.get())
 
-        Utils.setFloat("Probe", "tooldistance", self.probeDistance.get())
-        Utils.setFloat("Probe", "toolheight", self.toolHeight.get())
-        Utils.setFloat("Probe", "toolmz", CNC.vars.get("toolmz", 0.0))
+        gconfig.setstr("Probe", "tooldistance", self.probeDistance.get())
+        gconfig.setstr("Probe", "toolheight", self.toolHeight.get())
+        gconfig.setstr("Probe", "toolmz", CNC.vars.get("toolmz", 0.0))
 
     # -----------------------------------------------------------------------
     def loadConfig(self):
-        self.changeX.set(Utils.getFloat("Probe", "toolchangex"))
-        self.changeY.set(Utils.getFloat("Probe", "toolchangey"))
-        self.changeZ.set(Utils.getFloat("Probe", "toolchangez"))
+        self.changeX.set(gconfig.getfloat("Probe", "toolchangex"))
+        self.changeY.set(gconfig.getfloat("Probe", "toolchangey"))
+        self.changeZ.set(gconfig.getfloat("Probe", "toolchangez"))
 
-        self.probeX.set(Utils.getFloat("Probe", "toolprobex"))
-        self.probeY.set(Utils.getFloat("Probe", "toolprobey"))
-        self.probeZ.set(Utils.getFloat("Probe", "toolprobez"))
+        self.probeX.set(gconfig.getfloat("Probe", "toolprobex"))
+        self.probeY.set(gconfig.getfloat("Probe", "toolprobey"))
+        self.probeZ.set(gconfig.getfloat("Probe", "toolprobez"))
 
-        self.probeDistance.set(Utils.getFloat("Probe", "tooldistance"))
-        self.toolHeight.set(Utils.getFloat("Probe", "toolheight"))
+        self.probeDistance.set(gconfig.getfloat("Probe", "tooldistance"))
+        self.toolHeight.set(gconfig.getfloat("Probe", "toolheight"))
         self.toolPolicy.set(
-            TOOL_POLICY[Utils.getInt("Probe", "toolpolicy", 0)])
-        self.toolWait.set(TOOL_WAIT[Utils.getInt("Probe", "toolwait", 1)])
-        CNC.vars["toolmz"] = Utils.getFloat("Probe", "toolmz")
+            TOOL_POLICY[gconfig.getint("Probe", "toolpolicy", 0)])
+        self.toolWait.set(TOOL_WAIT[gconfig.getint("Probe", "toolwait", 1)])
+        CNC.vars["toolmz"] = gconfig.getfloat("Probe", "toolmz")
         self.set()
 
     # -----------------------------------------------------------------------

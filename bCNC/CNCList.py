@@ -16,9 +16,6 @@ import tkinter.font as tkfont
 import tkExtra
 from CNC import CNC, Block
 
-from Helpers import _
-
-
 BLOCK_COLOR = "LightYellow"
 COMMENT_COLOR = "Blue"
 DISABLE_COLOR = "Gray"

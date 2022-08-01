@@ -19,10 +19,10 @@ from queue import (
     Queue,
 )
 
+from globalConfig import config as gconfig
 import Pendant
 import rexx
-import Utils
-from Helpers import _
+from globalConstants import __prgpath__, __hisFile__
 from CNC import CNC, MSG, UPDATE, WAIT
 from GCode import GCode
 
@@ -93,7 +93,7 @@ class Sender:
         self.controllerLoad()
         self.controllerSet("GRBL1")
 
-        CNC.loadConfig(Utils.config)
+        CNC.loadConfig(gconfig)
         self.gcode = GCode()
         self.cnc = self.gcode.cnc
 
@@ -126,9 +126,12 @@ class Sender:
 
     # ----------------------------------------------------------------------
     def controllerLoad(self):
+        # FIXME: update as described in
+        #        https://stackoverflow.com/questions/547829/how-to-dynamically-load-a-python-class
+        # FIXME: Only load required Controller
         # Find plugins in the controllers directory and load them
-        for f in glob.glob(f"{Utils.prgpath}/controllers/*.py"):
-            name, ext = os.path.splitext(os.path.basename(f))
+        for f in glob.glob(f"{__prgpath__}/controllers/*.py"):
+            name, _ = os.path.splitext(os.path.basename(f))
             if name[0] == "_":
                 continue
             try:
@@ -156,9 +159,11 @@ class Sender:
 
     # ----------------------------------------------------------------------
     def loadConfig(self):
-        self.controllerSet(Utils.getStr("Connection", "controller"))
-        Pendant.port = Utils.getInt("Connection", "pendantport", Pendant.port)
-        GCode.LOOP_MERGE = Utils.getBool("File", "dxfloopmerge")
+        self.controllerSet(gconfig.getstr("Connection", "controller"))
+        Pendant.port = gconfig.getint("Connection",
+                                      "pendantport",
+                                      Pendant.port)
+        GCode.LOOP_MERGE = gconfig.getbool("File", "dxfloopmerge")
         self.loadHistory()
 
     # ----------------------------------------------------------------------
@@ -168,7 +173,7 @@ class Sender:
     # ----------------------------------------------------------------------
     def loadHistory(self):
         try:
-            f = open(Utils.hisFile)
+            f = open(__hisFile__)
         except Exception:
             return
         self.history = [x.strip() for x in f]
@@ -177,7 +182,7 @@ class Sender:
     # ----------------------------------------------------------------------
     def saveHistory(self):
         try:
-            f = open(Utils.hisFile, "w")
+            f = open(__hisFile__, "w")
         except Exception:
             return
         f.write("\n".join(self.history))
@@ -346,7 +351,7 @@ class Sender:
 
     # ----------------------------------------------------------------------
     def loadRecent(self, recent):
-        filename = Utils.getRecent(recent)
+        filename = gconfig.getrecent(recent)
         if filename is None:
             return
         self.load(filename)
@@ -395,9 +400,10 @@ class Sender:
     def _saveConfigFile(self, filename=None):
         if filename is None:
             filename = self.gcode.filename
-        Utils.setUtf("File", "dir", os.path.dirname(os.path.abspath(filename)))
-        Utils.setUtf("File", "file", os.path.basename(filename))
-        Utils.setUtf(
+        gconfig.setstr(
+            "File", "dir", os.path.dirname(os.path.abspath(filename)))
+        gconfig.setstr("File", "file", os.path.basename(filename))
+        gconfig.setstr(
             "File", "probe", os.path.basename(self.gcode.probe.filename))
 
     # ----------------------------------------------------------------------
@@ -433,7 +439,7 @@ class Sender:
         else:
             self.gcode.load(filename)
             self._saveConfigFile()
-        Utils.addRecent(filename)
+        gconfig.addrecent(filename)
 
     # ----------------------------------------------------------------------
     def save(self, filename):
@@ -462,7 +468,7 @@ class Sender:
             if filename is not None:
                 self.gcode.filename = filename
                 self._saveConfigFile()
-            Utils.addRecent(self.gcode.filename)
+            gconfig.addrecent(self.gcode.filename)
             return self.gcode.save()
 
     # ----------------------------------------------------------------------

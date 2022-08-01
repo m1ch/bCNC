@@ -11,7 +11,7 @@ import threading
 
 import Camera
 from CNC import CNC
-from Utils import prgpath
+from globalConstants import __prgpath__
 
 import urllib.parse as urlparse
 import http.server as httpserver
@@ -28,8 +28,8 @@ HOSTNAME = "localhost"
 port = 8080
 
 httpd = None
-webpath = f"{prgpath}/pendant"
-iconpath = f"{prgpath}/icons/"
+webpath = f"{__prgpath__}/pendant"
+iconpath = f"{__prgpath__}/icons/"
 
 
 # =============================================================================

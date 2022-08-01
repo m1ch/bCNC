@@ -25,6 +25,7 @@ from tkinter import (
     NORMAL,
     DISABLED,
     ACTIVE,
+    OptionMenu,
     StringVar,
     Button,
     Frame,
@@ -36,13 +37,16 @@ from tkinter import (
     messagebox,
 )
 
+from globalConfig import config as gconfig
+from Utils import getDictKeyByValue
 import CNCRibbon
 import Ribbon
 import tkExtra
 import Unicode
 import Utils
+from globalConstants import __prg__, __prgpath__, __LANGUAGES__
 from CNC import CNC
-from Helpers import _, N_
+from globalVariables import N_
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"
@@ -78,14 +82,14 @@ class _Base:
         if self.current is None:
             self.values[name] = value
         else:
-            self.values["%s.%d" % (name, self.current)] = value
+            self.values[f"{name}.{int(self.current)}"] = value
 
     # ----------------------------------------------------------------------
     def __getitem__(self, name):
         if self.current is None:
             return self.values.get(name, "")
         else:
-            return self.values.get("%s.%d" % (name, self.current), "")
+            return self.values.get(f"{name}.{int(self.current)}", "")
 
     # ----------------------------------------------------------------------
     def gcode(self):
@@ -97,7 +101,7 @@ class _Base:
     def names(self):
         lst = []
         for i in range(1000):
-            key = "name.%d" % (i)
+            key = f"name.{i}"
             value = self.values.get(key)
             if value is None:
                 break
@@ -108,13 +112,13 @@ class _Base:
     # ----------------------------------------------------------------------
     def _get(self, key, t, default):
         if t in ("float", "mm"):
-            return Utils.getFloat(self.name, key, default)
+            return gconfig.getfloat(self.name, key, default)
         elif t == "int":
-            return Utils.getInt(self.name, key, default)
+            return gconfig.getint(self.name, key, default)
         elif t == "bool":
-            return Utils.getInt(self.name, key, default)
+            return gconfig.getint(self.name, key, default)
         else:
-            return Utils.getStr(self.name, key, default)
+            return gconfig.getstr(self.name, key, default)
 
     # ----------------------------------------------------------------------
     # Override with execute command
@@ -234,7 +238,7 @@ class _Base:
             return
         # special handling
         for i in range(1000):
-            if name == self.values.get("name.%d" % (i)):
+            if name == self.values.get(f"name.{i}"):
                 self.current = i
                 self.update()
                 return True
@@ -367,8 +371,8 @@ class _Base:
             for p in lists:
                 self.listdb[p] = []
                 for i in range(1000):
-                    key = "_%s.%d" % (p, i)
-                    value = Utils.getStr(self.name, key).strip()
+                    key = f"_{p}.{i}"
+                    value = gconfig.getstr(self.name, key).strip()
                     if value:
                         self.listdb[p].append(value)
                     else:
@@ -376,7 +380,7 @@ class _Base:
 
         # Check if there is a current
         try:
-            self.current = int(Utils.config.get(self.name, "current"))
+            self.current = int(gconfig.get(self.name, "current"))
         except Exception:
             self.current = None
 
@@ -384,11 +388,11 @@ class _Base:
         if self.current is not None:
             self.n = self._get("n", "int", 0)
             for i in range(self.n):
-                key = "name.%d" % (i)
-                self.values[key] = Utils.getStr(self.name, key)
+                key = f"name.{i}"
+                self.values[key] = gconfig.getstr(self.name, key)
                 for var in self.variables:
                     n, t, d, lp = var[:4]
-                    key = "%s.%d" % (n, i)
+                    key = f"{n}.{i}"
                     self.values[key] = self._get(key, t, d)
         else:
             for var in self.variables:
@@ -401,34 +405,35 @@ class _Base:
     # ----------------------------------------------------------------------
     def save(self):
         # if section do not exist add it
-        Utils.addSection(self.name)
+        gconfig.add_section_if_new(self.name)
 
         if self.listdb:
             for name, lst in self.listdb.items():
                 for i, value in enumerate(lst):
-                    Utils.setStr(self.name, "_%s.%d" % (name, i), value)
+                    gconfig.setstr(self.name, f"_{name}.{i}", value)
 
         # Save values
         if self.current is not None:
-            Utils.setStr(self.name, "current", str(self.current))
-            Utils.setStr(self.name, "n", str(self.n))
+            gconfig.setstr(self.name, "current", str(self.current))
+            gconfig.setstr(self.name, "n", str(self.n))
 
             for i in range(self.n):
-                key = "name.%d" % (i)
+                key = f"name.{i}"
                 value = self.values.get(key)
                 if value is None:
                     break
-                Utils.setStr(self.name, key, value)
+                gconfig.setstr(self.name, key, value)
 
                 for var in self.variables:
                     n, t, d, lp = var[:4]
-                    key = "%s.%d" % (n, i)
-                    Utils.setStr(self.name, key, str(self.values.get(key, d)))
+                    key = f"{n}.{i}"
+                    gconfig.setstr(
+                        self.name, key, str(self.values.get(key, d)))
         else:
             for var in self.variables:
                 n, t, d, lp = var[:4]
                 val = self.values.get(n, d)
-                Utils.setStr(self.name, n, str(val))
+                gconfig.setstr(self.name, n, str(val))
 
     # ----------------------------------------------------------------------
     def fromMm(self, name, default=0.0):
@@ -451,7 +456,8 @@ class DataBase(_Base):
     # ----------------------------------------------------------------------
     def add(self, rename=True):
         self.current = self.n
-        self.values["name.%d" % (self.n)] = "%s %02d" % (self.name, self.n + 1)
+        self.values[f"name.{int(self.n)}"] = \
+            f"{self.name} {int(self.n + 1):02d}"
         self.n += 1
         self.populate()
         if rename:
@@ -467,11 +473,10 @@ class DataBase(_Base):
             n, t, d, lp = var[:4]
             for i in range(self.current, self.n):
                 try:
-                    self.values["%s.%d" % (n, i)] = self.values[
-                        "%s.%d" % (n, i + 1)]
+                    self.values[f"{n}.{i}"] = self.values[f"{n}.{i + 1}"]
                 except KeyError:
                     try:
-                        del self.values["%s.%d" % (n, i)]
+                        del self.values[f"{n}.{i}"]
                     except KeyError:
                         pass
 
@@ -490,13 +495,12 @@ class DataBase(_Base):
             n, t, d, lp = var[:4]
             try:
                 if n == "name":
-                    self.values["%s.%d" % (n, self.n)] = (
-                        self.values["%s.%d" % (n, self.current)] + " clone"
+                    self.values[f"{n}.{int(self.n)}"] = (
+                        self.values[f"{n}.{int(self.current)}"] + " clone"
                     )
                 else:
-                    self.values["%s.%d" % (n, self.n)] = self.values[
-                        "%s.%d" % (n, self.current)
-                    ]
+                    self.values[f"{n}.{int(self.n)}"] = self.values[
+                        f"{n}.{int(self.current)}"]
             except KeyError:
                 pass
         self.n += 1
@@ -533,7 +537,7 @@ class Ini(_Base):
         self.name = name
 
         # detect variables from ini file
-        for name, value in Utils.config.items(self.name):
+        for name, value in gconfig.items(self.name):
             if name in ignore:
                 continue
             self.variables.append((name, vartype, value, name))
@@ -1279,7 +1283,7 @@ class Tools:
             self.addTool(tool)
 
         # Find plugins in the plugins directory and load them
-        for f in glob.glob(f"{Utils.prgpath}/plugins/*.py"):
+        for f in glob.glob(f"{__prgpath__}/plugins/*.py"):
             name, ext = os.path.splitext(os.path.basename(f))
             try:
                 exec(f"import {name}")
@@ -1348,7 +1352,7 @@ class Tools:
     # Load from config file
     # ----------------------------------------------------------------------
     def loadConfig(self):
-        self.active.set(Utils.getStr(Utils.__prg__, "tool", "CNC"))
+        self.active.set(gconfig.getstr(__prg__, "tool", "CNC"))
         for tool in self.tools.values():
             tool.load()
 
@@ -1356,7 +1360,7 @@ class Tools:
     # Save to config file
     # ----------------------------------------------------------------------
     def saveConfig(self):
-        Utils.setStr(Utils.__prg__, "tool", self.active.get())
+        gconfig.setstr(__prg__, "tool", self.active.get())
         for tool in self.tools.values():
             tool.save()
 
@@ -1743,15 +1747,22 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
         b = Label(f, image=Utils.icons["globe"], background=Ribbon._BACKGROUND)
         b.pack(side=LEFT)
 
-        self.language = Ribbon.LabelCombobox(
-            f, command=self.languageChange, width=16)
-        self.language.pack(side=RIGHT, fill=X, expand=YES)
-        tkExtra.Balloon.set(
-            self.language, _("Change program language restart is required")
-        )
-        self.addWidget(self.language)
+        # Create Language selector
+        # Create a Tkinter variable
+        self.language = StringVar(master)
 
-        self.fillLanguage()
+        # Dictionary with options
+        choices = list(sorted(__LANGUAGES__.values()))
+        self.language.set(gconfig.getlanguage())  # set the default option
+
+        lang = OptionMenu(f, self.language, *choices)
+        lang.config(width=16)
+        lang.pack(side=RIGHT, fill=X, expand=YES)
+        tkExtra.Balloon.set(
+            lang, _("Change program language restart is required")
+        )
+        self.addWidget(lang)
+        self.language.trace('w', self.languageChange)
 
         # ===
         row += 1
@@ -1819,26 +1830,21 @@ class ConfigGroup(CNCRibbon.ButtonMenuGroup):
         self.addWidget(b)
 
     # ----------------------------------------------------------------------
-    def fillLanguage(self):
-        self.language.set(Utils.LANGUAGES.get(Utils.language, ""))
-        self.language.fill(list(sorted(Utils.LANGUAGES.values())))
-
-    # ----------------------------------------------------------------------
-    def languageChange(self):
+    def languageChange(self, *args):
         lang = self.language.get()
         # find translation
-        for a, b in Utils.LANGUAGES.items():
-            if b == lang:
-                if Utils.language == a:
-                    return
-                Utils.language = a
-                Utils.setStr(Utils.__prg__, "language", Utils.language)
-                messagebox.showinfo(
-                    _("Language change"),
-                    _("Please restart the program."),
-                    parent=self.winfo_toplevel(),
-                )
+        lang = getDictKeyByValue(__LANGUAGES__, lang)
+        if lang:
+            # do nothing if language has not changed
+            if lang == gconfig.getlanguage():
                 return
+            gconfig.setlanguage(lang)
+            messagebox.showinfo(
+                _("Language change"),
+                _("Please restart the program."),
+                parent=self.winfo_toplevel(),
+            )
+            return
 
     # ----------------------------------------------------------------------
     def createMenu(self):

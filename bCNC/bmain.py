@@ -57,6 +57,21 @@ except ImportError:
     print("testing mode, could not import serial")
 
 import Utils
+from globalConstants import (
+    __prg__,
+    __version__,
+    __date__,
+    __author__,
+    __email__,
+    __www__,
+    __contribute__,
+    __translations__,
+    __credits__,
+    __prgpath__,
+    __hisFile__,
+    _maxRecent,
+)
+from globalConfig import config as gconfig
 
 import bFileDialog
 import CNCCanvas
@@ -81,14 +96,6 @@ from Sender import NOT_CONNECTED, STATECOLOR, STATECOLORDEF, Sender
 from TerminalPage import TerminalPage
 from ToolsPage import Tools, ToolsPage
 
-from Helpers import _
-
-Utils.loadConfiguration()
-
-__version__ = Utils.__version__
-__date__ = Utils.__date__
-__author__ = Utils.__author__
-__email__ = Utils.__email__
 
 if not (sys.version_info.major == 3 and sys.version_info.minor >= 8):
     print("ERROR: Python3.8 or newer is required to run bCNC!!")
@@ -153,9 +160,9 @@ class Application(Tk, Sender):
         tkinter.CallWrapper = Utils.CallWrapper
         tkExtra.bindClasses(self)
 
-        photo = PhotoImage(file=f"{Utils.prgpath}/bCNC.png")
+        photo = PhotoImage(file=f"{__prgpath__}/bCNC.png")
         self.iconphoto(True, photo)
-        self.title(f"{Utils.__prg__} {__version__} {__platform_fingerprint__}")
+        self.title(f"{__prg__} {__version__} {__platform_fingerprint__}")
         self.widgets = []
 
         # Global variables
@@ -257,14 +264,14 @@ class Application(Tk, Sender):
         # then add their properties (in separate loop)
         errors = []
         for name, page in self.pages.items():
-            for n in Utils.getStr(Utils.__prg__,
-                                  f"{page.name}.ribbon").split():
+            for n in gconfig.getstr(__prg__,
+                                    f"{page.name}.ribbon").split():
                 try:
                     page.addRibbonGroup(n)
                 except KeyError:
                     errors.append(n)
 
-            for n in Utils.getStr(Utils.__prg__, f"{page.name}.page").split():
+            for n in gconfig.getstr(__prg__, f"{page.name}.page").split():
                 last = n[-1]
                 if ((n == "abcDRO" or n == "abcControl")
                         and CNC.enable6axisopt is False):
@@ -303,7 +310,7 @@ class Application(Tk, Sender):
         self.autolevel = Page.frames["Probe:Autolevel"]
 
         # Left side
-        for name in Utils.getStr(Utils.__prg__, "ribbon").split():
+        for name in gconfig.getstr(__prg__, "ribbon").split():
             last = name[-1]
             if last == ">":
                 name = name[:-1]
@@ -315,7 +322,7 @@ class Application(Tk, Sender):
         # Restore last page
         # Select "Probe:Probe" tab to show the dialogs!
         self.pages["Probe"].tabChange()
-        self.ribbon.changePage(Utils.getStr(Utils.__prg__, "page", "File"))
+        self.ribbon.changePage(gconfig.getstr(__prg__, "page", "File"))
 
         probe = Page.frames["Probe:Probe"]
         tkExtra.bindEventData(
@@ -543,18 +550,18 @@ class Application(Tk, Sender):
         self.monitorSerial()
         self.canvasFrame.toggleDrawFlag()
 
-        self.paned.sash_place(0, Utils.getInt(Utils.__prg__, "sash", 340), 0)
+        self.paned.sash_place(0, gconfig.getint(__prg__, "sash", 340), 0)
 
         # Auto start pendant and serial
-        if Utils.getBool("Connection", "pendant"):
+        if gconfig.getbool("Connection", "pendant"):
             self.startPendant(False)
 
-        if _openserial and Utils.getBool("Connection", "openserial"):
+        if _openserial and gconfig.getbool("Connection", "openserial"):
             self.openClose()
 
         # Filedialog Load history
-        for i in range(Utils._maxRecent):
-            filename = Utils.getRecent(i)
+        for i in range(_maxRecent):
+            filename = gconfig.getrecent(i)
             if filename is None:
                 break
             bFileDialog.append2History(os.path.dirname(filename))
@@ -708,7 +715,7 @@ class Application(Tk, Sender):
 
     # -----------------------------------------------------------------------
     def loadShortcuts(self):
-        for name, value in Utils.config.items("Shortcut"):
+        for name, value in gconfig.items("Shortcut"):
             # Convert to uppercase
             key = name.title()
             self.unbind(f"<{key}>")  # unbind any possible old value
@@ -726,8 +733,8 @@ class Application(Tk, Sender):
 
         if geometry is None:
             geometry = "x".join([
-                f"{Utils.getInt(Utils.__prg__, 'width', 900)}",
-                f"{Utils.getInt(Utils.__prg__, 'height', 650)}"
+                f"{gconfig.getint(__prg__, 'width', 900)}",
+                f"{gconfig.getint(__prg__, 'height', 650)}"
             ])
         try:
             self.geometry(geometry)
@@ -736,24 +743,24 @@ class Application(Tk, Sender):
 
         # restore windowsState
         try:
-            self.wm_state(Utils.getStr(Utils.__prg__, "windowstate", "normal"))
+            self.wm_state(gconfig.getstr(__prg__, "windowstate", "normal"))
         except Exception:
             pass
 
-        self._swapKeyboard = Utils.getInt("Control", "swap", 0)
+        self._swapKeyboard = gconfig.getint("Control", "swap", 0)
 
-        self._onStart = Utils.getStr("Events", "onstart", "")
-        self._onStop = Utils.getStr("Events", "onstop", "")
+        self._onStart = gconfig.getstr("Events", "onstart", "")
+        self._onStop = gconfig.getstr("Events", "onstop", "")
 
-        tkExtra.Balloon.font = Utils.getFont("balloon", tkExtra.Balloon.font)
+        tkExtra.Balloon.font = gconfig.getfont("balloon", tkExtra.Balloon.font)
 
-        Ribbon._FONT = Utils.getFont("ribbon.label", Ribbon._FONT)
-        Ribbon._TABFONT = Utils.getFont("ribbon.tab", Ribbon._TABFONT)
+        Ribbon._FONT = gconfig.getfont("ribbon.label", Ribbon._FONT)
+        Ribbon._TABFONT = gconfig.getfont("ribbon.tab", Ribbon._TABFONT)
 
-        Ribbon._ACTIVE_COLOR = Utils.getStr(
+        Ribbon._ACTIVE_COLOR = gconfig.getstr(
             "Color", "ribbon.active", Ribbon._ACTIVE_COLOR
         )
-        Ribbon._LABEL_SELECT_COLOR = Utils.getStr(
+        Ribbon._LABEL_SELECT_COLOR = gconfig.getstr(
             "Color", "ribbon.select", Ribbon._LABEL_SELECT_COLOR
         )
 
@@ -764,13 +771,13 @@ class Application(Tk, Sender):
     # -----------------------------------------------------------------------
     def saveConfig(self):
         # Program
-        Utils.setInt(Utils.__prg__, "width", str(self.winfo_width()))
-        Utils.setInt(Utils.__prg__, "height", str(self.winfo_height()))
-        Utils.setInt(Utils.__prg__, "sash", str(self.paned.sash_coord(0)[0]))
+        gconfig.setstr(__prg__, "width", str(self.winfo_width()))
+        gconfig.setstr(__prg__, "height", str(self.winfo_height()))
+        gconfig.setstr(__prg__, "sash", str(self.paned.sash_coord(0)[0]))
 
         # save windowState
-        Utils.setStr(Utils.__prg__, "windowstate", str(self.wm_state()))
-        Utils.setStr(Utils.__prg__, "page", str(
+        gconfig.setstr(__prg__, "windowstate", str(self.wm_state()))
+        gconfig.setstr(__prg__, "page", str(
             self.ribbon.getActivePage().name))
 
         # Connection
@@ -782,7 +789,7 @@ class Application(Tk, Sender):
     # -----------------------------------------------------------------------
     def loadHistory(self):
         try:
-            f = open(Utils.hisFile)
+            f = open(__hisFile__)
         except Exception:
             return
         self.history = [x.strip() for x in f]
@@ -792,7 +799,7 @@ class Application(Tk, Sender):
     # -----------------------------------------------------------------------
     def saveHistory(self):
         try:
-            f = open(Utils.hisFile, "w")
+            f = open(__hisFile__, "w")
         except Exception:
             return
         f.write("\n".join(self.history))
@@ -843,7 +850,7 @@ class Application(Tk, Sender):
     def about(self, event=None, timer=None):
         toplevel = Toplevel(self)
         toplevel.transient(self)
-        toplevel.title(_("About {} v{}").format(Utils.__prg__, __version__))
+        toplevel.title(_("About {} v{}").format(__prg__, __version__))
 
         bg = "#707070"
         fg = "#ffffff"
@@ -900,7 +907,7 @@ class Application(Tk, Sender):
 
         la = Label(
             frame,
-            text=Utils.__www__,
+            text=__www__,
             foreground=fg,
             background=bg,
             justify=LEFT,
@@ -909,7 +916,7 @@ class Application(Tk, Sender):
             cursor="hand1",
         )
         la.grid(row=row, column=1, sticky=W, padx=2, pady=2)
-        la.bind("<Button-1>", lambda e: webbrowser.open(Utils.__www__))
+        la.bind("<Button-1>", lambda e: webbrowser.open(__www__))
 
         # -----
         row += 1
@@ -969,7 +976,7 @@ class Application(Tk, Sender):
 
         la = Label(
             frame,
-            text=Utils.__contribute__,
+            text=__contribute__,
             foreground=fg,
             background=bg,
             justify=LEFT,
@@ -991,7 +998,7 @@ class Application(Tk, Sender):
 
         la = Label(
             frame,
-            text=Utils.__translations__,
+            text=__translations__,
             foreground=fg,
             background=bg,
             justify=LEFT,
@@ -1013,7 +1020,7 @@ class Application(Tk, Sender):
 
         la = Label(
             frame,
-            text=Utils.__credits__,
+            text=__credits__,
             foreground=fg,
             background=bg,
             justify=LEFT,
@@ -1909,14 +1916,17 @@ class Application(Tk, Sender):
 
         # US*ER cmd: execute user command, cmd=number or name
         elif rexx.abbrev("USER", cmd, 2):
-            n = Utils.getInt("Buttons", "n", 6)
+            n = gconfig.getint("Buttons", "n", 6)
             try:
                 idx = int(line[1])
             except Exception:
                 try:
                     name = line[1].upper()
                     for i in range(n):
-                        if name == Utils.getStr("Buttons", f"name.{int(i)}", "").upper():
+                        if name == gconfig.getstr(
+                                "Buttons",
+                                f"name.{int(i)}",
+                                "").upper():
                             idx = i
                             break
                 except Exception:
@@ -1924,7 +1934,7 @@ class Application(Tk, Sender):
             if idx < 0 or idx >= n:
                 self.setStatus(_("Invalid user command {}").format(line[1]))
                 return "break"
-            cmd = Utils.getStr("Buttons", f"command.{int(idx)}", "")
+            cmd = gconfig.getstr("Buttons", f"command.{int(idx)}", "")
             for line in cmd.splitlines():
                 self.execute(line)
 
@@ -2280,7 +2290,7 @@ class Application(Tk, Sender):
         self.gcode.headerFooter()
         self.editor.fill()
         self.draw()
-        self.title(f"{Utils.__prg__} {__version__} {__platform_fingerprint__}")
+        self.title(f"{__prg__} {__version__} {__platform_fingerprint__}")
 
     # -----------------------------------------------------------------------
     # load dialog
@@ -2292,7 +2302,7 @@ class Application(Tk, Sender):
             master=self,
             title=_("Open file"),
             initialfile=os.path.join(
-                Utils.getUtf("File", "dir"), Utils.getUtf("File", "file")
+                gconfig.getstr("File", "dir"), gconfig.getstr("File", "file")
             ),
             filetypes=FILETYPES,
         )
@@ -2306,13 +2316,13 @@ class Application(Tk, Sender):
     def saveDialog(self, event=None):
         if self.running:
             return
-        fn, ext = os.path.splitext(Utils.getUtf("File", "file"))
+        fn, ext = os.path.splitext(gconfig.getstr("File", "file"))
         if ext in (".dxf", ".DXF"):
             ext = ".ngc"
         filename = bFileDialog.asksaveasfilename(
             master=self,
             title=_("Save file"),
-            initialfile=os.path.join(Utils.getUtf("File", "dir"), fn + ext),
+            initialfile=os.path.join(gconfig.getstr("File", "dir"), fn + ext),
             filetypes=FILETYPES,
         )
         if filename:
@@ -2397,7 +2407,7 @@ class Application(Tk, Sender):
         else:
             self.setStatus(_("'{}' loaded").format(filename))
         self.title(
-            f"{Utils.__prg__} {__version__}: {self.gcode.filename} "
+            f"{__prg__} {__version__}: {self.gcode.filename} "
             + f"{__platform_fingerprint__}"
         )
 
@@ -2406,7 +2416,7 @@ class Application(Tk, Sender):
         Sender.save(self, filename)
         self.setStatus(_("'{}' saved").format(filename))
         self.title(
-            f"{Utils.__prg__} {__version__}: {self.gcode.filename} "
+            f"{__prg__} {__version__}: {self.gcode.filename} "
             + f"{__platform_fingerprint__}"
         )
 
@@ -2429,7 +2439,8 @@ class Application(Tk, Sender):
                 master=self,
                 title=_("Import Gcode/DXF file"),
                 initialfile=os.path.join(
-                    Utils.getUtf("File", "dir"), Utils.getUtf("File", "file")
+                    gconfig.getstr("File", "dir"),
+                    gconfig.getstr("File", "file")
                 ),
                 filetypes=[
                     (_("G-Code"), ("*.ngc", "*.nc", "*.gcode")),
@@ -2843,11 +2854,11 @@ class Application(Tk, Sender):
 
     # -----------------------------------------------------------------------
     def get(self, section, item):
-        return Utils.config.get(section, item)
+        return gconfig.get(section, item)
 
     # -----------------------------------------------------------------------
     def set(self, section, item, value):
-        return Utils.config.set(section, item, value)
+        return gconfig.set(section, item, value)
 
 
 if __name__ == "__main__":

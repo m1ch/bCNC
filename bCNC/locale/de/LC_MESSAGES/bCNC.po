@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: bCNC Deutsch\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-19 19:55+0200\n"
-"PO-Revision-Date: 2022-07-19 20:15+0200\n"
+"PO-Revision-Date: 2022-07-31 16:55+0200\n"
 "Last-Translator: Daniel Luginbühl <webmaster@ltspiceusers.ch>\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -5378,7 +5378,7 @@ msgstr "Warnung"
 
 #: bCNC/plugins/function_plot.py:110
 msgid "Warning: "
-msgstr "Warnung:"
+msgstr "Warnung: "
 
 #: bCNC/ToolsPage.py:621
 msgid "Web Camera"
