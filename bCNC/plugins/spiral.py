@@ -377,7 +377,7 @@ class Spiral:
             return
 
         block.append(CNC.zenter(ZApproach))
-        block.append(CNC.gcode(1, [("f", CNC.vars["cutfeed"])]))
+        block.append(CNC.gcode_generate(1, [("f", CNC.vars["cutfeed"])]))
 
         for g, x, y, z, r in zip(gP, xP, yP, zP, rP):
             if RotAxis == "A":

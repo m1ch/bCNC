@@ -386,7 +386,7 @@ class Tool(Plugin):
         # Uncomment for first flat pass
         if helicalCut == "Helical Cut":
             block.append(
-                CNC.gcode(
+                CNC.gcode_generate(
                     turn, [("X", x - Radio),
                            ("Y", y),
                            ("Z", z),
@@ -401,7 +401,7 @@ class Tool(Plugin):
             while (z - pitch) < Depth:
                 z = z - pitch
                 block.append(
-                    CNC.gcode(
+                    CNC.gcode_generate(
                         turn, [("X",
                                 x - Radio),
                                ("Y", y),
@@ -415,7 +415,7 @@ class Tool(Plugin):
             while (z - pitch) >= Depth:
                 z = z - pitch
                 block.append(
-                    CNC.gcode(
+                    CNC.gcode_generate(
                         turn, [("X", x - Radio),
                                ("Y", y),
                                ("Z", z),
@@ -440,7 +440,7 @@ class Tool(Plugin):
 
         if helicalCut == "Helical Cut":
             block.append(
-                CNC.gcode(
+                CNC.gcode_generate(
                     turn, [("X", x - Radio),
                            ("Y", y),
                            ("Z", z),
@@ -450,7 +450,7 @@ class Tool(Plugin):
             )
             # Last flat pass
             block.append(
-                CNC.gcode(
+                CNC.gcode_generate(
                     turn, [("X", x - Radio),
                            ("Y", y),
                            ("Z", z),
@@ -463,7 +463,7 @@ class Tool(Plugin):
             or helicalCut == "External Right Thread"
         ):
             block.append(
-                CNC.gcode(
+                CNC.gcode_generate(
                     turn,
                     [
                         ("X", x - Radiox),
@@ -478,7 +478,7 @@ class Tool(Plugin):
         elif (helicalCut == "Internal Left Thread"
               or helicalCut == "External Left Thread"):
             block.append(
-                CNC.gcode(
+                CNC.gcode_generate(
                     turn,
                     [
                         ("X", x - Radiox),

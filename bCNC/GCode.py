@@ -43,7 +43,8 @@ class GCode:
 
     # ----------------------------------------------------------------------
     def __init__(self):
-        self.cnc = CNC()
+        # self.cnc = CNC()
+        self.cnc = CNC
         self.header = ""
         self.footer = ""
         self.undoredo = undo.UndoRedo()
@@ -2855,14 +2856,25 @@ class GCode:
     # Use probe information to modify the g-code to autolevel
     # ----------------------------------------------------------------------
     def compile(self, queue, stopFunc=None):
+        """
+
+        Args:
+            queue (funktion): Funtion to add element to queue
+            stopFunc (funktion, optional): ???. Defaults to None.
+
+        Returns:
+            str: Path
+        """
         paths = []
 
         def add(line, path):
-            if line is not None:
-                if isinstance(line, str):
-                    queue.put(line + "\n")
-                else:
-                    queue.put(line)
+            queue(line)
+            # FIXME
+            # if line is not None:
+            #     if isinstance(line, str):
+            #         queue.put(line + "\n")
+            #     else:
+            #         queue.put(line)
             paths.append(path)
 
         autolevel = not self.probe.isEmpty()

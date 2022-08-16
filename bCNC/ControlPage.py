@@ -69,11 +69,10 @@ OVERRIDES = ["Feed", "Rapid", "Spindle"]
 # override for init
 UNITS = {"G20": "inch", "G21": "mm"}
 
+
 # =============================================================================
 # Connection Group
 # =============================================================================
-
-
 class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
     def __init__(self, master, app):
         CNCRibbon.ButtonMenuGroup.__init__(
@@ -81,7 +80,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             master,
             N_("Connection"),
             app,
-            [(_("Hard Reset"), "reset", app.hardReset)],
+            [(_("Hard Reset"), "reset", app.sender.hardReset)],
         )
         self.grid2rows()
 
@@ -93,7 +92,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Home"),
             compound=TOP,
             anchor=W,
-            command=app.home,
+            command=app.sender.home,
             background=Ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=NSEW)
@@ -108,7 +107,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Unlock"),
             compound=LEFT,
             anchor=W,
-            command=app.unlock,
+            command=app.sender.unlock,
             background=Ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
@@ -136,7 +135,7 @@ class ConnectionGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Reset"),
             compound=LEFT,
             anchor=W,
-            command=app.softReset,
+            command=app.sender.softReset,
             background=Ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
@@ -498,7 +497,7 @@ class DROFrame(CNCRibbon.PageFrame):
 
     # ----------------------------------------------------------------------
     def updateState(self):
-        msg = self.app._msg or CNC.vars["state"]
+        msg = self.app.sender._msg or CNC.vars["state"]
         if CNC.vars["pins"] is not None and CNC.vars["pins"] != "":
             msg += " [" + CNC.vars["pins"] + "]"
         self.state.config(text=msg, background=CNC.vars["color"])
@@ -535,7 +534,7 @@ class DROFrame(CNCRibbon.PageFrame):
     # Do not give the focus while we are running
     # ----------------------------------------------------------------------
     def workFocus(self, event=None):
-        if self.app.running:
+        if self.app.sender.running:
             self.app.focus_set()
 
     # ----------------------------------------------------------------------
@@ -560,7 +559,7 @@ class DROFrame(CNCRibbon.PageFrame):
 
     # ----------------------------------------------------------------------
     def setX(self, event=None):
-        if self.app.running:
+        if self.app.sender.running:
             return
         try:
             value = round(eval(self.xwork.get(), None, CNC.vars), 3)
@@ -570,7 +569,7 @@ class DROFrame(CNCRibbon.PageFrame):
 
     # ----------------------------------------------------------------------
     def setY(self, event=None):
-        if self.app.running:
+        if self.app.sender.running:
             return
         try:
             value = round(eval(self.ywork.get(), None, CNC.vars), 3)
@@ -580,7 +579,7 @@ class DROFrame(CNCRibbon.PageFrame):
 
     # ----------------------------------------------------------------------
     def setZ(self, event=None):
-        if self.app.running:
+        if self.app.sender.running:
             return
         try:
             value = round(eval(self.zwork.get(), None, CNC.vars), 3)
@@ -837,7 +836,7 @@ class abcDROFrame(CNCRibbon.PageExLabelFrame):
     # ----------------------------------------------------------------------
 
     def workFocus(self, event=None):
-        if self.app.running:
+        if self.app.sender.running:
             self.app.focus_set()
 
     # ----------------------------------------------------------------------
@@ -863,7 +862,7 @@ class abcDROFrame(CNCRibbon.PageExLabelFrame):
 
     # ----------------------------------------------------------------------
     def setA(self, event=None):
-        if self.app.running:
+        if self.app.sender.running:
             return
         try:
             value = round(eval(self.awork.get(), None, CNC.vars), 3)
@@ -873,7 +872,7 @@ class abcDROFrame(CNCRibbon.PageExLabelFrame):
 
     # ----------------------------------------------------------------------
     def setB(self, event=None):
-        if self.app.running:
+        if self.app.sender.running:
             return
         try:
             value = round(eval(self.bwork.get(), None, CNC.vars), 3)
@@ -883,7 +882,7 @@ class abcDROFrame(CNCRibbon.PageExLabelFrame):
 
     # ----------------------------------------------------------------------
     def setC(self, event=None):
-        if self.app.running:
+        if self.app.sender.running:
             return
         try:
             value = round(eval(self.cwork.get(), None, CNC.vars), 3)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-from pydoc import Helper
+# from pydoc import Helper
 import sys
 import argparse
 
@@ -131,6 +131,7 @@ def select_recent_file():
 # -----------------------------------------------------------------------------
 def main() -> int:
     import bmain
+    import Sender
     import tkExtra
     import Utils
     import Updates
@@ -174,7 +175,9 @@ def main() -> int:
                 "\nERROR: There is no recent file available!\n")
             sys.exit(1)
 
-    application = bmain.Application(className=f"  {__prg__}  ")
+    sender = Sender.Sender()
+
+    application = bmain.Application(sender, className=f"  {__prg__}  ")
 
     palette = {"background": application.cget("background")}
 
@@ -229,6 +232,8 @@ def main() -> int:
         application.quit()
 
     application.close()
+    sender.close()
+    sender.quit()
     gconfig.save_configuration()
     Utils.delIcons()
 

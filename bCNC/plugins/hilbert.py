@@ -85,7 +85,7 @@ class Hilbert:
             if currDepth < self.depth:
                 currDepth = self.depth
             block.append(CNC.zenter(currDepth))
-            block.append(CNC.gcode(1, [("f", CNC.vars["cutfeed"])]))
+            block.append(CNC.gcode_generate(1, [("f", CNC.vars["cutfeed"])]))
             for x, y in zip(xi, yi):
                 block.append(CNC.gline(x, y))
             if currDepth <= self.depth:

@@ -186,7 +186,7 @@ class Box:
         # Bottom
         pos = Vector(x0, y0, self.surface)
         pos -= self.r * Vector.Y  # r*V
-        block.append(CNC.gcode(0, zip("XY", pos[:2])))
+        block.append(CNC.gcode_generate(0, zip("XY", pos[:2])))
         z = self.surface
         last = False
         while True:

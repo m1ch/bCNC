@@ -73,6 +73,7 @@ errors = []
 
 # -----------------------------------------------------------------------------
 def loadIcons():
+    # FIXME: Optimize
     global icons
     icons = {}
     for img in glob.glob(f"{__prgpath__}{os.sep}icons{os.sep}*.gif"):

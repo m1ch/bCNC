@@ -41,7 +41,7 @@ class Bowl:
         currDepth = 0.0
 
         def setCutFeedrate():
-            block.append(CNC.gcode(1, [("f", CNC.vars["cutfeed"])]))
+            block.append(CNC.gcode_generate(1, [("f", CNC.vars["cutfeed"])]))
 
         def addCircumference(radius):
             block.append(CNC.garc(2, radius, 0.0, i=-radius))

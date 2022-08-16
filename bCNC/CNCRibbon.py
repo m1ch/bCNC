@@ -34,7 +34,7 @@ class _LinkApp:
     # Send a command to Grbl
     # ----------------------------------------------------------------------
     def sendGCode(self, cmd):
-        self.app.sendGCode(cmd)
+        self.app.sender.sendGCode(cmd)
 
     # ----------------------------------------------------------------------
     # Accept the user key if not editing any text
@@ -146,7 +146,7 @@ class Page(Ribbon.Page):
     # Send a command to Grbl
     # ----------------------------------------------------------------------
     def sendGCode(self, cmd):
-        self.app.sendGCode(cmd)
+        self.app.sender.sendGCode(cmd)
 
     # ----------------------------------------------------------------------
     def addRibbonGroup(self, name, **args):

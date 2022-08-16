@@ -354,7 +354,7 @@ class Config(configparser.ConfigParser):
         return __LANGUAGES__.get(language, "")
 
     def getcontrollers(self, name=None):
-        if not name:
+        if name is None:
             controllers = {}
             for key, value in self.items("_controllers"):
                 controllers[key] = value

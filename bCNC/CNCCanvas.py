@@ -1,3 +1,8 @@
+"""Add a graphic canvas to the GUI
+
+Package: GUI
+"""
+
 # $Id: CNCCanvas.py,v 1.7 2014/10/15 15:04:06 bnv Exp $
 #
 # Author:       vvlachoudis@gmail.com
@@ -170,8 +175,8 @@ class CNCCanvas(Canvas):
         # Global variables
         self.view = 0
         self.app = app
-        self.cnc = app.cnc
-        self.gcode = app.gcode
+        self.cnc = app.sender.cnc
+        self.gcode = app.sender.gcode
         self.actionVar = IntVar()
 
         # Canvas binding
@@ -466,7 +471,7 @@ class CNCCanvas(Canvas):
     # ----------------------------------------------------------------------
     def actionGantry(self, x, y):
         u, v, w = self.image2Machine(x, y)
-        self.app.goto(u, v, w)
+        self.app.sender.goto(u, v, w)
         self.setAction(ACTION_SELECT)
 
     # ----------------------------------------------------------------------

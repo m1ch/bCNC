@@ -284,6 +284,8 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
         b.grid(row=row, column=col, sticky=E)
         self.addWidget(b)
 
+        # FIXME: renew the selection part of serial
+        # FIXME: disconnect if port, baud, or controller changes
         self.portCombo = tkExtra.Combobox(
             self,
             False,
@@ -328,7 +330,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
         self.ctrlCombo.grid(row=row, column=col + 1, sticky=EW)
         tkExtra.Balloon.set(self.ctrlCombo, _("Select controller board"))
         self.ctrlCombo.fill(gconfig.getcontrollerslist())
-        self.ctrlCombo.set(app.controller)
+        self.ctrlCombo.set(app.sender.controller)
         self.addWidget(self.ctrlCombo)
 
         # ---
@@ -373,7 +375,8 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
 
     # -----------------------------------------------------------------------
     def ctrlChange(self):
-        self.app.controllerSet(self.ctrlCombo.get())
+        self.app.sender.controllerSet(self.ctrlCombo.get())
+        self.app.mcontrol = self.app.sender.mcontrol  # FIXME: Should not be necessary
 
     # -----------------------------------------------------------------------
     def comportClean(self, event=None):
@@ -435,7 +438,7 @@ class SerialFrame(CNCRibbon.PageLabelFrame):
     # -----------------------------------------------------------------------
     def saveConfig(self):
         # Connection
-        gconfig.setstr("Connection", "controller", self.app.controller)
+        gconfig.setstr("Connection", "controller", self.app.sender.controller)
         gconfig.setstr(
             "Connection", "port", self.portCombo.get().split("\t")[0])
         gconfig.setstr("Connection", "baud", self.baudCombo.get())

@@ -123,7 +123,7 @@ TODO
             if not Y[i] is None:
                 Ynn.append(Y[i])
 
-        block.append(CNC.gcode(1, [("f", CNC.vars["cutfeed"])]))  # Set feedrate
+        block.append(CNC.gcode_generate(1, [("f", CNC.vars["cutfeed"])]))  # Set feedrate
 
         if draw:  # If the user selected to draw the coordinate system
             # X axis

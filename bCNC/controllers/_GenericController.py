@@ -278,6 +278,7 @@ class _GenericController:
             del sline[:]
             CNC.vars["version"] = line.split()[1]
             # Detect controller
+            # FIXME: This overwrites the setup
             if self.master.controller in ("GRBL0", "GRBL1"):
                 self.master.controllerSet(
                     "GRBL%d" % (int(CNC.vars["version"][0])))

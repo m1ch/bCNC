@@ -68,7 +68,6 @@ from globalConstants import (
     __translations__,
     __credits__,
     __prgpath__,
-    __hisFile__,
     _maxRecent,
 )
 from globalConfig import config as gconfig
@@ -92,7 +91,7 @@ from ControlPage import ControlPage
 from EditorPage import EditorPage
 from FilePage import FilePage
 from ProbePage import ProbePage
-from Sender import NOT_CONNECTED, STATECOLOR, STATECOLORDEF, Sender
+from Sender import NOT_CONNECTED, STATECOLOR, STATECOLORDEF
 from TerminalPage import TerminalPage
 from ToolsPage import Tools, ToolsPage
 
@@ -151,14 +150,15 @@ geometry = None
 # =============================================================================
 # Main Application window
 # =============================================================================
-class Application(Tk, Sender):
-    def __init__(self, **kw):
+class Application(Tk):
+    def __init__(self, sender, **kw):
         Tk.__init__(self, **kw)
-        Sender.__init__(self)
-
+        # Sender.__init__(self)
         Utils.loadIcons()
         tkinter.CallWrapper = Utils.CallWrapper
         tkExtra.bindClasses(self)
+
+        self.sender = sender
 
         photo = PhotoImage(file=f"{__prgpath__}/bCNC.png")
         self.iconphoto(True, photo)
@@ -166,9 +166,11 @@ class Application(Tk, Sender):
         self.widgets = []
 
         # Global variables
-        self.tools = Tools(self.gcode)
-        self.controller = None
+        self.gcode = sender.gcode
+        self.mcontrol = None
+        self.tools = Tools(sender.gcode)
         self.loadConfig()
+
         # --- Ribbon ---
         self.ribbon = Ribbon.TabRibbonFrame(self)
         self.ribbon.pack(side=TOP, fill=X)
@@ -352,26 +354,37 @@ class Application(Tk, Sender):
         self.bind("<<SaveAs>>", self.saveDialog)
         self.bind("<<Reload>>", self.reload)
 
-        self.bind("<<Recent0>>", self._loadRecent0)
-        self.bind("<<Recent1>>", self._loadRecent1)
-        self.bind("<<Recent2>>", self._loadRecent2)
-        self.bind("<<Recent3>>", self._loadRecent3)
-        self.bind("<<Recent4>>", self._loadRecent4)
-        self.bind("<<Recent5>>", self._loadRecent5)
-        self.bind("<<Recent6>>", self._loadRecent6)
-        self.bind("<<Recent7>>", self._loadRecent7)
-        self.bind("<<Recent8>>", self._loadRecent8)
-        self.bind("<<Recent9>>", self._loadRecent9)
+        # self.bind("<<Recent0>>", self.sender._loadRecent0)
+        self.bind("<<Recent0>>", lambda event, a=0:
+                  self.sender.loadRecent(a))
+        self.bind("<<Recent0>>", lambda event, a=1:
+                  self.sender.loadRecent(a))
+        self.bind("<<Recent0>>", lambda event, a=2:
+                  self.sender.loadRecent(a))
+        self.bind("<<Recent0>>", lambda event, a=3:
+                  self.sender.loadRecent(a))
+        self.bind("<<Recent0>>", lambda event, a=4:
+                  self.sender.loadRecent(a))
+        self.bind("<<Recent0>>", lambda event, a=5:
+                  self.sender.loadRecent(a))
+        self.bind("<<Recent0>>", lambda event, a=6:
+                  self.sender.loadRecent(a))
+        self.bind("<<Recent0>>", lambda event, a=7:
+                  self.sender.loadRecent(a))
+        self.bind("<<Recent0>>", lambda event, a=8:
+                  self.sender.loadRecent(a))
+        self.bind("<<Recent0>>", lambda event, a=9:
+                  self.sender.loadRecent(a))
 
         self.bind("<<TerminalClear>>", Page.frames["Terminal"].clear)
         self.bind("<<AlarmClear>>", self.alarmClear)
-        self.bind("<<Help>>", self.help)
+        self.bind("<<Help>>", self.sender.help)
         # Do not send the event otherwise it will skip the feedHold/resume
-        self.bind("<<FeedHold>>", lambda e, s=self: s.feedHold())
-        self.bind("<<Resume>>", lambda e, s=self: s.resume())
-        self.bind("<<Run>>", lambda e, s=self: s.run())
-        self.bind("<<Stop>>", self.stopRun)
-        self.bind("<<Pause>>", self.pause)
+        self.bind("<<FeedHold>>", lambda e: self.sender.feedHold())
+        self.bind("<<Resume>>", lambda e: self.sender.resume())
+        self.bind("<<Run>>", lambda e: self.sender.run())
+        self.bind("<<Stop>>", self.sender.stopRun)
+        self.bind("<<Pause>>", self.sender.pause)
 
         tkExtra.bindEventData(self, "<<Status>>", self.updateStatus)
         tkExtra.bindEventData(self, "<<Coords>>", self.updateCanvasCoords)
@@ -526,8 +539,8 @@ class Application(Tk, Sender):
         self.bind("<Key-2>", self.control.setStep2)
         self.bind("<Key-3>", self.control.setStep3)
 
-        self.bind("<Key-exclam>", self.feedHold)
-        self.bind("<Key-asciitilde>", self.resume)
+        self.bind("<Key-exclam>", self.sender.feedHold)
+        self.bind("<Key-asciitilde>", self.sender.resume)
 
         for x in self.widgets:
             if isinstance(x, Entry):
@@ -614,7 +627,7 @@ class Application(Tk, Sender):
     # Accept the user key if not editing any text
     # ----------------------------------------------------------------------
     def acceptKey(self, skipRun=False):
-        if not skipRun and self.running:
+        if not skipRun and self.sender.running:
             return False
         focus = self.focus_get()
         if (
@@ -628,7 +641,7 @@ class Application(Tk, Sender):
 
     # -----------------------------------------------------------------------
     def quit(self, event=None):
-        if self.running and self._quit < 1:
+        if self.sender.running and self._quit < 1:
             messagebox.showinfo(
                 _("Running"),
                 _("CNC is currently running, please stop it before."),
@@ -642,7 +655,6 @@ class Application(Tk, Sender):
             return
 
         self.canvas.cameraOff()
-        Sender.quit(self)
         self.saveConfig()
         self.destroy()
         if Utils.errors and Utils._errorReport:
@@ -749,8 +761,8 @@ class Application(Tk, Sender):
 
         self._swapKeyboard = gconfig.getint("Control", "swap", 0)
 
-        self._onStart = gconfig.getstr("Events", "onstart", "")
-        self._onStop = gconfig.getstr("Events", "onstop", "")
+        # self._onStart = gconfig.getstr("Events", "onstart", "")
+        # self.sender._onStop = gconfig.getstr("Events", "onstop", "")
 
         tkExtra.Balloon.font = gconfig.getfont("balloon", tkExtra.Balloon.font)
 
@@ -765,7 +777,6 @@ class Application(Tk, Sender):
         )
 
         self.tools.loadConfig()
-        Sender.loadConfig(self)
         self.loadShortcuts()
 
     # -----------------------------------------------------------------------
@@ -782,28 +793,28 @@ class Application(Tk, Sender):
 
         # Connection
         Page.saveConfig()
-        Sender.saveConfig(self)
+        self.sender.saveConfig()
         self.tools.saveConfig()
         self.canvasFrame.saveConfig()
 
     # -----------------------------------------------------------------------
-    def loadHistory(self):
-        try:
-            f = open(__hisFile__)
-        except Exception:
-            return
-        self.history = [x.strip() for x in f]
-        self._historySearch = None
-        f.close()
+    # def loadHistory(self):
+    #     try:
+    #         f = open(__hisFile__)
+    #     except Exception:
+    #         return
+    #     self.history = [x.strip() for x in f]
+    #     self._historySearch = None
+    #     f.close()
 
     # -----------------------------------------------------------------------
-    def saveHistory(self):
-        try:
-            f = open(__hisFile__, "w")
-        except Exception:
-            return
-        f.write("\n".join(self.history))
-        f.close()
+    # def saveHistory(self):
+    #     try:
+    #         f = open(__hisFile__, "w")
+    #     except Exception:
+    #         return
+    #     f.write("\n".join(self.history))
+    #     f.close()
 
     # -----------------------------------------------------------------------
     def cut(self, event=None):
@@ -828,7 +839,7 @@ class Application(Tk, Sender):
 
     # -----------------------------------------------------------------------
     def undo(self, event=None):
-        if not self.running and self.gcode.canUndo():
+        if not self.sender.running and self.gcode.canUndo():
             self.gcode.undo()
             self.editor.fill()
             self.drawAfter()
@@ -836,7 +847,7 @@ class Application(Tk, Sender):
 
     # -----------------------------------------------------------------------
     def redo(self, event=None):
-        if not self.running and self.gcode.canRedo():
+        if not self.sender.running and self.gcode.canRedo():
             self.gcode.redo()
             self.editor.fill()
             self.drawAfter()
@@ -1328,7 +1339,7 @@ class Application(Tk, Sender):
 
     # -----------------------------------------------------------------------
     def viewChange(self, event=None):
-        if self.running:
+        if self.sender.running:
             self._selectI = 0  # last selection pointer in items
         self.draw()
 
@@ -1435,13 +1446,13 @@ class Application(Tk, Sender):
             return
 
         if self._historyPos is not None:
-            if self.history[self._historyPos] != line:
-                self.history.append(line)
-        elif not self.history or self.history[-1] != line:
-            self.history.append(line)
+            if self.sender.history[self._historyPos] != line:
+                self.sender.history.append(line)
+        elif not self.sender.history or self.sender.history[-1] != line:
+            self.sender.history.append(line)
 
-        if len(self.history) > MAX_HISTORY:
-            self.history.pop(0)
+        if len(self.sender.history) > MAX_HISTORY:
+            self.sender.history.pop(0)
         self.command.delete(0, END)
         self.execute(line)
 
@@ -1450,7 +1461,7 @@ class Application(Tk, Sender):
     # -----------------------------------------------------------------------
     def execute(self, line):
         try:
-            line = self.evaluate(line)
+            line = self.sender.evaluate(line)
         except Exception:
             messagebox.showerror(
                 _("Evaluation error"), sys.exc_info()[1], parent=self
@@ -1460,7 +1471,7 @@ class Application(Tk, Sender):
         if line is None:
             return "break"
 
-        if self.executeGcode(line):
+        if self.sender.executeGcode(line):
             return "break"
 
         oline = line.strip()
@@ -1860,7 +1871,7 @@ class Application(Tk, Sender):
 
         # STOP: stop current run
         elif cmd == "STOP":
-            self.stopRun()
+            self.sender.stopRun()
 
         # TAB*S [ntabs] [dtabs] [dx] [dy] [z]: create tabs on selected blocks
         # default values are taken from the active tab
@@ -1912,7 +1923,7 @@ class Application(Tk, Sender):
 
         # UNL*OCK: unlock grbl
         elif rexx.abbrev("UNLOCK", cmd, 3):
-            self.unlock()
+            self.sender.unlock()
 
         # US*ER cmd: execute user command, cmd=number or name
         elif rexx.abbrev("USER", cmd, 2):
@@ -1974,7 +1985,7 @@ class Application(Tk, Sender):
             self.canvasFrame.viewYZ()
 
         else:
-            rc = self.executeCommand(oline)
+            rc = self.sender.executeCommand(oline)
             if rc:
                 messagebox.showerror(rc[0], rc[1], parent=self)
             return "break"
@@ -2220,8 +2231,8 @@ class Application(Tk, Sender):
     def commandHistoryUp(self, event=None):
         if self._historyPos is None:
             s = self.command.get()
-            if self.history:
-                self._historyPos = len(self.history) - 1
+            if self.sender.history:
+                self._historyPos = len(self.sender.history) - 1
             else:
                 self._historySearch = None
                 return
@@ -2232,13 +2243,13 @@ class Application(Tk, Sender):
 
         if self._historySearch:
             for i in range(self._historyPos, -1, -1):
-                h = self.history[i]
+                h = self.sender.history[i]
                 if h.upper().startswith(self._historySearch):
                     self._historyPos = i
                     break
 
         self.command.delete(0, END)
-        self.command.insert(0, self.history[self._historyPos])
+        self.command.insert(0, self.sender.history[self._historyPos])
 
     # -----------------------------------------------------------------------
     def commandHistoryDown(self, event=None):
@@ -2247,20 +2258,20 @@ class Application(Tk, Sender):
             return
         else:
             self._historyPos += 1
-            if self._historyPos >= len(self.history):
+            if self._historyPos >= len(self.sender.history):
                 self._historyPos = None
                 self._historySearch = None
 
         if self._historySearch:
-            for i in range(self._historyPos, len(self.history)):
-                h = self.history[i]
+            for i in range(self._historyPos, len(self.sender.history)):
+                h = self.sender.history[i]
                 if h.upper().startswith(self._historySearch):
                     self._historyPos = i
                     break
 
         self.command.delete(0, END)
         if self._historyPos is not None:
-            self.command.insert(0, self.history[self._historyPos])
+            self.command.insert(0, self.sender.history[self._historyPos])
 
     # -----------------------------------------------------------------------
     def select(self, items, double, clear, toggle=True):
@@ -2282,7 +2293,7 @@ class Application(Tk, Sender):
     # Create a new file
     # -----------------------------------------------------------------------
     def newFile(self, event=None):
-        if self.running:
+        if self.sender.running:
             return
         if self.fileModified():
             return
@@ -2296,7 +2307,7 @@ class Application(Tk, Sender):
     # load dialog
     # -----------------------------------------------------------------------
     def loadDialog(self, event=None):
-        if self.running:
+        if self.sender.running:
             return
         filename = bFileDialog.askopenfilename(
             master=self,
@@ -2314,7 +2325,7 @@ class Application(Tk, Sender):
     # save dialog
     # -----------------------------------------------------------------------
     def saveDialog(self, event=None):
-        if self.running:
+        if self.sender.running:
             return
         fn, ext = os.path.splitext(gconfig.getstr("File", "file"))
         if ext in (".dxf", ".DXF"):
@@ -2380,7 +2391,7 @@ class Application(Tk, Sender):
                     self.gcode.probe.init()
 
         self.setStatus(_("Loading: {} ...").format(filename), True)
-        Sender.load(self, filename)
+        self.sender.load(filename)
 
         if ext == ".probe":
             self.autolevel.setValues()
@@ -2413,7 +2424,7 @@ class Application(Tk, Sender):
 
     # -----------------------------------------------------------------------
     def save(self, filename):
-        Sender.save(self, filename)
+        self.sender.save(filename)
         self.setStatus(_("'{}' saved").format(filename))
         self.title(
             f"{__prg__} {__version__}: {self.gcode.filename} "
@@ -2423,7 +2434,7 @@ class Application(Tk, Sender):
     # -----------------------------------------------------------------------
     def saveAll(self, event=None):
         if self.gcode.filename:
-            Sender.saveAll(self)
+            self.sender.saveAll()
         else:
             self.saveDialog()
         return "break"
@@ -2499,7 +2510,7 @@ class Application(Tk, Sender):
     # -----------------------------------------------------------------------
     def openClose(self, event=None):
         serialPage = Page.frames["Serial"]
-        if self.serial is not None:
+        if self.sender.serial is not None:
             self.close()
             serialPage.connectBtn.config(
                 text=_("Open"), background="Salmon", activebackground="Salmon"
@@ -2519,9 +2530,9 @@ class Application(Tk, Sender):
     # -----------------------------------------------------------------------
     def open(self, device, baudrate):
         try:
-            return Sender.open(self, device, baudrate)
+            return self.sender.open(device, baudrate)
         except Exception:
-            self.serial = None
+            self.sender.serial = None
             self.thread = None
             messagebox.showerror(
                 _("Error opening serial"), sys.exc_info()[1], parent=self
@@ -2530,7 +2541,6 @@ class Application(Tk, Sender):
 
     # -----------------------------------------------------------------------
     def close(self):
-        Sender.close(self)
         try:
             self.dro.updateState()
         except TclError:
@@ -2555,14 +2565,14 @@ class Application(Tk, Sender):
         self.cleanAfter = True  # Clean when this operation stops
         print("Will clean after this operation")
 
-        if self.serial is None and not CNC.developer:
+        if self.sender.serial is None and not CNC.developer:
             messagebox.showerror(
                 _("Serial Error"), _("Serial is not connected"), parent=self
             )
             return
-        if self.running:
+        if self.sender.running:
             if self._pause:
-                self.resume()
+                self.sender.resume()
                 return
             messagebox.showerror(
                 _("Already running"), _("Please stop before"), parent=self
@@ -2584,22 +2594,23 @@ class Application(Tk, Sender):
         self._paths = None  # temporary
         CNC.vars["running"] = True  # enable running status
         CNC.vars["_OvChanged"] = True  # force a feed change if any
-        if self._onStart:
+        _onStart = gconfig.getstr("Events", "onstart", "")
+        if _onStart:
             try:
-                os.system(self._onStart)
+                os.system(_onStart)
             except Exception:
                 pass
 
         if lines is None:
             self.statusbar.setLimits(0, 9999)
             self.statusbar.setProgress(0, 0)
-            self._paths = self.gcode.compile(self.queue, self.checkStop)
+            self._paths = self.gcode.compile(self.sender.queue, self.checkStop)
             if self._paths is None:
-                self.emptyQueue()
-                self.purgeController()
+                self.sender.emptyQueue()
+                self.sender.purgeController()
                 return
             elif not self._paths:
-                self.runEnded()
+                self.sender.runEnded()
                 messagebox.showerror(
                     _("Empty gcode"),
                     _("Not gcode file was loaded"),
@@ -2630,14 +2641,16 @@ class Application(Tk, Sender):
             n = 1  # including one wait command
             for line in CNC.compile(lines):
                 if line is not None:
-                    if isinstance(line, str):
-                        self.queue.put(line + "\n")
-                    else:
-                        self.queue.put(line)
+                    self.sender.queue_command(line)
+                    # if isinstance(line, str):
+                    #     self.sender.queue.put(line + "\n")
+                    # else:
+                    #     self.sender.queue.put(line)
                     n += 1
             # set it at the end to be sure that all lines are queued
             self._runLines = n
-        self.queue.put((WAIT,))  # wait at the end to become idle
+        # self.sender.queue.put((WAIT,))  # wait at the end to become idle
+        self.sender.queue_command((WAIT,))  # wait at the end to become idle
 
         self.setStatus(_("Running..."))
         self.statusbar.setLimits(0, self._runLines)
@@ -2689,20 +2702,20 @@ class Application(Tk, Sender):
 
         # dump in the terminal what ever you can in less than 0.1s
         inserted = False
-        while self.log.qsize() > 0 and time.time() - t < 0.1:
+        while self.sender.log.qsize() > 0 and time.time() - t < 0.1:
             try:
-                msg, line = self.log.get_nowait()
+                msg, line = self.sender.log.get_nowait()
                 line = str(line).rstrip("\n")
                 inserted = True
 
-                if msg == Sender.MSG_BUFFER:
+                if msg == self.sender.MSG_BUFFER:
                     self.buffer.insert(END, line)
 
-                elif msg == Sender.MSG_SEND:
+                elif msg == self.sender.MSG_SEND:
                     self.terminal.insert(END, line)
                     self.terminal.itemconfig(END, foreground="Blue")
 
-                elif msg == Sender.MSG_RECEIVE:
+                elif msg == self.sender.MSG_RECEIVE:
                     self.terminal.insert(END, line)
                     if self._insertCount:
                         # when counting is started, then continue
@@ -2712,7 +2725,7 @@ class Application(Tk, Sender):
                         # starting with $ or [
                         self._insertCount = 1
 
-                elif msg == Sender.MSG_OK:
+                elif msg == self.sender.MSG_OK:
                     if self.terminal.size() > 0:
                         if self._insertCount:
                             pos = self.terminal.size() - self._insertCount
@@ -2724,7 +2737,7 @@ class Application(Tk, Sender):
                         self.buffer.delete(0)
                     self.terminal.insert(END, line)
 
-                elif msg == Sender.MSG_ERROR:
+                elif msg == self.sender.MSG_ERROR:
                     if self.terminal.size() > 0:
                         if self._insertCount:
                             pos = self.terminal.size() - self._insertCount
@@ -2737,13 +2750,13 @@ class Application(Tk, Sender):
                     self.terminal.insert(END, line)
                     self.terminal.itemconfig(END, foreground="Red")
 
-                elif msg == Sender.MSG_RUNEND:
+                elif msg == self.sender.MSG_RUNEND:
                     self.terminal.insert(END, line)
                     self.terminal.itemconfig(END, foreground="Magenta")
                     self.setStatus(line)
                     self.enable()
 
-                elif msg == Sender.MSG_CLEAR:
+                elif msg == self.sender.MSG_CLEAR:
                     self.buffer.delete(0, END)
 
                 else:
@@ -2761,7 +2774,7 @@ class Application(Tk, Sender):
 
         # Check pendant
         try:
-            cmd = self.pendant.get_nowait()
+            cmd = self.sender.pendant.get_nowait()
             self.execute(cmd)
         except Empty:
             pass
@@ -2772,7 +2785,7 @@ class Application(Tk, Sender):
             self._pendantFileUploaded = None
 
         # Update position if needed
-        if self._posUpdate:
+        if self.sender._posUpdate:
             state = CNC.vars["state"]
             try:
                 CNC.vars["color"] = STATECOLOR[state]
@@ -2794,35 +2807,35 @@ class Application(Tk, Sender):
             )
             if state == "Run":
                 self.gstate.updateFeed()
-            self._posUpdate = False
+            self.sender._posUpdate = False
 
         # Update status string
-        if self._gUpdate:
+        if self.sender._gUpdate:
             self.gstate.updateG()
-            self._gUpdate = False
+            self.sender._gUpdate = False
 
         # Update probe and draw point
-        if self._probeUpdate:
+        if self.sender._probeUpdate:
             Page.frames["Probe:Probe"].updateProbe()
             Page.frames["ProbeCommon"].updateTlo()
             self.canvas.drawProbe()
-            self._probeUpdate = False
+            self.sender._probeUpdate = False
 
         # Update any possible variable?
-        if self._update:
-            if self._update == "toolheight":
+        if self.sender._update:
+            if self.sender._update == "toolheight":
                 Page.frames["Probe:Tool"].updateTool()
-            elif self._update == "TLO":
+            elif self.sender._update == "TLO":
                 Page.frames["ProbeCommon"].updateTlo()
-            self._update = None
+            self.sender._update = None
 
-        if self.running:
+        if self.sender.running:
             self.statusbar.setProgress(
-                self._runLines - self.queue.qsize(), self._gcount
+                self._runLines - self.sender.get_queue_size(), self._gcount
             )
             CNC.vars["msg"] = self.statusbar.msg
-            self.bufferbar.setProgress(Sender.getBufferFill(self))
-            self.bufferbar.setText(f"{Sender.getBufferFill(self)}%")
+            self.bufferbar.setProgress(self.sender.getBufferFill())
+            self.bufferbar.setText(f"{self.sender.getBufferFill()}%")
 
             if self._selectI >= 0 and self._paths:
                 while self._selectI <= self._gcount and self._selectI < len(
@@ -2838,7 +2851,7 @@ class Application(Tk, Sender):
                     self._selectI += 1
 
             if self._gcount >= self._runLines:
-                self.runEnded()
+                self.sender.runEnded()
 
     # -----------------------------------------------------------------------
     # "thread" timed function looking for messages in the serial thread

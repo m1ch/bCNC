@@ -10,7 +10,7 @@ import re
 import sys
 import threading
 import time
-import traceback
+# import traceback
 import webbrowser
 from datetime import datetime
 from tkinter import messagebox
@@ -90,8 +90,11 @@ class Sender:
         self._historyPos = None
 
         self.controllers = {}
-        self.controllerLoad()
-        self.controllerSet("GRBL1")
+        # self.controllerLoad()
+        # self.controllerSet("GRBL1")
+
+        self.controller = None
+        self.loadConfig()
 
         CNC.loadConfig(gconfig)
         self.gcode = GCode()
@@ -99,6 +102,7 @@ class Sender:
 
         self.log = Queue()  # Log queue returned from GRBL
         self.queue = Queue()  # Command queue to be send to GRBL
+        # FIXME: pendant get's never read
         self.pendant = Queue()  # Command queue to be executed from Pendant
         self.serial = None
         self.thread = None
@@ -125,15 +129,15 @@ class Sender:
         self._onStop = ""
 
     # ----------------------------------------------------------------------
-    def controllerLoad(self):
-        # FIXME: update as described in
-        #        https://stackoverflow.com/questions/547829/how-to-dynamically-load-a-python-class
-        # FIXME: Only load required Controller
-        # Find plugins in the controllers directory and load them
-        for f in glob.glob(f"{__prgpath__}/controllers/*.py"):
-            name, _ = os.path.splitext(os.path.basename(f))
-            if name[0] == "_":
-                continue
+    # def controllerLoad(self):
+    #     # FIXME: update as described in
+    #     #        https://stackoverflow.com/questions/547829/how-to-dynamically-load-a-python-class
+    #     # FIXME: Only load required Controller
+    #     # Find plugins in the controllers directory and load them
+    #     for f in glob.glob(f"{__prgpath__}/controllers/*.py"):
+    #         name, _ = os.path.splitext(os.path.basename(f))
+    #         if name[0] == "_":
+    #             continue
 
     # ----------------------------------------------------------------------
     def controllerList(self):
@@ -147,7 +151,8 @@ class Sender:
             return  # controller does not exist
         from pydoc import locate
         my_class = locate(f"controllers.{ctl}.Controller")
-        self.controllers[ctl] = my_class(self)
+        if my_class is not None:
+            self.controllers[ctl] = my_class(self)
         self.controller = ctl
         CNC.vars["controller"] = ctl
         self.mcontrol = self.controllers[ctl]
@@ -159,12 +164,15 @@ class Sender:
 
     # ----------------------------------------------------------------------
     def loadConfig(self):
-        self.controllerSet(gconfig.getstr("Connection", "controller"))
+        # self.controllerSet(gconfig.getstr("Connection", "controller"))
         Pendant.port = gconfig.getint("Connection",
                                       "pendantport",
                                       Pendant.port)
         GCode.LOOP_MERGE = gconfig.getbool("File", "dxfloopmerge")
         self.loadHistory()
+        ctl = gconfig.getstr("Connection", "controller")
+        if gconfig.getcontrollers(ctl):
+            self.controller = ctl
 
     # ----------------------------------------------------------------------
     def saveConfig(self):
@@ -523,7 +531,10 @@ class Sender:
         self._gcount = 0
         self._alarm = True
         self.thread = threading.Thread(target=self.serialIO)
+        # self.thread_receive = threading.Timer(SERIAL_POLL,
+        #                                       self.serial_receiver)
         self.thread.start()
+        # self.thread_receive.start()
         return True
 
     # ----------------------------------------------------------------------
@@ -546,6 +557,19 @@ class Sender:
         self.serial = None
         CNC.vars["state"] = NOT_CONNECTED
         CNC.vars["color"] = STATECOLOR[CNC.vars["state"]]
+
+    def queue_command(self, cmd):
+        """Add a line to the command queue"""
+        if cmd is None:
+            self.queue.put("\n")
+        elif isinstance(cmd, str):
+            self.queue.put(f"{cmd.strip()}\n")
+        else:
+            self.queue.put(cmd)
+
+    def get_queue_size(self):
+        """Return the current size of the command queue"""
+        return self.queue.qsize()
 
     # ----------------------------------------------------------------------
     # Send to controller a gcode or command
@@ -669,9 +693,10 @@ class Sender:
             self.log.put((Sender.MSG_RUNEND, _("Run ended")))
             self.log.put((Sender.MSG_RUNEND, str(datetime.now())))
             self.log.put((Sender.MSG_RUNEND, str(CNC.vars["msg"])))
-            if self._onStop:
+            _onStop = gconfig.getstr("Events", "onstop", "")
+            if _onStop:
                 try:
-                    os.system(self._onStop)
+                    os.system(_onStop)
                 except Exception:
                     pass
         self._runLines = 0
@@ -828,7 +853,7 @@ class Sender:
                     cline.append(len(tosend))
 
             # Anything to receive?
-            if self.serial.inWaiting() or tosend is None:
+            if self.serial.inWaiting():  # or tosend is None:
                 try:
                     line = str(self.serial.readline().decode()).strip()
                 except Exception:
@@ -872,3 +897,35 @@ class Sender:
                     sline.append(tosend)
                     cline.append(len(tosend))
                     tg = t
+        # FIXME: Switch to Timer for scheduled tasks!
+        #        Seperate threads for send and resaive!
+        # threading.Timer(SERIAL_POLL, self.serialIO)
+
+    # def serial_receiver(self):
+    #     """Read all received data from serial and schedule next reading"""
+
+    #     cline = []  # length of pipeline commands
+    #     sline = []  # pipeline commands
+    #     # TODO: Test this function
+    #     iw = self.serial.inWaiting()
+    #     while self.serial.inWaiting():  # or tosend is None:
+    #         l = self.serial.readline()
+    #         try:
+    #             line = str(l.decode()).strip()
+    #             # line = str(self.serial.readline().decode()).strip()
+    #         except Exception as e:
+    #             self.log.put((Sender.MSG_RECEIVE, str(sys.exc_info()[1])))
+    #             self.emptyQueue()
+    #             self.close()
+    #             return
+
+    #         if not line:
+    #             pass
+    #         elif self.mcontrol.parseLine(line, cline, sline):
+    #             pass
+    #         else:
+    #             self.log.put((Sender.MSG_RECEIVE, line))
+
+    #     self.thread_receive = threading.Timer(SERIAL_POLL,
+    #                                           self.serial_receiver)
+    #     self.thread_receive.start()

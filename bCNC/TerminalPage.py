@@ -62,15 +62,17 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             app,
             [
                 (_("Restore Settings"),
-                 "grbl_settings", app.grblRestoreSettings),
-                (_("Restore Workspace"), "grbl_params", app.grblRestoreWCS),
-                (_("Restore All"), "reset", app.grblRestoreAll),
+                 "grbl_settings", app.sender.grblRestoreSettings),
+                (_("Restore Workspace"),
+                 "grbl_params", app.sender.grblRestoreWCS),
+                (_("Restore All"), "reset", app.sender.grblRestoreAll),
             ],
         )
         self.grid3rows()
 
         # Disable state for some SMOOTHIE commands
-        state = (app.controller in ("GRBL0", "GRBL1") and NORMAL or DISABLED,)
+        state = (app.sender.controller in
+                 ("GRBL0", "GRBL1") and NORMAL or DISABLED,)
 
         # ---
         col, row = 0, 0
@@ -81,7 +83,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             compound=LEFT,
             anchor=W,
             state=state,
-            command=self.app.viewSettings,
+            command=self.app.sender.viewSettings,
             background=Ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
@@ -96,7 +98,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Parameters"),
             compound=LEFT,
             anchor=W,
-            command=self.app.viewParameters,
+            command=self.app.sender.viewParameters,
             background=Ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
@@ -110,7 +112,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             text=_("State"),
             compound=LEFT,
             anchor=W,
-            command=self.app.viewState,
+            command=self.app.sender.viewState,
             background=Ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
@@ -126,7 +128,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Build"),
             compound=LEFT,
             anchor=W,
-            command=self.app.viewBuild,
+            command=self.app.sender.viewBuild,
             background=Ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
@@ -141,7 +143,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             compound=LEFT,
             anchor=W,
             state=state,
-            command=self.app.viewStartup,
+            command=self.app.sender.viewStartup,
             background=Ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
@@ -158,7 +160,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             compound=LEFT,
             anchor=W,
             state=state,
-            command=self.app.checkGcode,
+            command=self.app.sender.checkGcode,
             background=Ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
@@ -175,7 +177,7 @@ class CommandsGroup(CNCRibbon.ButtonMenuGroup):
             text=_("Help"),
             compound=LEFT,
             anchor=W,
-            command=self.app.grblHelp,
+            command=self.app.sender.grblHelp,
             background=Ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)

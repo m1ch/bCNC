@@ -632,6 +632,11 @@ class Camera(_Base):
 # =============================================================================
 class Config(_Base):
     def __init__(self, master):
+        """ToolsPage.Config init
+
+        Args:
+          master: A ToolsPage.Tools - object
+        """
         _Base.__init__(self, master)
         self.name = "CNC"
         self.variables = [
@@ -1246,10 +1251,8 @@ class Controller(_Base):
         _Base.populate(self)
 
 
-# =============================================================================
-# Tools container class
-# =============================================================================
 class Tools:
+    """Tools container class"""
     def __init__(self, gcode):
         from pydoc import locate
 

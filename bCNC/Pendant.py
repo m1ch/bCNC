@@ -70,9 +70,9 @@ class Pendant(httpserver.BaseHTTPRequestHandler):
             for key, value in arg.items():
                 if key == "gcode":
                     for line in value.split("\n"):
-                        httpd.app.queue.put(line + "\n")
+                        httpd.app.sender.queue.put(line + "\n")
                 elif key == "cmd":
-                    httpd.app.pendant.put(urlparse.unquote(value))
+                    httpd.app.sender.pendant.put(urlparse.unquote(value))
             # send empty response so browser does not generate errors
             self.do_HEAD(200, "text/text", cl=len(""))
             self.wfile.write(b"")

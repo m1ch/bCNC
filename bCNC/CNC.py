@@ -652,7 +652,7 @@ class Orient:
 # =============================================================================
 # Command operations on a CNC
 # =============================================================================
-class CNC:
+class _CNC:
     inch = False
     lasercutter = False
     laseradaptive = False
@@ -767,166 +767,164 @@ class CNC:
     # ----------------------------------------------------------------------
     # Update G variables from "G" string
     # ----------------------------------------------------------------------
-    @staticmethod
-    def updateG():
-        for g in CNC.vars["G"]:
+    def updateG(self):
+        for g in self.vars["G"]:
             if g[0] == "F":
-                CNC.vars["feed"] = float(g[1:])
+                self.vars["feed"] = float(g[1:])
             elif g[0] == "S":
-                CNC.vars["rpm"] = float(g[1:])
+                self.vars["rpm"] = float(g[1:])
             elif g[0] == "T":
-                CNC.vars["tool"] = int(g[1:])
+                self.vars["tool"] = int(g[1:])
             else:
                 var = MODAL_MODES.get(g)
                 if var is not None:
-                    CNC.vars[var] = g
+                    self.vars[var] = g
 
     # ----------------------------------------------------------------------
     def __getitem__(self, name):
-        return CNC.vars[name]
+        return self.vars[name]
 
     # ----------------------------------------------------------------------
     def __setitem__(self, name, value):
-        CNC.vars[name] = value
+        self.vars[name] = value
 
     # ----------------------------------------------------------------------
-    @staticmethod
-    def loadConfig(config):
+    def loadConfig(self, config):
         section = "CNC"
         try:
-            CNC.inch = bool(int(config.get(section, "units")))
+            self.inch = bool(int(config.get(section, "units")))
         except Exception:
             pass
         try:
-            CNC.lasercutter = bool(int(config.get(section, "lasercutter")))
+            self.lasercutter = bool(int(config.get(section, "lasercutter")))
         except Exception:
             pass
         try:
-            CNC.laseradaptive = bool(int(config.get(section, "laseradaptive")))
+            self.laseradaptive = bool(int(config.get(section, "laseradaptive")))
         except Exception:
             pass
         try:
-            CNC.enable6axisopt = bool(int(
+            self.enable6axisopt = bool(int(
                 config.get(section, "enable6axisopt")))
         except Exception:
             pass
         try:
-            CNC.doublesizeicon = bool(int(
+            self.doublesizeicon = bool(int(
                 config.get(section, "doublesizeicon")))
         except Exception:
             pass
         try:
-            CNC.acceleration_x = float(config.get(section, "acceleration_x"))
+            self.acceleration_x = float(config.get(section, "acceleration_x"))
         except Exception:
             pass
         try:
-            CNC.acceleration_y = float(config.get(section, "acceleration_y"))
+            self.acceleration_y = float(config.get(section, "acceleration_y"))
         except Exception:
             pass
         try:
-            CNC.acceleration_z = float(config.get(section, "acceleration_z"))
+            self.acceleration_z = float(config.get(section, "acceleration_z"))
         except Exception:
             pass
         try:
-            CNC.feedmax_x = float(config.get(section, "feedmax_x"))
+            self.feedmax_x = float(config.get(section, "feedmax_x"))
         except Exception:
             pass
         try:
-            CNC.feedmax_y = float(config.get(section, "feedmax_y"))
+            self.feedmax_y = float(config.get(section, "feedmax_y"))
         except Exception:
             pass
         try:
-            CNC.feedmax_z = float(config.get(section, "feedmax_z"))
+            self.feedmax_z = float(config.get(section, "feedmax_z"))
         except Exception:
             pass
         try:
-            CNC.travel_x = float(config.get(section, "travel_x"))
+            self.travel_x = float(config.get(section, "travel_x"))
         except Exception:
             pass
         try:
-            CNC.travel_y = float(config.get(section, "travel_y"))
+            self.travel_y = float(config.get(section, "travel_y"))
         except Exception:
             pass
         try:
-            CNC.travel_z = float(config.get(section, "travel_z"))
+            self.travel_z = float(config.get(section, "travel_z"))
         except Exception:
             pass
         try:
-            CNC.acceleration_a = float(config.get(section, "acceleration_a"))
+            self.acceleration_a = float(config.get(section, "acceleration_a"))
         except Exception:
             pass
         try:
-            CNC.acceleration_b = float(config.get(section, "acceleration_b"))
+            self.acceleration_b = float(config.get(section, "acceleration_b"))
         except Exception:
             pass
         try:
-            CNC.acceleration_c = float(config.get(section, "acceleration_c"))
+            self.acceleration_c = float(config.get(section, "acceleration_c"))
         except Exception:
             pass
         try:
-            CNC.feedmax_a = float(config.get(section, "feedmax_a"))
+            self.feedmax_a = float(config.get(section, "feedmax_a"))
         except Exception:
             pass
         try:
-            CNC.feedmax_b = float(config.get(section, "feedmax_b"))
+            self.feedmax_b = float(config.get(section, "feedmax_b"))
         except Exception:
             pass
         try:
-            CNC.feedmax_c = float(config.get(section, "feedmax_c"))
+            self.feedmax_c = float(config.get(section, "feedmax_c"))
         except Exception:
             pass
         try:
-            CNC.travel_a = float(config.get(section, "travel_a"))
+            self.travel_a = float(config.get(section, "travel_a"))
         except Exception:
             pass
         try:
-            CNC.travel_b = float(config.get(section, "travel_b"))
+            self.travel_b = float(config.get(section, "travel_b"))
         except Exception:
             pass
         try:
-            CNC.travel_c = float(config.get(section, "travel_c"))
+            self.travel_c = float(config.get(section, "travel_c"))
         except Exception:
             pass
         try:
-            CNC.accuracy = float(config.get(section, "accuracy"))
+            self.accuracy = float(config.get(section, "accuracy"))
         except Exception:
             pass
         try:
-            CNC.digits = int(config.get(section, "round"))
+            self.digits = int(config.get(section, "round"))
         except Exception:
             pass
         try:
-            CNC.drozeropad = int(config.get(section, "drozeropad"))
+            self.drozeropad = int(config.get(section, "drozeropad"))
         except Exception:
             pass
 
         try:
-            CNC.startup = config.get(section, "startup")
+            self.startup = config.get(section, "startup")
         except Exception:
             pass
         try:
-            CNC.header = config.get(section, "header")
+            self.header = config.get(section, "header")
         except Exception:
             pass
         try:
-            CNC.footer = config.get(section, "footer")
+            self.footer = config.get(section, "footer")
         except Exception:
             pass
 
-        if CNC.inch:
-            CNC.acceleration_x /= 25.4
-            CNC.acceleration_y /= 25.4
-            CNC.acceleration_z /= 25.4
-            CNC.feedmax_x /= 25.4
-            CNC.feedmax_y /= 25.4
-            CNC.feedmax_z /= 25.4
-            CNC.travel_x /= 25.4
-            CNC.travel_y /= 25.4
-            CNC.travel_z /= 25.4
+        if self.inch:
+            self.acceleration_x /= 25.4
+            self.acceleration_y /= 25.4
+            self.acceleration_z /= 25.4
+            self.feedmax_x /= 25.4
+            self.feedmax_y /= 25.4
+            self.feedmax_z /= 25.4
+            self.travel_x /= 25.4
+            self.travel_y /= 25.4
+            self.travel_z /= 25.4
             # a,b,c are in degrees no conversion required
 
         section = "Error"
-        if CNC.drillPolicy == 1:
+        if self.drillPolicy == 1:
             ERROR_HANDLING["G98"] = 1
             ERROR_HANDLING["G99"] = 1
 
@@ -944,27 +942,27 @@ class CNC:
     # ----------------------------------------------------------------------
     def initPath(self, x=None, y=None, z=None, a=None, b=None, c=None):
         if x is None:
-            self.x = self.xval = CNC.vars["wx"] or 0
+            self.x = self.xval = self.vars["wx"] or 0
         else:
             self.x = self.xval = x
         if y is None:
-            self.y = self.yval = CNC.vars["wy"] or 0
+            self.y = self.yval = self.vars["wy"] or 0
         else:
             self.y = self.yval = y
         if z is None:
-            self.z = self.zval = CNC.vars["wz"] or 0
+            self.z = self.zval = self.vars["wz"] or 0
         else:
             self.z = self.zval = z
         if a is None:
-            self.a = self.aval = CNC.vars["wa"] or 0
+            self.a = self.aval = self.vars["wa"] or 0
         else:
             self.a = self.aval = a
         if b is None:
-            self.b = self.bval = CNC.vars["wb"] or 0
+            self.b = self.bval = self.vars["wb"] or 0
         else:
             self.b = self.bval = b
         if c is None:
-            self.c = self.cval = CNC.vars["wc"] or 0
+            self.c = self.cval = self.vars["wc"] or 0
         else:
             self.c = self.cval = c
 
@@ -993,41 +991,38 @@ class CNC:
     # ----------------------------------------------------------------------
     def resetEnableMargins(self):
         # Selected blocks margin
-        CNC.vars["xmin"] = CNC.vars["ymin"] = CNC.vars["zmin"] = 1000000.0
-        CNC.vars["xmax"] = CNC.vars["ymax"] = CNC.vars["zmax"] = -1000000.0
+        self.vars["xmin"] = self.vars["ymin"] = self.vars["zmin"] = 1000000.0
+        self.vars["xmax"] = self.vars["ymax"] = self.vars["zmax"] = -1000000.0
 
     # ----------------------------------------------------------------------
     def resetAllMargins(self):
         self.resetEnableMargins()
         # All blocks margin
-        CNC.vars["axmin"] = CNC.vars["aymin"] = CNC.vars["azmin"] = 1000000.0
-        CNC.vars["axmax"] = CNC.vars["aymax"] = CNC.vars["azmax"] = -1000000.0
+        self.vars["axmin"] = self.vars["aymin"] = self.vars["azmin"] = 1000000.0
+        self.vars["axmax"] = self.vars["aymax"] = self.vars["azmax"] = -1000000.0
 
     # ----------------------------------------------------------------------
-    @staticmethod
-    def isMarginValid():
+    def isMarginValid(self):
         return (
-            CNC.vars["xmin"] <= CNC.vars["xmax"]
-            and CNC.vars["ymin"] <= CNC.vars["ymax"]
-            and CNC.vars["zmin"] <= CNC.vars["zmax"]
+            self.vars["xmin"] <= self.vars["xmax"]
+            and self.vars["ymin"] <= self.vars["ymax"]
+            and self.vars["zmin"] <= self.vars["zmax"]
         )
 
     # ----------------------------------------------------------------------
-    @staticmethod
-    def isAllMarginValid():
+    def isAllMarginValid(self):
         return (
-            CNC.vars["axmin"] <= CNC.vars["axmax"]
-            and CNC.vars["aymin"] <= CNC.vars["aymax"]
-            and CNC.vars["azmin"] <= CNC.vars["azmax"]
+            self.vars["axmin"] <= self.vars["axmax"]
+            and self.vars["aymin"] <= self.vars["aymax"]
+            and self.vars["azmin"] <= self.vars["azmax"]
         )
 
     # ----------------------------------------------------------------------
     # Number formating
     # ----------------------------------------------------------------------
-    @staticmethod
-    def fmt(c, v, d=None):
+    def fmt(self, c, v, d=None):
         if d is None:
-            d = CNC.digits
+            d = self.digits
         # Don't know why, but in some cases floats are not truncated by
         # format string unless rounded
         # I guess it's vital idea to round them rather than truncate anyway!
@@ -1035,134 +1030,123 @@ class CNC:
         return (f"{c}{v:>{d}f}").rstrip("0").rstrip(".")
 
     # ----------------------------------------------------------------------
-    @staticmethod
-    def gcode(g, pairs):
-        s = f"g{int(g)}"
-        for c, v in pairs:
-            s += f" {c[0]}{round(v, CNC.digits):g}"
+    # FIXME: self.gcode() is shadowed by self.gcode variable
+    # TODO: Move functions to module level, rather then leaf in class
+    def gcode_generate(self, g, pairs):
+        s = "g{} {}".format(
+            g,
+            ' '.join([f"{c[0]}{round(v, self.digits):g}" for c, v in pairs])
+        )
         return s
 
     # ----------------------------------------------------------------------
-    @staticmethod
-    def _gcode(g, **args):
-        s = f"g{int(g)}"
-        for n, v in args.items():
-            s += " " + CNC.fmt(n, v)
+    def _gcode(self, g, **args):
+        s = f"g{int(g)} {' '.join([self.fmt(n, v) for n, v in args.items()])}"
         return s
 
     # ----------------------------------------------------------------------
-    @staticmethod
-    def _gotoABC(g, x=None, y=None, z=None, a=None, b=None, c=None, **args):
+    def _gotoABC(self, g, x=None, y=None, z=None, a=None, b=None, c=None, **args):
         s = f"g{int(g)}"
         if x is not None:
-            s += " " + CNC.fmt("x", x)
+            s += " " + self.fmt("x", x)
         if y is not None:
-            s += " " + CNC.fmt("y", y)
+            s += " " + self.fmt("y", y)
         if z is not None:
-            s += " " + CNC.fmt("z", z)
+            s += " " + self.fmt("z", z)
         if a is not None:
-            s += " " + CNC.fmt("a", a)
+            s += " " + self.fmt("a", a)
         if b is not None:
-            s += " " + CNC.fmt("b", b)
+            s += " " + self.fmt("b", b)
         if c is not None:
-            s += " " + CNC.fmt("c", c)
+            s += " " + self.fmt("c", c)
         for n, v in args.items():
-            s += " " + CNC.fmt(n, v)
+            s += " " + self.fmt(n, v)
         return s
 
-    @staticmethod
-    def _goto(g, x=None, y=None, z=None, **args):
+    def _goto(self, g, x=None, y=None, z=None, **args):
         s = f"g{int(g)}"
         if x is not None:
-            s += " " + CNC.fmt("x", x)
+            s += " " + self.fmt("x", x)
         if y is not None:
-            s += " " + CNC.fmt("y", y)
+            s += " " + self.fmt("y", y)
         if z is not None:
-            s += " " + CNC.fmt("z", z)
+            s += " " + self.fmt("z", z)
         for n, v in args.items():
-            s += " " + CNC.fmt(n, v)
+            s += " " + self.fmt(n, v)
         return s
 
     # ----------------------------------------------------------------------
-    @staticmethod
-    def grapidABC(x=None, y=None, z=None, a=None, b=None, c=None, **args):
-        return CNC._gotoABC(0, x, y, z, a, b, c, **args)
+    def grapidABC(self, x=None, y=None, z=None, a=None, b=None, c=None, **args):
+        return self._gotoABC(0, x, y, z, a, b, c, **args)
 
-    @staticmethod
-    def grapid(x=None, y=None, z=None, **args):
-        return CNC._goto(0, x, y, z, **args)
+    def grapid(self, x=None, y=None, z=None, **args):
+        return self._goto(0, x, y, z, **args)
 
     # ----------------------------------------------------------------------
-    @staticmethod
-    def glineABC(x=None, y=None, z=None, a=None, b=None, c=None, **args):
-        return CNC._gotoABC(1, x, y, z, a, b, c, **args)
+    def glineABC(self, x=None, y=None, z=None, a=None, b=None, c=None, **args):
+        return self._gotoABC(1, x, y, z, a, b, c, **args)
 
-    @staticmethod
-    def gline(x=None, y=None, z=None, **args):
-        return CNC._goto(1, x, y, z, **args)
+    def gline(self, x=None, y=None, z=None, **args):
+        return self._goto(1, x, y, z, **args)
 
     # ----------------------------------------------------------------------
-    @staticmethod
-    def glinev(g, v, feed=None):
+    def glinev(self, g, v, feed=None):
         pairs = to_zip("xyz", v)
         if feed is not None:
             pairs.append(("f", feed))
-        return CNC.gcode(g, pairs)
+        # FIXME: self.gcode() is shadowed by self.gcode variable
+        return self.gcode_generate(g, pairs)
 
     # ----------------------------------------------------------------------
-    @staticmethod
-    def garcv(g, v, ijk):
-        return CNC.gcode(g, to_zip("xyz", v) + to_zip("ij", ijk[:2]))
+    def garcv(self, g, v, ijk):
+        # FIXME: self.gcode() is shadowed by self.gcode variable
+        return self.gcode_generate(g, to_zip("xyz", v) + to_zip("ij", ijk[:2]))
 
     # ----------------------------------------------------------------------
-    @staticmethod
-    def garc(g, x=None, y=None, z=None, i=None, j=None, k=None, **args):
+    def garc(self, g, x=None, y=None, z=None, i=None, j=None, k=None, **args):
         s = f"g{int(g)}"
         if x is not None:
-            s += " " + CNC.fmt("x", x)
+            s += " " + self.fmt("x", x)
         if y is not None:
-            s += " " + CNC.fmt("y", y)
+            s += " " + self.fmt("y", y)
         if z is not None:
-            s += " " + CNC.fmt("z", z)
+            s += " " + self.fmt("z", z)
         if i is not None:
-            s += " " + CNC.fmt("i", i)
+            s += " " + self.fmt("i", i)
         if j is not None:
-            s += " " + CNC.fmt("j", j)
+            s += " " + self.fmt("j", j)
         if k is not None:
-            s += " " + CNC.fmt("k", k)
+            s += " " + self.fmt("k", k)
         for n, v in args.items():
-            s += " " + CNC.fmt(n, v)
+            s += " " + self.fmt(n, v)
         return s
 
     # ----------------------------------------------------------------------
     # Enter to material or start the laser
     # ----------------------------------------------------------------------
-    @staticmethod
-    def zenter(z, d=None):
-        if CNC.lasercutter:
-            if CNC.laseradaptive:
+    def zenter(self, z, d=None):
+        if self.lasercutter:
+            if self.laseradaptive:
                 return "m4"
             else:
                 return "m3"
         else:
-            return (f"g1 {CNC.fmt('z', z, d)} "
-                    f"{CNC.fmt('f', CNC.vars['cutfeedz'])}")
+            return (f"g1 {self.fmt('z', z, d)} "
+                    f"{self.fmt('f', self.vars['cutfeedz'])}")
 
     # ----------------------------------------------------------------------
-    @staticmethod
-    def zexit(z, d=None):
-        if CNC.lasercutter:
+    def zexit(self, z, d=None):
+        if self.lasercutter:
             return "m5"
         else:
-            return f"g0 {CNC.fmt('z', z, d)}"
+            return f"g0 {self.fmt('z', z, d)}"
 
     # ----------------------------------------------------------------------
     # gcode to go to z-safe
     # Exit from material or stop the laser
     # ----------------------------------------------------------------------
-    @staticmethod
-    def zsafe():
-        return CNC.zexit(CNC.vars["safe"])
+    def zsafe(self):
+        return self.zexit(self.vars["safe"])
 
     # ----------------------------------------------------------------------
     # @return line in broken a list of commands, None if empty or comment
@@ -1191,8 +1175,7 @@ class CNC:
     #       None,"" if empty or comment
     #       else compiled expressions,""
     # ----------------------------------------------------------------------
-    @staticmethod
-    def compileLine(line, space=False):
+    def compileLine(self, line, space=False):
         line = line.strip()
         if not line:
             return None
@@ -1201,7 +1184,7 @@ class CNC:
 
         # to accept #nnn variables as _nnn internally
         line = line.replace("#", "_")
-        CNC.comment = ""
+        self.comment = ""
 
         # execute literally the line after the first character
         if line[0] == "%":
@@ -1221,7 +1204,7 @@ class CNC:
                 return (MSG, args)
             elif cmd == "%update":
                 return (UPDATE, args)
-            elif line.startswith("%if running") and not CNC.vars["running"]:
+            elif line.startswith("%if running") and not self.vars["running"]:
                 # ignore if running lines when not running
                 return None
             else:
@@ -1242,7 +1225,7 @@ class CNC:
 
         # commented line
         if line[0] == ";":
-            CNC.comment = line[1:].strip()
+            self.comment = line[1:].strip()
             return None
 
         out = []  # output list of commands
@@ -1268,7 +1251,7 @@ class CNC:
             elif ch == "[":
                 # expression start?
                 if not inComment:
-                    if CNC.stdexpr:
+                    if self.stdexpr:
                         ch = "("
                     braket += 1
                     if braket == 1:
@@ -1278,11 +1261,11 @@ class CNC:
                     else:
                         expr += ch
                 else:
-                    CNC.comment += ch
+                    self.comment += ch
             elif ch == "]":
                 # expression end?
                 if not inComment:
-                    if CNC.stdexpr:
+                    if self.stdexpr:
                         ch = ")"
                     braket -= 1
                     if braket == 0:
@@ -1295,7 +1278,7 @@ class CNC:
                     else:
                         expr += ch
                 else:
-                    CNC.comment += ch
+                    self.comment += ch
             elif ch == "=":
                 # check for assignments (FIXME very bad)
                 if not out and braket == 0 and paren == 0:
@@ -1312,7 +1295,7 @@ class CNC:
             elif ch == ";":
                 # Skip everything after the semicolon on normal lines
                 if not inComment and paren == 0 and braket == 0:
-                    CNC.comment += line[i + 1:]
+                    self.comment += line[i + 1:]
                     break
                 else:
                     expr += ch
@@ -1328,7 +1311,7 @@ class CNC:
                     cmd += ch
 
             elif inComment:
-                CNC.comment += ch
+                self.comment += ch
 
         if cmd:
             out.append(cmd)
@@ -1404,13 +1387,13 @@ class CNC:
                     self.plane = YZ
 
                 elif gcode == 20:  # Switch to inches
-                    if CNC.inch:
+                    if self.inch:
                         self.unit = 1.0
                     else:
                         self.unit = 25.4
 
                 elif gcode == 21:  # Switch to mm
-                    if CNC.inch:
+                    if self.inch:
                         self.unit = 1.0 / 25.4
                     else:
                         self.unit = 1.0
@@ -1434,7 +1417,7 @@ class CNC:
                         self.arcabsolute = False
 
                 elif gcode in (93, 94, 95):
-                    CNC.vars["feedmode"] = gcode
+                    self.vars["feedmode"] = gcode
 
                 elif gcode == 98:
                     self.retractz = True
@@ -1587,7 +1570,7 @@ class CNC:
             phi0 = math.atan2(v0 - vc, u0 - uc)
             phi1 = math.atan2(v1 - vc, u1 - uc)
             try:
-                sagitta = 1.0 - CNC.accuracy / self.rval
+                sagitta = 1.0 - self.accuracy / self.rval
             except ZeroDivisionError:
                 sagitta = 0.0
             if sagitta > 0.0:
@@ -1744,10 +1727,10 @@ class CNC:
             self.totalTime += length / self.feed
         else:
             try:
-                if CNC.vars["feedmode"] == 94:
+                if self.vars["feedmode"] == 94:
                     # Normal mode
                     t = length / self.feed
-                elif CNC.vars["feedmode"] == 93:
+                elif self.vars["feedmode"] == 93:
                     # Inverse mode
                     t = length * self.feed
                 block.time += t
@@ -1761,35 +1744,34 @@ class CNC:
     # ----------------------------------------------------------------------
     def pathMargins(self, block):
         if block.enable:
-            CNC.vars["xmin"] = min(CNC.vars["xmin"], block.xmin)
-            CNC.vars["ymin"] = min(CNC.vars["ymin"], block.ymin)
-            CNC.vars["zmin"] = min(CNC.vars["zmin"], block.zmin)
-            CNC.vars["xmax"] = max(CNC.vars["xmax"], block.xmax)
-            CNC.vars["ymax"] = max(CNC.vars["ymax"], block.ymax)
-            CNC.vars["zmax"] = max(CNC.vars["zmax"], block.zmax)
+            self.vars["xmin"] = min(self.vars["xmin"], block.xmin)
+            self.vars["ymin"] = min(self.vars["ymin"], block.ymin)
+            self.vars["zmin"] = min(self.vars["zmin"], block.zmin)
+            self.vars["xmax"] = max(self.vars["xmax"], block.xmax)
+            self.vars["ymax"] = max(self.vars["ymax"], block.ymax)
+            self.vars["zmax"] = max(self.vars["zmax"], block.zmax)
 
-        CNC.vars["axmin"] = min(CNC.vars["axmin"], block.xmin)
-        CNC.vars["aymin"] = min(CNC.vars["aymin"], block.ymin)
-        CNC.vars["azmin"] = min(CNC.vars["azmin"], block.zmin)
-        CNC.vars["axmax"] = max(CNC.vars["axmax"], block.xmax)
-        CNC.vars["aymax"] = max(CNC.vars["aymax"], block.ymax)
-        CNC.vars["azmax"] = max(CNC.vars["azmax"], block.zmax)
+        self.vars["axmin"] = min(self.vars["axmin"], block.xmin)
+        self.vars["aymin"] = min(self.vars["aymin"], block.ymin)
+        self.vars["azmin"] = min(self.vars["azmin"], block.zmin)
+        self.vars["axmax"] = max(self.vars["axmax"], block.xmax)
+        self.vars["aymax"] = max(self.vars["aymax"], block.ymax)
+        self.vars["azmax"] = max(self.vars["azmax"], block.zmax)
 
     # ----------------------------------------------------------------------
     # Instead of the current code, override with the custom user lines
     # @param program a list of lines to execute
     # @return the new list of lines
     # ----------------------------------------------------------------------
-    @staticmethod
-    def compile(program):
+    def compile(self, program):
         lines = []
         for j, line in enumerate(program):
             newcmd = []
-            cmds = CNC.compileLine(line)
+            cmds = self.compileLine(line)
             if cmds is None:
                 continue
             if isinstance(cmds, str):
-                cmds = CNC.breakLine(cmds)
+                cmds = self.breakLine(cmds)
             else:
                 # either CodeType or tuple, list[] append it as is
                 lines.append(cmds)
@@ -1802,7 +1784,7 @@ class CNC:
                 except Exception:
                     value = 0.0
                 if c.upper() in ("F", "X", "Y", "Z", "I", "J", "K", "R", "P"):
-                    cmd = CNC.fmt(c, value)
+                    cmd = self.fmt(c, value)
                 else:
                     opt = ERROR_HANDLING.get(cmd.upper(), 0)
                     if opt == SKIP:
@@ -1840,34 +1822,34 @@ class CNC:
         lines.append("g53 g0 x[toolchangex] y[toolchangey]")
         lines.append("%wait")
 
-        if CNC.comment:
+        if self.comment:
             lines.append(
-                f"%msg Tool change T{int(self.tool):02} ({CNC.comment})")
+                f"%msg Tool change T{int(self.tool):02} ({self.comment})")
         else:
             lines.append(f"%msg Tool change T{int(self.tool):02}")
         lines.append("m0")  # feed hold
 
-        if CNC.toolPolicy < 4:
+        if self.toolPolicy < 4:
             lines.append("g53 g0 x[toolprobex] y[toolprobey]")
             lines.append("g53 g0 z[toolprobez]")
 
             # fixed WCS
-            if CNC.vars["fastprbfeed"]:
+            if self.vars["fastprbfeed"]:
                 prb_reverse = {"2": "4", "3": "5", "4": "2", "5": "3"}
-                CNC.vars["prbcmdreverse"] = (
-                    CNC.vars["prbcmd"][:-1]
-                    + prb_reverse[CNC.vars["prbcmd"][-1]]
+                self.vars["prbcmdreverse"] = (
+                    self.vars["prbcmd"][:-1]
+                    + prb_reverse[self.vars["prbcmd"][-1]]
                 )
-                currentFeedrate = CNC.vars["fastprbfeed"]
-                while currentFeedrate > CNC.vars["prbfeed"]:
+                currentFeedrate = self.vars["fastprbfeed"]
+                while currentFeedrate > self.vars["prbfeed"]:
                     lines.append("%wait")
                     lines.append(
-                        f"g91 [prbcmd] {CNC.fmt('f', currentFeedrate)} "
+                        f"g91 [prbcmd] {self.fmt('f', currentFeedrate)} "
                         f"z[toolprobez-mz-tooldistance]"
                     )
                     lines.append("%wait")
                     lines.append(
-                        f"[prbcmdreverse] {CNC.fmt('f', currentFeedrate)} "
+                        f"[prbcmdreverse] {self.fmt('f', currentFeedrate)} "
                         f"z[toolprobez-mz]"
                     )
                     currentFeedrate /= 10
@@ -1875,14 +1857,14 @@ class CNC:
             lines.append(
                 "g91 [prbcmd] f[prbfeed] z[toolprobez-mz-tooldistance]")
 
-            if CNC.toolPolicy == 2:
+            if self.toolPolicy == 2:
                 # Adjust the current WCS to fit to the tool
                 # FIXME could be done dynamically in the code
-                p = WCS.index(CNC.vars["WCS"]) + 1
+                p = WCS.index(self.vars["WCS"]) + 1
                 lines.append(f"g10l20p{int(p)} z[toolheight]")
                 lines.append("%wait")
 
-            elif CNC.toolPolicy == 3:
+            elif self.toolPolicy == 3:
                 # Modify the tool length, update the TLO
                 lines.append("g4 p1")  # wait a sec to get the probe info
                 lines.append("%wait")
@@ -1893,7 +1875,7 @@ class CNC:
             lines.append("g53 g0 z[toolchangez]")
             lines.append("g53 g0 x[toolchangex] y[toolchangey]")
 
-        if CNC.toolWaitAfterProbe:
+        if self.toolWaitAfterProbe:
             lines.append("%wait")
             lines.append("%msg Restart spindle")
             lines.append("m0")  # feed hold
@@ -1944,31 +1926,31 @@ class CNC:
         x, y, z = self.x, self.y, self.z
         if z < clearz:
             z = clearz
-            lines.append(CNC.grapid(z=z / self.unit))
+            lines.append(self.grapid(z=z / self.unit))
 
         for _line in range(self.lval):
             # Rapid move parallel to XY
             x += self.dx
             y += self.dy
-            lines.append(CNC.grapid(x / self.unit, y / self.unit))
+            lines.append(self.grapid(x / self.unit, y / self.unit))
 
             # Rapid move parallel to retract
             zstep = max(drill, retract - peck)
             while z > drill:
                 if z != retract:
                     z = retract
-                    lines.append(CNC.grapid(z=z / self.unit))
+                    lines.append(self.grapid(z=z / self.unit))
 
                 z = max(drill, zstep)
                 zstep -= peck
 
                 # Drill to z
                 lines.append(
-                    CNC.gline(z=z / self.unit, f=self.feed / self.unit))
+                    self.gline(z=z / self.unit, f=self.feed / self.unit))
 
             # 82=dwell, 86=boring-stop, 89=boring-dwell
             if self.gcode in (82, 86, 89):
-                lines.append(CNC._gcode(4, p=self.pval))
+                lines.append(self._gcode(4, p=self.pval))
 
                 if self.gcode == 86:
                     lines.append("M5")  # stop spindle???
@@ -1977,10 +1959,10 @@ class CNC:
             if self.gcode in (85, 89):  # boring cycle
                 z = retract
                 lines.append(
-                    CNC.gline(z=z / self.unit, f=self.feed / self.unit))
+                    self.gline(z=z / self.unit, f=self.feed / self.unit))
 
             z = clearz
-            lines.append(CNC.grapid(z=z / self.unit))
+            lines.append(self.grapid(z=z / self.unit))
 
             if self.gcode == 86:
                 lines.append("M3")  # restart spindle???
@@ -2269,3 +2251,7 @@ class Block(list):
         self.xmax = max(self.xmax, max(i[0] for i in xyz))
         self.ymax = max(self.ymax, max(i[1] for i in xyz))
         self.zmax = max(self.zmax, max(i[2] for i in xyz))
+
+
+# Static global CNC-class object
+CNC = _CNC()

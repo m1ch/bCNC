@@ -431,7 +431,7 @@ class Tool(Plugin):
 
                 # Dwell time only on last pass
                 if dwell != 0:
-                    block.append(CNC.gcode(4, [("P", dwell)]))
+                    block.append(CNC.gcode_generate(4, [("P", dwell)]))
 
                 if self.useCustom:
                     block.append(f"G1 S{self.spinMin}")

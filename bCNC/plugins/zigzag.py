@@ -79,7 +79,7 @@ class ZigZag:
             if currDepth < Depth:
                 currDepth = Depth
             block.append(CNC.zenter(currDepth))
-            block.append(CNC.gcode(1, [("f", CNC.vars["cutfeed"])]))
+            block.append(CNC.gcode_generate(1, [("f", CNC.vars["cutfeed"])]))
             for (x, y) in points:
                 block.append(CNC.gline(x, y))
             if currDepth <= Depth:

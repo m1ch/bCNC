@@ -154,7 +154,7 @@ class Tool(Plugin):
             block.append(
                 CNC.grapid(xO + cont[0].x * scale, yO + cont[0].y * scale))
             block.append(CNC.zenter(depth))
-            block.append(CNC.gcode(1, [("f", CNC.vars["cutfeed"])]))
+            block.append(CNC.gcode_generate(1, [("f", CNC.vars["cutfeed"])]))
             for p in cont:
                 block.append(CNC.gline(xO + p.x * scale, yO + p.y * scale))
 

@@ -222,7 +222,7 @@ class Flatten:
             if currDepth < FlatDepth:
                 currDepth = FlatDepth
             block.append(CNC.zenter(currDepth))
-            block.append(CNC.gcode(1, [("f", CNC.vars["cutfeed"])]))
+            block.append(CNC.gcode_generate(1, [("f", CNC.vars["cutfeed"])]))
 
             # Pocketing
             lastxy = None

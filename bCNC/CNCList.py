@@ -60,7 +60,7 @@ class CNCListbox(Listbox):
         self._blockPos = []  # listbox position of each block
         self._items = []  # each listbox lien which item (bid,lid) shows
         self.app = app
-        self.gcode = app.gcode
+        self.gcode = app.sender.gcode
         self.font = tkfont.nametofont(self.cget("font"))
         self._ystart = 0
         self._double = False  # double clicked handled

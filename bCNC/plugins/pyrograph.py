@@ -191,7 +191,7 @@ class Tool(Plugin):
             block.append(CNC.zsafe())
             block.append(CNC.grapid(0, 0))
             block.append(CNC.zenter(depth))
-            block.append(CNC.gcode(1, [("f", feedMin)]))
+            block.append(CNC.gcode_generate(1, [("f", feedMin)]))
             block.append(CNC.gline(newWidth * toolSize - toolSize, 0))
             block.append(
                 CNC.gline(newWidth * toolSize - toolSize, newHeight * toolSize)

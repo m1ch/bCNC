@@ -1384,7 +1384,7 @@ class AutolevelFrame(CNCRibbon.PageFrame):
 
     # -----------------------------------------------------------------------
     def change(self, verbose=True):
-        probe = self.app.gcode.probe
+        probe = self.app.sender.gcode.probe
         error = False
         try:
             probe.xmin = float(self.probeXmin.get())

@@ -215,7 +215,7 @@ class Tool(Plugin):
             block.append(CNC.zsafe())
             block.append(CNC.grapid(0, 0))
             block.append(CNC.zenter(depth))
-            block.append(CNC.gcode(1, [("f", CNC.vars["cutfeed"])]))
+            block.append(CNC.gcode_generate(1, [("f", CNC.vars["cutfeed"])]))
             block.append(CNC.gline(self.imgWidth * self.ratio, 0))
             block.append(
                 CNC.gline(self.imgWidth * self.ratio,
