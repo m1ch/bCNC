@@ -4,14 +4,11 @@ import os
 import sys
 import getopt
 
-import Helpers # required for translation
-
 PRGPATH = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(PRGPATH)
 sys.path.append(os.path.join(PRGPATH, "lib"))
 sys.path.append(os.path.join(PRGPATH, "plugins"))
 sys.path.append(os.path.join(PRGPATH, "controllers"))
-
 
 # -----------------------------------------------------------------------------
 def usage(rc):
@@ -45,6 +42,7 @@ def usage(rc):
 
 # -----------------------------------------------------------------------------
 def main():
+    import Helpers
     import bmain
     import tkExtra
     import Utils
@@ -213,7 +211,7 @@ def main():
 
 sys.stdout.write("=" * 80 + "\n")
 sys.stdout.write(
-    "WARNING: bCNC was resently ported to only support \n"
+    "WARNING: bCNC was recently ported to only support \n"
     + "python3.8 and newer.\n"
 )
 sys.stdout.write(

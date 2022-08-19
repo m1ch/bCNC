@@ -210,14 +210,14 @@ def loadConfiguration(systemOnly=False):
         config.read(iniSystem)
     else:
         config.read([iniSystem, iniUser])
-        _errorReport = getInt("Connection", "errorreport", 1)
+        errorReport = getInt("Connection", "errorreport", 1)
 
         language = getStr(__prg__, "language")
-        if language:
+        if language and language != "en":
             # replace language
             lang = gettext.translation(
                 __prg__,
-                os.path.join(prgpath, "locale"),
+                os.path.join(prgpath, "locales"),
                 languages=[language]
             )
             lang.install()
