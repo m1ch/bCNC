@@ -350,7 +350,7 @@ def fontString(font):
     name = str(font[0])
     size = str(font[1])
     if name.find(" ") >= 0:
-        s = f'"{name}" {size}'
+        s = f"\"{name}\" {size}"
     else:
         s = f"{name} {size}"
 

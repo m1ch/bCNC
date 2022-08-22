@@ -3994,7 +3994,7 @@ class GCode:
             or depth > self.cnc["surface"]
         ):
             return (
-                "ERROR: Cut depth {depth:g} outside stock surface: "
+                f"ERROR: Cut depth {depth:g} outside stock surface: "
                 f"{self.cnc['surface']:g} .. "
                 f"{self.cnc['surface'] - self.cnc['thickness']:g}\n"
                 "Please change stock surface in Tools->Stock or cut depth."

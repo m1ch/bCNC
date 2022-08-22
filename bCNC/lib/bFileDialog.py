@@ -818,7 +818,7 @@ class FileDialog(Toplevel):
                     pass
         else:
             lget = self.fileList.get
-            files = [f'"{lget(i)[0]}"' for i in sel]
+            files = [f"\"{lget(i)[0]}\"" for i in sel]
 
             if files:
                 self.filename.delete(0, END)
