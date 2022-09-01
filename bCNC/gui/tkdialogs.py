@@ -1285,8 +1285,9 @@ class ReportDialog(tk.Toplevel):
         # FIXME: Pytho2 only code here!
         import httplib
         import urllib
+        from globalVariables import glob_errors
 
-        global errors
+        # global errors
         email = self.email.get()
         desc = self.text.get("1.0", "end").strip()
 
@@ -1316,7 +1317,7 @@ class ReportDialog(tk.Toplevel):
                     _("Report was successfully uploaded to web site"),
                     parent=self,
                 )
-                del errors[:]
+                del glob_errors[:]
             else:
                 tk.messagebox.showwarning(
                     _("Error sending report"),
@@ -1331,10 +1332,11 @@ class ReportDialog(tk.Toplevel):
 
     # ----------------------------------------------------------------------
     def cancel(self):
-        global _errorReport, errors
-        _errorReport = self.err.get()
+        from globalVariables import glob_error_report, glob_errors
+        # global _errorReport, errors
+        glob_error_report = self.err.get()
         gconfig.set("Connection", "errorreport", str(bool(self.err.get())))
-        del errors[:]
+        del glob_errors[:]
         self.close()
 
     # ----------------------------------------------------------------------

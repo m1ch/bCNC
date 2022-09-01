@@ -1755,7 +1755,7 @@ class GCode:
             or depth > globCNC["surface"]
         ):
             return (
-                "ERROR: Cut depth {depth:g} outside stock surface: "
+                f"ERROR: Cut depth {depth:g} outside stock surface: "
                 f"{globCNC['surface']:g} .. "
                 f"{globCNC['surface'] - globCNC['thickness']:g}\n"
                 "Please change stock surface in Tools->Stock or cut depth."

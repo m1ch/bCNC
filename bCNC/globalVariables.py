@@ -1,12 +1,6 @@
-from typing import Final
-
-import cnc
-
-globCNC:Final = cnc.CNC()
-
-# Variables need to be defined later due to circular imports
-globGCode = None
-globSender = None
+glob_error_report = True
+glob_errors = []
+glob_language = ""
 
 
 def N_(message):
