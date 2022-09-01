@@ -1,9 +1,15 @@
+(Block-name: Header)
+(Block-expand: 0)
+(Block-enable: 1)
 
 G21
 G90
 G94
 F500.00
 G00 Z2.0000
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
 M03 S10000
 G4 P1
 G00 X0.3201Y3.4246
@@ -402,5 +408,8 @@ G01 X0.3215Y9.1750
 G01 X0.3200Y9.1440
 G01 X0.3201Y3.4246
 G00 Z2.0000
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
 G00 X0Y0
 M05

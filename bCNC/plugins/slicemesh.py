@@ -13,7 +13,7 @@ import numpy as np
 import ply
 import stl  # FIXME: write smaller STL parser
 
-from CNC import Block
+from cnc import Block
 from ToolsPage import Plugin
 
 __author__ = "@harvie Tomas Mudrunka"
@@ -180,7 +180,7 @@ Also note you can export resulting slices to DXF and SVG if needed.
 
         # Insert blocks to bCNC
         active = app.activeBlock()
-        app.gcode.insBlocks(
+        globGCode.insBlocks(
             active, blocks, "Mesh sliced"
         )  # <<< insert blocks over active block in the editor
         app.refresh()  # <<< refresh editor

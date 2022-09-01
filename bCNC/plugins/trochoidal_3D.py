@@ -20,7 +20,11 @@ from math import (
 )
 from tkinter import EXCEPTION
 
-from CNC import CNC, Block
+from cnc import globCNC
+from gcode import globGCode
+from sender import globSender
+
+from cnc import  Block
 from ToolsPage import Plugin
 
 __author__ = "Mario S Basz"
@@ -111,7 +115,7 @@ class Tool(Plugin):
 
     # ----------------------------------------------------------------------
     def update(self):
-        self.master.cnc()["diam"] = self.fromMm("diam")
+        globGCode["diam"] = self.fromMm("diam")
 
     # ----------------------------------------------------------------------
     def came_back(self, current, old):
@@ -164,18 +168,18 @@ class Tool(Plugin):
     # Extract all segments from commands ------------ -----------------------
     def extractAllSegments(self, app, selectedBlock):
         allSegments = []
-        allBlocks = app.gcode.blocks
+        allBlocks = globGCode.blocks
 
         for bid in selectedBlock:
             bidSegments = []
             block = allBlocks[bid]
             if block.name() in ("Header", "Footer"):
                 continue
-            app.gcode.initPath(bid)
+            globGCode.initPath(bid)
             for line in block:
                 try:
                     cmd = app.cnc.breakLine(
-                        app.gcode.evaluate(app.cnc.compileLine(line))
+                        globGCode.evaluate(app.cnc.compileLine(line))
                     )
                 except EXCEPTION:
                     cmd = None
@@ -223,9 +227,9 @@ class Tool(Plugin):
 
         manualsetting = 1
         cutradius = self["diam"] / 2.0
-        zfeed = CNC.vars["cutfeedz"]
-        feed = CNC.vars["cutfeed"]
-        minimfeed = CNC.vars["cutfeed"]
+        zfeed = globCNC.vars["cutfeedz"]
+        feed = globCNC.vars["cutfeed"]
+        minimfeed = globCNC.vars["cutfeed"]
         if manualsetting:
             if self["diam"]:
                 cutradius = self["diam"] / 2.0
@@ -239,14 +243,14 @@ class Tool(Plugin):
             if self["endmill"]:
                 self.master["endmill"].makeCurrent(self["endmill"])
 
-        toolRadius = CNC.vars["diameter"] / 2.0
+        toolRadius = globCNC.vars["diameter"] / 2.0
         radius = max(0, cutradius - toolRadius)
         oldradius = radius
         helicalRadius = radius
         helicalPerimeter = pi * 2.0 * helicalRadius
 
         cw = self["cw"]
-        surface = CNC.vars["surface"]
+        surface = globCNC.vars["surface"]
 
         zbeforecontact = surface
         zbeforecontact = surface
@@ -280,7 +284,7 @@ class Tool(Plugin):
                 self["overcut"],
                 self["adaptative"],
                 radius,
-                CNC.vars["diameter"],
+                globCNC.vars["diameter"],
                 targetDepth,
                 depthIncrement,
                 tabsnumber,
@@ -394,7 +398,7 @@ class Tool(Plugin):
                     else:
                         tr_block.append(
                             "(The original first movement is not vertical)")
-                    tr_block.append(CNC.zsafe())
+                    tr_block.append(globCNC.zsafe())
                     tr_block.append(
                         "(--------------------------------------------------)"
                     )
@@ -416,7 +420,7 @@ class Tool(Plugin):
                             + " On Surface)"
                         )
                         tr_block.append(
-                            CNC.grapid(segm[1][0], segm[1][1], segm[1][2]))
+                            globCNC.grapid(segm[1][0], segm[1][1], segm[1][2]))
                     else:
                         tr_distance = self.center_distance(segm, atot)
                         A = segm[0][0], segm[0][1], segm[0][2]
@@ -814,7 +818,7 @@ class Tool(Plugin):
                             self.helical(A, B, helicalRadius, phi, u))
         tr_block.append("(-----------------------------------------)")
         tr_block.append(
-            CNC.zsafe()
+            globCNC.zsafe()
         )  # <<< Move rapid Z axis to the safe height in Stock Material
         blocks.append(tr_block)
         self.finish_blocks(app, blocks)
@@ -889,7 +893,7 @@ class Tool(Plugin):
         )
         if t_splice == "came_back":
             block.append(
-                CNC.gline(round(B[0], 5), round(B[1], 5), round(B[2], 5)))
+                globCNC.gline(round(B[0], 5), round(B[1], 5), round(B[2], 5)))
             block.append(
                 arc
                 + " x"
@@ -1330,6 +1334,6 @@ class Tool(Plugin):
     # Insert created blocks
     def finish_blocks(self, app, blocks):
         active = app.activeBlock()
-        app.gcode.insBlocks(active + 1, blocks, "Trochs")
+        globGCode.insBlocks(active + 1, blocks, "Trochs")
         app.refresh()
         app.setStatus(_("Trochoid Generated"))

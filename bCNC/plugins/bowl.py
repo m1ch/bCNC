@@ -5,7 +5,11 @@
 
 import math
 
-from CNC import CNC, Block
+from cnc import globCNC
+from gcode import globGCode
+from sender import globSender
+
+from cnc import Block
 from ToolsPage import Plugin
 
 __author__ = "Carlos Garcia Saura"
@@ -30,10 +34,10 @@ class Bowl:
         block = Block(self.name)
 
         # Load tool and material settings
-        toolDiam = CNC.vars["diameter"]
+        toolDiam = globCNC.vars["diameter"]
         toolRadius = toolDiam / 2.0
-        stepz = CNC.vars["stepz"]
-        stepxy = toolDiam * (CNC.vars["stepover"] / 100.0)
+        stepz = globCNC.vars["stepz"]
+        stepxy = toolDiam * (globCNC.vars["stepover"] / 100.0)
 
         if toolDiam <= 0 or stepxy <= 0 or stepz <= 0 or D <= 0 or res <= 0:
             return blocks
@@ -41,28 +45,29 @@ class Bowl:
         currDepth = 0.0
 
         def setCutFeedrate():
-            block.append(CNC.gcode_generate(1, [("f", CNC.vars["cutfeed"])]))
+            block.append(globCNC.gcode_generate(
+                1, [("f", globCNC.vars["cutfeed"])]))
 
         def addCircumference(radius):
-            block.append(CNC.garc(2, radius, 0.0, i=-radius))
+            block.append(globCNC.garc(2, radius, 0.0, i=-radius))
 
         # Mills a circle, pocketing it if needed
         def addSingleCircle(radius, depth):
             if pocket:
-                block.append(CNC.grapid(0.0, 0.0))
-                block.append(CNC.zenter(depth))
+                block.append(globCNC.grapid(0.0, 0.0))
+                block.append(globCNC.zenter(depth))
                 setCutFeedrate()
                 currRadius = 0.0
                 while radius > currRadius + stepxy:
                     currRadius += stepxy
-                    block.append(CNC.gline(currRadius, 0))
+                    block.append(globCNC.gline(currRadius, 0))
                     addCircumference(currRadius)
                 if radius - currRadius > 0:
-                    block.append(CNC.gline(radius, 0))
+                    block.append(globCNC.gline(radius, 0))
                     addCircumference(radius)
             else:
-                block.append(CNC.grapid(radius, 0.0))
-                block.append(CNC.zenter(depth))
+                block.append(globCNC.grapid(radius, 0.0))
+                block.append(globCNC.zenter(depth))
                 setCutFeedrate()
                 addCircumference(radius)
 
@@ -75,7 +80,7 @@ class Bowl:
                 addSingleCircle(radius, depth)
             return depth
 
-        block.append(CNC.zsafe())
+        block.append(globCNC.zsafe())
         r = D / 2.0
         r -= toolRadius  # Removes offset of ball-end tool
         angleInc = res
@@ -128,7 +133,7 @@ class Tool(Plugin):
             active = app.activeBlock()
             if active == 0:
                 active = 1
-            app.gcode.insBlocks(active, blocks, "Create BOWL")
+            globGCode.insBlocks(active, blocks, "Create BOWL")
             app.refresh()
             app.setStatus(_("Generated: BOWL"))
         else:

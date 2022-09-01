@@ -10,7 +10,8 @@ import tempfile
 import threading
 
 import Camera
-from CNC import CNC
+from cnc import globCNC
+
 from globalConstants import __prgpath__
 
 import urllib.parse as urlparse
@@ -102,7 +103,7 @@ class Pendant(httpserver.BaseHTTPRequestHandler):
                 "OvRapid",
                 "OvSpindle",
             ]:
-                tmp[name] = CNC.vars[name]
+                tmp[name] = globCNC.vars[name]
             contentToSend = json.dumps(tmp)
             self.do_HEAD(200, content="text/text", cl=len(contentToSend))
             self.wfile.write(contentToSend.encode())

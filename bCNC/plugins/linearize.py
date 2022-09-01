@@ -2,7 +2,7 @@
 # Date: 25 sept 2018
 
 
-from CNC import Block
+from cnc import Block
 from ToolsPage import Plugin
 
 __author__ = "@harvie Tomas Mudrunka"
@@ -70,17 +70,17 @@ If you set the segment size large enough, you can even use this to create inscri
 
         blocks = []
         for bid in app.editor.getSelectedBlocks():
-            if len(app.gcode.toPath(bid)) < 1:
+            if len(globGCode.toPath(bid)) < 1:
                 continue
 
-            eblock = Block("lin " + app.gcode[bid].name())
-            opath = app.gcode.toPath(bid)[0]
+            eblock = Block("lin " + globGCode[bid].name())
+            opath = globGCode.toPath(bid)[0]
             npath = opath.linearize(maxseg, splitlines)
-            eblock = app.gcode.fromPath(npath, eblock)
+            eblock = globGCode.fromPath(npath, eblock)
             blocks.append(eblock)
 
         active = -1  # add to end
-        app.gcode.insBlocks(
+        globGCode.insBlocks(
             active, blocks, "Linearized"
         )  # <<< insert blocks over active block in the editor
         app.refresh()  # <<< refresh editor

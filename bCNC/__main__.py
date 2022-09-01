@@ -4,6 +4,7 @@ import os
 # from pydoc import Helper
 import sys
 import argparse
+from typing import Final
 
 from globalConstants import (
     __prg__,
@@ -24,7 +25,7 @@ sys.path.insert(1, __controllerpath__)
 
 sys.stdout.write("=" * 80 + "\n")
 sys.stdout.write(
-    "WARNING: bCNC was resently ported to only support \n"
+    "WARNING: bCNC was recently ported to only support \n"
     + "python3.8 and newer.\n"
 )
 sys.stdout.write(
@@ -130,12 +131,16 @@ def select_recent_file():
 
 # -----------------------------------------------------------------------------
 def main() -> int:
+    # initialize the global variables:
+    # import globalVariables as gv
+    from cnc import globCNC
+    from sender import globSender
+
     import bmain
-    import Sender
-    import tkExtra
+    from gui import tkextra
     import Utils
     import Updates
-    from CNC import CNC
+
     try:
         import serial
     except ImportError:
@@ -154,11 +159,13 @@ def main() -> int:
         gconfig.set_userini(args.ini)
 
     gconfig.load_configuration()
-
     # DEBUG: print the entire config
     # gconfig.print_configuration()
 
-    CNC.developer = args.d
+    globCNC.loadConfig()  # must run after config is loaded!
+    globCNC.developer = args.d
+
+    globSender.loadConfig()
 
     r = -1
     if args.recent:
@@ -175,9 +182,7 @@ def main() -> int:
                 "\nERROR: There is no recent file available!\n")
             sys.exit(1)
 
-    sender = Sender.Sender()
-
-    application = bmain.Application(sender, className=f"  {__prg__}  ")
+    application = bmain.Application(className=f"  {__prg__}  ")
 
     palette = {"background": application.cget("background")}
 
@@ -194,18 +199,19 @@ def main() -> int:
         "selectBackground",
         "selectForeground",
     ):
-        color2 = gconfig.getstr("Color", "global." + color_name.lower(), None)
+        color2 = gconfig.getstr("Color", f"global.{color_name.lower()}", None)
         color_count += 1
         if (color2 is not None) and (color2.strip() != ""):
             palette[color_name] = color2.strip()
             custom_color_count += 1
 
-            if color_count == 0:
-                tkExtra.GLOBAL_CONTROL_BACKGROUND = color2
+            if color_count == 0:  # FIXME: Cannot be reached!
+                tkextra.GLOBAL_CONTROL_BACKGROUND = color2
             elif color_count == 1:
-                tkExtra.GLOBAL_FONT_COLOR = color2
+                tkextra.GLOBAL_FONT_COLOR = color2
 
     if custom_color_count > 0:
+        # FIXME: Move to styles.py
         print("Changing palette")
         application.tk_setPalette(**palette)
 
@@ -232,8 +238,8 @@ def main() -> int:
         application.quit()
 
     application.close()
-    sender.close()
-    sender.quit()
+    globSender.close()
+    globSender.quit()
     gconfig.save_configuration()
     Utils.delIcons()
 

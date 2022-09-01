@@ -3,7 +3,11 @@
 # Author:    DodoLaSaumure
 # Date:      30-Dec-2019
 
-from CNC import CNC, Block
+from cnc import globCNC
+from gcode import globGCode
+from sender import globSender
+
+from cnc import  Block
 from ToolsPage import Plugin
 
 __author__ = "DodoLaSaumure"
@@ -19,9 +23,9 @@ class SimpleDrill:
 
     def accelerateIfNeeded(self, ztogo, drillfeed):
         if self.safeZforG0 > 0:
-            self.block.append(CNC.grapid(z=ztogo + self.safeZforG0))
+            self.block.append(globCNC.grapid(z=ztogo + self.safeZforG0))
             kwargs = {"f": float(drillfeed)}
-            self.block.append(CNC.gline(None, None, ztogo, **kwargs))
+            self.block.append(globCNC.gline(None, None, ztogo, **kwargs))
 
     def calc(self, x, y, depth, peck, dwell, drillFeed, safeZforG0):
         self.safeZforG0 = float(abs(safeZforG0))
@@ -29,8 +33,8 @@ class SimpleDrill:
         currentz = 0.0
         self.blocks = []
         self.block = Block(self.name)
-        self.block.append(CNC.grapid(x=x, y=y))
-        self.block.append(CNC.grapid(z=CNC.vars["safe"]))
+        self.block.append(globCNC.grapid(x=x, y=y))
+        self.block.append(globCNC.grapid(z=globCNC.vars["safe"]))
         self.accelerateIfNeeded(0.0, drillFeed)
         self.block.append("(entered)")
         while currentz > depth:
@@ -38,16 +42,16 @@ class SimpleDrill:
             if currentz < depth:
                 currentz = depth
             kwargs = {"f": float(drillFeed)}
-            self.block.append(CNC.gline(None, None, float(currentz), **kwargs))
+            self.block.append(globCNC.gline(None, None, float(currentz), **kwargs))
             if self.safeZforG0 > 0:
-                self.block.append(CNC.grapid(z=0.0 + self.safeZforG0))
+                self.block.append(globCNC.grapid(z=0.0 + self.safeZforG0))
             else:
-                self.block.append(CNC.grapid(z=CNC.vars["safe"]))
-            self.block.append(f"g4 {CNC.fmt('p', float(dwell))}")
+                self.block.append(globCNC.grapid(z=globCNC.vars["safe"]))
+            self.block.append(f"g4 {globCNC.fmt('p', float(dwell))}")
             if currentz > depth:
                 self.accelerateIfNeeded(currentz, drillFeed)
         self.block.append("(exiting)")
-        self.block.append(CNC.grapid(z=CNC.vars["safe"]))
+        self.block.append(globCNC.grapid(z=globCNC.vars["safe"]))
         self.blocks.append(self.block)
         return self.blocks
 
@@ -100,7 +104,7 @@ class Tool(Plugin):
         active = app.activeBlock()
         if active == 0:
             active = 1
-        app.gcode.insBlocks(active, blocks, _("Create Simple Drill"))
+        globGCode.insBlocks(active, blocks, _("Create Simple Drill"))
         app.refresh()
         app.setStatus(_("Generated: Simple Drill"))
 

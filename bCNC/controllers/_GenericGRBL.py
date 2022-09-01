@@ -3,6 +3,7 @@
 
 import time
 
+from sender import globSender
 from _GenericController import _GenericController
 
 # From https://github.com/grbl/grbl/wiki/Interfacing-with-Grbl
@@ -223,29 +224,29 @@ class _GenericGRBL(_GenericController):
         print("test supergen grbl")
 
     def viewSettings(self):
-        self.master.sendGCode("$$")
+        globSender.sendGCode("$$")
 
     def viewBuild(self):
-        self.master.sendGCode("$I")
+        globSender.sendGCode("$I")
 
     def viewStartup(self):
-        self.master.sendGCode("$N")
+        globSender.sendGCode("$N")
 
     def checkGcode(self):
-        self.master.sendGCode("$C")
+        globSender.sendGCode("$C")
 
     def grblHelp(self):
-        self.master.sendGCode("$")
+        globSender.sendGCode("$")
 
     def grblRestoreSettings(self):
-        self.master.sendGCode("$RST=$")
+        globSender.sendGCode("$RST=$")
 
     def grblRestoreWCS(self):
-        self.master.sendGCode("$RST=#")
+        globSender.sendGCode("$RST=#")
 
     def grblRestoreAll(self):
-        self.master.sendGCode("$RST=#")
+        globSender.sendGCode("$RST=#")
 
     def purgeControllerExtra(self):
         time.sleep(1)
-        self.master.unlock(False)
+        globSender.unlock(False)

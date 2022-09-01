@@ -4,7 +4,11 @@
 # Date:      11 March 2016
 # Done in Annonay at Hotel "Du midi" after a business trip and 10 hours of work.
 
-from CNC import CNC, Block
+from cnc import globCNC
+from gcode import globGCode
+from sender import globSender
+
+from cnc import  Block
 from ToolsPage import Plugin
 from Helpers import to_zip
 
@@ -72,11 +76,11 @@ class Hilbert:
         block = Block(self.name)
         xi, yi = to_zip(*(self.hilbert(0.0, 0.0, size, 0.0, 0.0, size, n)))
 
-        block.append(CNC.zsafe())
-        block.append(CNC.grapid(xi[0], yi[0]))
+        block.append(globCNC.zsafe())
+        block.append(globCNC.grapid(xi[0], yi[0]))
 
         currDepth = 0.0
-        stepz = CNC.vars["stepz"]
+        stepz = globCNC.vars["stepz"]
         if stepz == 0:
             stepz = 0.001  # avoid infinite while loop
 
@@ -84,14 +88,14 @@ class Hilbert:
             currDepth -= stepz
             if currDepth < self.depth:
                 currDepth = self.depth
-            block.append(CNC.zenter(currDepth))
-            block.append(CNC.gcode_generate(1, [("f", CNC.vars["cutfeed"])]))
+            block.append(globCNC.zenter(currDepth))
+            block.append(globCNC.gcode_generate(1, [("f", globCNC.vars["cutfeed"])]))
             for x, y in zip(xi, yi):
-                block.append(CNC.gline(x, y))
+                block.append(globCNC.gline(x, y))
             if currDepth <= self.depth:
                 break
 
-        block.append(CNC.zsafe())
+        block.append(globCNC.zsafe())
         blocks.append(block)
         return blocks
 
@@ -140,7 +144,7 @@ class Tool(Plugin):
         active = app.activeBlock()
         if active == 0:
             active = 1
-        app.gcode.insBlocks(active, blocks, "Hilbert")
+        globGCode.insBlocks(active, blocks, "Hilbert")
         app.refresh()
         app.setStatus(_("Generated: Hilbert"))
 

@@ -8,7 +8,7 @@ from math import (
     sin,
 )
 
-from CNC import Block
+from cnc import Block
 from ToolsPage import Plugin
 
 __author__ = "@harvie Tomas Mudrunka"
@@ -81,7 +81,7 @@ class Tool(Plugin):
         blocks = []
         # Loop over selected blocks
         for bid in app.editor.getSelectedBlocks():
-            path = app.gcode.toPath(bid)[0]
+            path = globGCode.toPath(bid)[0]
 
             # create new block which encorporates trochoidal path
             block = Block(
@@ -165,7 +165,7 @@ class Tool(Plugin):
             blocks.append(block)
 
         active = app.activeBlock()
-        app.gcode.insBlocks(
+        globGCode.insBlocks(
             active, blocks, "Trochoidal created"
         )  # <<< insert blocks over active block in the editor
         app.refresh()  # <<< refresh editor

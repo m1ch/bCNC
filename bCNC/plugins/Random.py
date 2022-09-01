@@ -61,16 +61,16 @@ class Tool(Plugin):
         undoinfo = []  # FIXME it should be only one UNDO
 
         for bid in blocks:
-            undoinfo.append(app.gcode.cloneBlockUndo(bid, pos))
+            undoinfo.append(globGCode.cloneBlockUndo(bid, pos))
             newblocks = []
             newblocks.append((pos, None))
             pos += 1
             app.addUndo(undoinfo)
             x = random.uniform(-dx, dx)
             y = random.uniform(-dy, dy)
-            app.gcode.moveLines(newblocks, x, y)
+            globGCode.moveLines(newblocks, x, y)
 
-        allBlocks = app.gcode.blocks
+        allBlocks = globGCode.blocks
         for bid in blocks:
             block = allBlocks[bid]
             if not block.name() in ("Header", "Footer"):

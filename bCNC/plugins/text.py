@@ -3,7 +3,11 @@
 # Author:    Filippo Rivato
 # Date: December 2015
 
-from CNC import CNC, Block
+from cnc import globCNC
+from gcode import globGCode
+from sender import globSender
+
+from cnc import  Block
 from ToolsPage import Plugin
 
 __author__ = "Filippo Rivato"
@@ -132,13 +136,13 @@ class Tool(Plugin):
         font.close()
 
         # Gcode Zsafe
-        block.append(CNC.zsafe())
+        block.append(globCNC.zsafe())
 
         blocks.append(block)
         active = app.activeBlock()
         if active == 0:
             active = 1
-        app.gcode.insBlocks(active, blocks, "Text")
+        globGCode.insBlocks(active, blocks, "Text")
         app.refresh()
         app.setStatus("Generated Text")
 
@@ -150,13 +154,13 @@ class Tool(Plugin):
         yO = yO * fontSize
         for cont in contours:
             block.append("( ---------- cut-here ---------- )")
-            block.append(CNC.zsafe())
+            block.append(globCNC.zsafe())
             block.append(
-                CNC.grapid(xO + cont[0].x * scale, yO + cont[0].y * scale))
-            block.append(CNC.zenter(depth))
-            block.append(CNC.gcode_generate(1, [("f", CNC.vars["cutfeed"])]))
+                globCNC.grapid(xO + cont[0].x * scale, yO + cont[0].y * scale))
+            block.append(globCNC.zenter(depth))
+            block.append(globCNC.gcode_generate(1, [("f", globCNC.vars["cutfeed"])]))
             for p in cont:
-                block.append(CNC.gline(xO + p.x * scale, yO + p.y * scale))
+                block.append(globCNC.gline(xO + p.x * scale, yO + p.y * scale))
 
     def image_to_ascii(self, image):
         ascii_chars = ["#", "A", "@", "%", "S", "+", "<", "*", ":", ",", "."]

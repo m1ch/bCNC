@@ -8,7 +8,11 @@ import math
 import random
 import time
 
-from CNC import CCW, CNC, CW, Block
+from cnc import globCNC
+from gcode import globGCode
+from sender import globSender
+
+from cnc import CCW, CW, Block
 from ToolsPage import Plugin
 
 __author__ = "Gonzalo Cobos Bergillos"
@@ -309,15 +313,15 @@ class Jigsaw:
         y = 0
         for i in range(0, int(self.thickness / self.step_z)):
             for cut in puzzle_cuts:
-                block.append(CNC.zsafe())
-                block.append(CNC.grapid(x + cut[0].x, y + cut[0].y))
-                block.append(CNC.zenter(0.0))
-                block.append(CNC.fmt("f", self.cut_feed))
-                block.append(CNC.zenter(-(i + 1) * self.step_z))
+                block.append(globCNC.zsafe())
+                block.append(globCNC.grapid(x + cut[0].x, y + cut[0].y))
+                block.append(globCNC.zenter(0.0))
+                block.append(globCNC.fmt("f", self.cut_feed))
+                block.append(globCNC.zenter(-(i + 1) * self.step_z))
                 for arc in cut:
                     if arc.r:
                         block.append(
-                            CNC.garc(arc.direction,
+                            globCNC.garc(arc.direction,
                                      x + arc.x,
                                      y + arc.y,
                                      r=arc.r)
@@ -328,18 +332,18 @@ class Jigsaw:
         # Draw border
         block = Block(self.name + "_border")
 
-        block.append(CNC.zsafe())
-        block.append(CNC.grapid(x, y))
+        block.append(globCNC.zsafe())
+        block.append(globCNC.grapid(x, y))
 
         for i in range(0, int(self.thickness / self.step_z)):
-            block.append(CNC.fmt("f", self.cut_feed))
-            block.append(CNC.zenter(-(i + 1) * self.step_z))
-            block.append(CNC.gline(x + board_width, y))
-            block.append(CNC.gline(x + board_width, y + board_height))
-            block.append(CNC.gline(x, y + board_height))
-            block.append(CNC.gline(x, y))
+            block.append(globCNC.fmt("f", self.cut_feed))
+            block.append(globCNC.zenter(-(i + 1) * self.step_z))
+            block.append(globCNC.gline(x + board_width, y))
+            block.append(globCNC.gline(x + board_width, y + board_height))
+            block.append(globCNC.gline(x, y + board_height))
+            block.append(globCNC.gline(x, y))
 
-        block.append(CNC.zsafe())
+        block.append(globCNC.zsafe())
         blocks.append(block)
 
         return blocks
@@ -397,7 +401,7 @@ class Tool(Plugin):
             active = app.activeBlock()
             if active == 0:
                 active = 1
-            app.gcode.insBlocks(active, blocks, "Jigsaw puzzle")
+            globGCode.insBlocks(active, blocks, "Jigsaw puzzle")
             app.refresh()
             app.setStatus(_("Jigsaw puzzle generated in {}s").format(duration))
         else:

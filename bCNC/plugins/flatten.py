@@ -3,7 +3,11 @@
 # Author:    Filippo Rivato
 # Date:      2015/10/04
 
-from CNC import CNC, Block
+from cnc import globCNC
+from gcode import globGCode
+from sender import globSender
+
+from cnc import  Block
 from ToolsPage import Plugin
 
 __author__ = "Filippo Rivato"
@@ -62,18 +66,18 @@ class Flatten:
         # Add Region disabled to show worked area
         block = Block(self.name + " Outline")
         block.enable = False
-        block.append(CNC.zsafe())
+        block.append(globCNC.zsafe())
         xR, yR = self.RectPath(XStart, YStart, FlatWidth, FlatHeight)
         for x, y in zip(xR, yR):
-            block.append(CNC.gline(x, y))
+            block.append(globCNC.gline(x, y))
         blocks.append(block)
 
         # Load tool and material settings
-        toolDiam = CNC.vars["diameter"]
+        toolDiam = globCNC.vars["diameter"]
         toolRadius = toolDiam / 2.0
 
         # Calc tool diameter with Maximum Step Over allowed
-        StepOverInUnitMax = toolDiam * CNC.vars["stepover"] / 100.0
+        StepOverInUnitMax = toolDiam * globCNC.vars["stepover"] / 100.0
 
         # Offset for Border Cut
         BorderXStart = XStart + toolRadius
@@ -208,11 +212,11 @@ class Flatten:
             block.append("(with border)")
 
         # Move safe to first point
-        block.append(CNC.zsafe())
-        block.append(CNC.grapid(xP[0], yP[0]))
+        block.append(globCNC.zsafe())
+        block.append(globCNC.grapid(xP[0], yP[0]))
         # Init Depth
         currDepth = 0.0
-        stepz = CNC.vars["stepz"]
+        stepz = globCNC.vars["stepz"]
         if stepz == 0:
             stepz = 0.001  # avoid infinite while loop
 
@@ -221,30 +225,30 @@ class Flatten:
             currDepth -= stepz
             if currDepth < FlatDepth:
                 currDepth = FlatDepth
-            block.append(CNC.zenter(currDepth))
-            block.append(CNC.gcode_generate(1, [("f", CNC.vars["cutfeed"])]))
+            block.append(globCNC.zenter(currDepth))
+            block.append(globCNC.gcode_generate(1, [("f", globCNC.vars["cutfeed"])]))
 
             # Pocketing
             lastxy = None
             for x, y in zip(xP, yP):
-                if lastxy != CNC.gline(x, y) or None:
-                    block.append(CNC.gline(x, y))
-                lastxy = CNC.gline(x, y)
+                if lastxy != globCNC.gline(x, y) or None:
+                    block.append(globCNC.gline(x, y))
+                lastxy = globCNC.gline(x, y)
 
             # Border cut if request
             for x, y in zip(xB, yB):
-                block.append(CNC.gline(x, y))
+                block.append(globCNC.gline(x, y))
 
             # Verify exit condition
             if currDepth <= FlatDepth:
                 break
 
             # Move to the begin in a safe way
-            block.append(CNC.zsafe())
-            block.append(CNC.grapid(xP[0], yP[0]))
+            block.append(globCNC.zsafe())
+            block.append(globCNC.grapid(xP[0], yP[0]))
 
         # Zsafe
-        block.append(CNC.zsafe())
+        block.append(globCNC.zsafe())
         blocks.append(block)
         return blocks
 
@@ -321,6 +325,6 @@ class Tool(Plugin):
             active = app.activeBlock()
             if active == 0:
                 active = 1
-            app.gcode.insBlocks(active, blocks, "Flatten")
+            globGCode.insBlocks(active, blocks, "Flatten")
             app.refresh()
             app.setStatus(_("Flatten: Generated flatten surface"))

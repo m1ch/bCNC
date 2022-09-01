@@ -10,3 +10,13 @@ build
 
 *.code-workspace
 .vscode/
+
+
+# Private files:
+NOTES.md
+flake8.out
+gettest_strings.txt
+pot_sort.py
+snakefood.dot
+snakefood.png
+source_files.txt

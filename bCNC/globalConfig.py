@@ -10,6 +10,10 @@ from globalConstants import (
     __LANGUAGES__,
     __controllerpath__,
     __pluginpath__,
+    __pagespath__,
+    __framespath__,
+    __groupspath__,
+    __localespath__,
     _maxRecent,
 )
 
@@ -69,6 +73,20 @@ def _search_controllers():
     return(controllers)
 
 
+def _search_py_modules(path):
+    import glob
+
+    modules = {}
+    for f in glob.glob(f"{path}/*.py"):
+        name, _ = os.path.splitext(os.path.basename(f))
+        if name[0] == "_":
+            continue
+        module = f.removeprefix(f"{__prgpath__}/")
+        module = module.removesuffix(".py").replace("/", ".")
+        modules[name] = module
+    return(modules)
+
+
 def _search_plugins():
     import glob
     # import traceback
@@ -124,7 +142,7 @@ def make_font(name, value=None):
 
 # New class to provide config for everyone
 # FIXME: create single instance of this and pass it to all parts of application
-class Config(configparser.ConfigParser):
+class _Config(configparser.ConfigParser):
     def __init__(self):
         configparser.ConfigParser.__init__(self)
         # FIXME: This is here to debug the fact that config is sometimes
@@ -148,17 +166,24 @@ class Config(configparser.ConfigParser):
         except Exception:
             _errorReport = self.getint("Connection", "errorreport", 1)
 
-        # Find available controllers
-        controllers = _search_controllers()
-        self.add_section("_controllers")
-        for name, path in controllers.items():
-            self.set('_controllers', name, path)
+        self.initiate_translation()
+        self.define_colors()
+        self.search_py_modules()
 
-        # FIXME: Find available plugins
+    def define_colors(self):
+        self.add_section("_colors")
+        self.set('_colors', "GLOBAL_CONTROL_BACKGROUND", "White")
+        self.set('_colors', "GLOBAL_FONT_COLOR", "White")
 
-        # initiate translation
+        # FIXME: Add color definition here!!
+        pass
+
+    def initiate_translation(self):
+        """If locales are set, than the translation is initiated.
+           With the initialization all strings in the _() format will be taken
+           from the translation files.
+        """
         language = self.getstr(__prg__, "language")
-        localedir = os.path.join(__prgpath__, "locale")
         # No translation needed if 'en' is selected!
         if language == 'en':
             return
@@ -173,20 +198,47 @@ class Config(configparser.ConfigParser):
             #     language = loc
             # else:
             #     return
-            return # FIXME: Check wether locale shall be used as default?
+            return  # FIXME: Check wether locale shall be used as default?
         lang = gettext.translation(
             __prg__,
-            localedir,
+            __localespath__,
             languages=[language]
         )
         lang.install()
+
+    def search_py_modules(self):
+        """Serch for all optional python modules like plugins, widgets, ...
+        """
+        # Find available controllers -----------------------------------------
+        controllers = _search_py_modules(__controllerpath__)
+        self.add_section("_controllers")
+        for name, path in controllers.items():
+            self.set('_controllers', name, path)
+        # Find available gui elements ----------------------------------------
+        modules = _search_py_modules(__pagespath__)
+        self.add_section("_guipages")
+        for name, path in modules.items():
+            self.set('_guipages', name, path)
+        modules = _search_py_modules(__framespath__)
+        self.add_section("_guiframes")
+        for name, path in modules.items():
+            self.set('_guiframes', name, path)
+        modules = _search_py_modules(__groupspath__)
+        self.add_section("_guigroups")
+        for name, path in modules.items():
+            self.set('_guigroups', name, path)
+        # Find available plugins ---------------------------------------------
+        modules = _search_py_modules(__pluginpath__)
+        self.add_section("_plugins")
+        for name, path in modules.items():
+            self.set('_plugins', name, path)
 
     # -------------------------------------------------------------------------
     # Print the full configuration to stdout
     # -------------------------------------------------------------------------
     def print_configuration(self):
         for s in self.sections():
-            print("-"*30)
+            print("-" * 30)
             print(s)
             for name, value in self.items(s):
                 print(name, value)
@@ -371,4 +423,4 @@ class Config(configparser.ConfigParser):
         return sorted(controllers.keys())
 
 
-config = Config()
+config = _Config()

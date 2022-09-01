@@ -9,7 +9,11 @@ from bmath import (
     sqrt,
     Vector,
 )
-from CNC import CNC, Block
+from cnc import globCNC
+from gcode import globGCode
+from sender import globSender
+
+from cnc import  Block
 from ToolsPage import Plugin
 
 __author__ = "Vasilis Vlachoudis"
@@ -105,61 +109,61 @@ class Box:
             pos += x * U
 
             if i == 0:
-                block.append(CNC.glinev(1, pos, self.feed))
+                block.append(globCNC.glinev(1, pos, self.feed))
             else:
-                block.append(CNC.glinev(1, pos))
+                block.append(globCNC.glinev(1, pos))
 
             if self.r > 0.0:
                 if sgn < 0.0:
                     if i < n - 1:
                         if overcut == "V":
                             pos -= sgn * self.r * V
-                            block.append(CNC.glinev(1, pos))
+                            block.append(globCNC.glinev(1, pos))
                             pos += sgn * dv * V
                         elif overcut == "D":
                             pos -= sgn * rd * (U + V)
-                            block.append(CNC.glinev(1, pos))
+                            block.append(globCNC.glinev(1, pos))
                             pos += sgn * rd * (U + V)
-                            block.append(CNC.glinev(1, pos))
+                            block.append(globCNC.glinev(1, pos))
                             pos += sgn * (dv - self.r) * V
                         else:
                             pos += sgn * (dv - self.r) * V
-                        block.append(CNC.glinev(1, pos))
+                        block.append(globCNC.glinev(1, pos))
                         ijk = self.r * U
                         pos += sgn * self.r * V + self.r * U
-                        block.append(CNC.garcv(3, pos, ijk))
+                        block.append(globCNC.garcv(3, pos, ijk))
                     else:
                         # ending
                         ijk = self.r * V
                         pos += self.r * V + self.r * U
-                        block.append(CNC.garcv(3, pos, ijk))
+                        block.append(globCNC.garcv(3, pos, ijk))
 
                 elif sgn > 0.0:
                     ijk = sgn * self.r * V
                     pos += sgn * self.r * V + self.r * U
-                    block.append(CNC.garcv(3, pos, ijk))
+                    block.append(globCNC.garcv(3, pos, ijk))
                     if i < n - 1:
                         if overcut == "V":
                             pos += sgn * dv * V
-                            block.append(CNC.glinev(1, pos))
+                            block.append(globCNC.glinev(1, pos))
                             if self.r > 0.0:
                                 pos -= sgn * self.r * V
-                                block.append(CNC.glinev(1, pos))
+                                block.append(globCNC.glinev(1, pos))
                         elif overcut == "D":
                             pos += sgn * (dv - self.r) * V
-                            block.append(CNC.glinev(1, pos))
+                            block.append(globCNC.glinev(1, pos))
                             if self.r > 0.0:
                                 pos -= sgn * rd * (U - V)
-                                block.append(CNC.glinev(1, pos))
+                                block.append(globCNC.glinev(1, pos))
                                 pos += sgn * rd * (U - V)
-                                block.append(CNC.glinev(1, pos))
+                                block.append(globCNC.glinev(1, pos))
                         else:
                             pos += sgn * (dv - self.r) * V
-                            block.append(CNC.glinev(1, pos))
+                            block.append(globCNC.glinev(1, pos))
 
             elif i < n - 1:
                 pos += sgn * dv * V
-                block.append(CNC.glinev(1, pos))
+                block.append(globCNC.glinev(1, pos))
             sgn = -sgn
 
         return pos
@@ -186,7 +190,7 @@ class Box:
         # Bottom
         pos = Vector(x0, y0, self.surface)
         pos -= self.r * Vector.Y  # r*V
-        block.append(CNC.gcode_generate(0, zip("XY", pos[:2])))
+        block.append(globCNC.gcode_generate(0, zip("XY", pos[:2])))
         z = self.surface
         last = False
         while True:
@@ -201,7 +205,7 @@ class Box:
             pos[2] = z
 
             # Penetrate
-            block.append(CNC.zenter(pos[2]))
+            block.append(globCNC.zenter(pos[2]))
 
             # Bottom
             pos = self.zigZagLine(
@@ -235,7 +239,7 @@ class Box:
                 break
 
         # Bring to safe height
-        block.append(CNC.zsafe())
+        block.append(globCNC.zsafe())
 
     # ----------------------------------------------------------------------
     # create all 6 sides of box
@@ -378,7 +382,7 @@ class Tool(Plugin):
         active = app.activeBlock()
         if active == 0:
             active = 1
-        app.gcode.insBlocks(active, box.make(), _("Create finger BOX"))
+        globGCode.insBlocks(active, box.make(), _("Create finger BOX"))
         app.refresh()
         app.setStatus(_("Generated: BOX with fingers"))
 

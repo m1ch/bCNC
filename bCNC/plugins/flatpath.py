@@ -2,7 +2,11 @@
 # Date: 7 july 2018
 
 
-from CNC import Block
+from cnc import Block
+from cnc import globCNC
+from gcode import globGCode
+from sender import globSender
+
 from ToolsPage import Plugin
 
 __author__ = "@harvie Tomas Mudrunka"
@@ -30,15 +34,15 @@ class Tool(Plugin):
     def execute(self, app):
         blocks = []
         for bid in app.editor.getSelectedBlocks():
-            if len(app.gcode.toPath(bid)) < 1:
+            if len(globGCode.toPath(bid)) < 1:
                 continue
 
-            eblock = Block("flat " + app.gcode[bid].name())
-            eblock = app.gcode.fromPath(app.gcode.toPath(bid), eblock)
+            eblock = Block("flat " + globGCode[bid].name())
+            eblock = globGCode.fromPath(globGCode.toPath(bid), eblock)
             blocks.append(eblock)
 
         active = -1  # add to end
-        app.gcode.insBlocks(
+        globGCode.insBlocks(
             active, blocks, "Shape flattened"
         )  # <<< insert blocks over active block in the editor
         app.refresh()  # <<< refresh editor

@@ -9,7 +9,10 @@ from math import (
 
 from bmath import Vector
 from bpath import Path, Segment, eq
-from CNC import CNC
+from cnc import globCNC
+from gcode import globGCode
+from sender import globSender
+
 from ToolsPage import Plugin
 
 __author__ = "@harvie Tomas Mudrunka"
@@ -108,7 +111,7 @@ This fact introduces the need for preprocessing the g-code to account with that 
         angleth = self["angle"]
         swivelz = self.fromMm("swivelz")
         initdir = self["initdir"]
-        CNC.vars["cutfeed"] = self.fromMm("feed")
+        globCNC.vars["cutfeed"] = self.fromMm("feed")
         simulate = self["simulate"]
         simpreci = self["simpreci"]
 
@@ -127,11 +130,11 @@ This fact introduces the need for preprocessing the g-code to account with that 
 
         blocks = []
         for bid in app.editor.getSelectedBlocks():
-            if len(app.gcode.toPath(bid)) < 1:
+            if len(globGCode.toPath(bid)) < 1:
                 continue
 
-            opath = app.gcode.toPath(bid)[0]
-            npath = Path(f"dragknife {dragoff}: {app.gcode[bid].name()}")
+            opath = globGCode.toPath(bid)[0]
+            npath = Path(f"dragknife {dragoff}: {globGCode[bid].name()}")
 
             if not simulate:
 
@@ -214,11 +217,11 @@ This fact introduces the need for preprocessing the g-code to account with that 
                                              newknife))
                     prevknife = newknife
 
-            eblock = app.gcode.fromPath(npath)
+            eblock = globGCode.fromPath(npath)
             blocks.append(eblock)
 
         active = -1  # add to end
-        app.gcode.insBlocks(
+        globGCode.insBlocks(
             active, blocks, "Dragknife"
         )  # <<< insert blocks over active block in the editor
         app.refresh()  # <<< refresh editor

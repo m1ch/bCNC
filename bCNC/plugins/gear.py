@@ -6,7 +6,11 @@
 import math
 
 from bmath import Vector
-from CNC import CNC, CW, Block
+from cnc import globCNC
+from gcode import globGCode
+from sender import globSender
+
+from cnc import  CW, Block
 from ToolsPage import Plugin
 
 __author__ = "Vasilis Vlachoudis"
@@ -124,19 +128,19 @@ class Gear:
         block = Block(self.name)
         blocks.append(block)
 
-        block.append(CNC.grapid(first.x(), first.y()))
-        block.append(CNC.zenter(0.0))
+        block.append(globCNC.grapid(first.x(), first.y()))
+        block.append(globCNC.zenter(0.0))
         for v in points:
-            block.append(CNC.gline(v.x(), v.y()))
-        block.append(CNC.gline(first.x(), first.y()))
-        block.append(CNC.zsafe())
+            block.append(globCNC.gline(v.x(), v.y()))
+        block.append(globCNC.gline(first.x(), first.y()))
+        block.append(globCNC.zsafe())
 
         block = Block(f"{self.name}-basecircle")
         block.enable = False
-        block.append(CNC.grapid(Db / 2, 0.0))
-        block.append(CNC.zenter(0.0))
-        block.append(CNC.garc(CW, Db / 2, 0.0, i=-Db / 2))
-        block.append(CNC.zsafe())
+        block.append(globCNC.grapid(Db / 2, 0.0))
+        block.append(globCNC.zenter(0.0))
+        block.append(globCNC.garc(CW, Db / 2, 0.0, i=-Db / 2))
+        block.append(globCNC.zsafe())
         blocks.append(block)
         return blocks
 
@@ -170,7 +174,7 @@ class Tool(Plugin):
         active = app.activeBlock()
         if active == 0:
             active = 1
-        app.gcode.insBlocks(active, blocks, _("Create Spur GEAR"))
+        globGCode.insBlocks(active, blocks, _("Create Spur GEAR"))
         app.refresh()
         app.setStatus(_("Generated: Spur GEAR"))
 

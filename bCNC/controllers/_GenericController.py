@@ -4,7 +4,8 @@
 import re
 import time
 
-from CNC import CNC, WCS
+from cnc import globCNC, WCS
+from sender import globSender
 
 # GRBLv1
 SPLITPAT = re.compile(r"[:,]")
@@ -63,51 +64,51 @@ class _GenericController:
         pass
 
     def hardReset(self):
-        self.master.busy()
-        if self.master.serial is not None:
+        globSender.busy()
+        if globSender.serial is not None:
             self.hardResetPre()
-            self.master.openClose()
+            globSender.openClose()
             self.hardResetAfter()
-        self.master.openClose()
-        self.master.stopProbe()
-        self.master._alarm = False
-        CNC.vars["_OvChanged"] = True  # force a feed change if any
-        self.master.notBusy()
+        globSender.openClose()
+        globSender.stopProbe()
+        globSender._alarm = False
+        globCNC.vars["_OvChanged"] = True  # force a feed change if any
+        globSender.notBusy()
 
     # ----------------------------------------------------------------------
     def softReset(self, clearAlarm=True):
-        if self.master.serial:
-            self.master.serial_write(b"\030")
-        self.master.stopProbe()
+        if globSender.serial:
+            globSender.serial_write(b"\030")
+        globSender.stopProbe()
         if clearAlarm:
-            self.master._alarm = False
-        CNC.vars["_OvChanged"] = True  # force a feed change if any
+            globSender._alarm = False
+        globCNC.vars["_OvChanged"] = True  # force a feed change if any
 
     # ----------------------------------------------------------------------
     def unlock(self, clearAlarm=True):
         if clearAlarm:
-            self.master._alarm = False
-        self.master.sendGCode("$X")
+            globSender._alarm = False
+        globSender.sendGCode("$X")
 
     # ----------------------------------------------------------------------
     def home(self, event=None):
-        self.master._alarm = False
-        self.master.sendGCode("$H")
+        globSender._alarm = False
+        globSender.sendGCode("$H")
 
     def viewStatusReport(self):
-        self.master.serial_write(b"?")
-        self.master.sio_status = True
+        globSender.serial_write(b"?")
+        globSender.sio_status = True
 
     def viewParameters(self):
-        self.master.sendGCode("$#")
+        globSender.sendGCode("$#")
 
     def viewState(self):  # Maybe rename to viewParserState() ???
-        self.master.sendGCode("$G")
+        globSender.sendGCode("$G")
 
     # ----------------------------------------------------------------------
     def jog(self, direction):
-        self.master.sendGCode(f"G91G0{direction}")
-        self.master.sendGCode("G90")
+        globSender.sendGCode(f"G91G0{direction}")
+        globSender.sendGCode("G90")
 
     # ----------------------------------------------------------------------
     def goto(self, x=None, y=None, z=None, a=None, b=None, c=None):
@@ -124,11 +125,11 @@ class _GenericController:
             cmd += f"B{b:g}"
         if c is not None:
             cmd += f"C{c:g}"
-        self.master.sendGCode(f"{cmd}")
+        globSender.sendGCode(f"{cmd}")
 
     # ----------------------------------------------------------------------
     def _wcsSet(self, x, y, z, a=None, b=None, c=None):
-        p = WCS.index(CNC.vars["WCS"])
+        p = WCS.index(globCNC.vars["WCS"])
         if p < 6:
             cmd = "G10L20P%d" % (p + 1)
         elif p == 6:
@@ -152,63 +153,63 @@ class _GenericController:
         if c is not None and abs(float(c)) < 10000.0:
             pos += "C" + str(c)
         cmd += pos
-        self.master.sendGCode(cmd)
+        globSender.sendGCode(cmd)
         self.viewParameters()
-        self.master.event_generate(
+        globSender.event_generate(
             "<<Status>>",
             data=(_("Set workspace {} to {}").format(WCS[p], pos))
         )
-        self.master.event_generate("<<CanvasFocus>>")
+        globSender.event_generate("<<CanvasFocus>>")
 
     # ----------------------------------------------------------------------
     def feedHold(self, event=None):
-        if event is not None and not self.master.acceptKey(True):
+        if event is not None and not globSender.acceptKey(True):
             return
-        if self.master.serial is None:
+        if globSender.serial is None:
             return
-        self.master.serial_write(b"!")
-        self.master.serial.flush()
-        self.master._pause = True
+        globSender.serial_write(b"!")
+        globSender.serial.flush()
+        globSender._pause = True
 
     # ----------------------------------------------------------------------
     def resume(self, event=None):
-        if event is not None and not self.master.acceptKey(True):
+        if event is not None and not globSender.acceptKey(True):
             return
-        if self.master.serial is None:
+        if globSender.serial is None:
             return
-        self.master.serial_write(b"~")
-        self.master.serial.flush()
-        self.master._msg = None
-        self.master._alarm = False
-        self.master._pause = False
+        globSender.serial_write(b"~")
+        globSender.serial.flush()
+        globSender._msg = None
+        globSender._alarm = False
+        globSender._pause = False
 
     # ----------------------------------------------------------------------
     def pause(self, event=None):
-        if self.master.serial is None:
+        if globSender.serial is None:
             return
-        if self.master._pause:
-            self.master.resume()
+        if globSender._pause:
+            globSender.resume()
         else:
-            self.master.feedHold()
+            globSender.feedHold()
 
     # ----------------------------------------------------------------------
     # Purge the buffer of the controller. Unfortunately we have to perform
     # a reset to clear the buffer of the controller
     # ---------------------------------------------------------------------
     def purgeController(self):
-        self.master.serial_write(b"!")
-        self.master.serial.flush()
+        globSender.serial_write(b"!")
+        globSender.serial.flush()
         time.sleep(1)
         # remember and send all G commands
-        G = " ".join([x for x in CNC.vars["G"] if x[0] == "G"])  # remember $G
-        TLO = CNC.vars["TLO"]
+        G = " ".join([x for x in globCNC.vars["G"] if x[0] == "G"])  # remember $G
+        TLO = globCNC.vars["TLO"]
         self.softReset(False)  # reset controller
         self.purgeControllerExtra()
-        self.master.runEnded()
-        self.master.stopProbe()
+        globSender.runEnded()
+        globSender.stopProbe()
         if G:
-            self.master.sendGCode(G)  # restore $G
-        self.master.sendGCode(f"G43.1Z{TLO}")  # restore TLO
+            globSender.sendGCode(G)  # restore $G
+        globSender.sendGCode(f"G43.1Z{TLO}")  # restore TLO
         self.viewState()
 
     # ----------------------------------------------------------------------
@@ -216,17 +217,17 @@ class _GenericController:
         state = state.strip()
 
         # Do not show g-code errors, when machine is already in alarm state
-        if (CNC.vars["state"].startswith("ALARM:")
+        if (globCNC.vars["state"].startswith("ALARM:")
                 and state.startswith("error:")):
             print(f"Supressed: {state}")
             return
 
         # Do not show alarm without number when we already
         # display alarm with number
-        if state == "Alarm" and CNC.vars["state"].startswith("ALARM:"):
+        if state == "Alarm" and globCNC.vars["state"].startswith("ALARM:"):
             return
 
-        CNC.vars["state"] = state
+        globCNC.vars["state"] = state
 
     # ----------------------------------------------------------------------
     def parseLine(self, line, cline, sline):
@@ -234,54 +235,54 @@ class _GenericController:
             return True
 
         elif line[0] == "<":
-            if not self.master.sio_status:
-                self.master.log.put((self.master.MSG_RECEIVE, line))
+            if not globSender.sio_status:
+                globSender.log.put((globSender.MSG_RECEIVE, line))
             else:
                 self.parseBracketAngle(line, cline)
 
         elif line[0] == "[":
-            self.master.log.put((self.master.MSG_RECEIVE, line))
+            globSender.log.put((globSender.MSG_RECEIVE, line))
             self.parseBracketSquare(line)
 
         elif "error:" in line or "ALARM:" in line:
-            self.master.log.put((self.master.MSG_ERROR, line))
-            self.master._gcount += 1
+            globSender.log.put((globSender.MSG_ERROR, line))
+            globSender._gcount += 1
             if cline:
                 del cline[0]
             if sline:
-                CNC.vars["errline"] = sline.pop(0)
-            if not self.master._alarm:
-                self.master._posUpdate = True
-            self.master._alarm = True
+                globCNC.vars["errline"] = sline.pop(0)
+            if not globSender._alarm:
+                globSender._posUpdate = True
+            globSender._alarm = True
             self.displayState(line)
-            if self.master.running:
-                self.master._stop = True
+            if globSender.running:
+                globSender._stop = True
 
         elif line.find("ok") >= 0:
-            self.master.log.put((self.master.MSG_OK, line))
-            self.master._gcount += 1
+            globSender.log.put((globSender.MSG_OK, line))
+            globSender._gcount += 1
             if cline:
                 del cline[0]
             if sline:
                 del sline[0]
 
         elif line[0] == "$":
-            self.master.log.put((self.master.MSG_RECEIVE, line))
+            globSender.log.put((globSender.MSG_RECEIVE, line))
             pat = VARPAT.match(line)
             if pat:
-                CNC.vars[f"grbl_{pat.group(1)}"] = pat.group(2)
+                globCNC.vars[f"grbl_{pat.group(1)}"] = pat.group(2)
 
         elif line[:4] == "Grbl" or line[:13] == "CarbideMotion":
-            self.master.log.put((self.master.MSG_RECEIVE, line))
-            self.master._stop = True
+            globSender.log.put((globSender.MSG_RECEIVE, line))
+            globSender._stop = True
             del cline[:]  # After reset clear the buffer counters
             del sline[:]
-            CNC.vars["version"] = line.split()[1]
+            globCNC.vars["version"] = line.split()[1]
             # Detect controller
             # FIXME: This overwrites the setup
-            if self.master.controller in ("GRBL0", "GRBL1"):
-                self.master.controllerSet(
-                    "GRBL%d" % (int(CNC.vars["version"][0])))
+            # if globSender.controller in ("GRBL0", "GRBL1"):
+            #     globSender.controllerSet(
+            #         "GRBL%d" % (int(globCNC.vars["version"][0])))
 
         else:
             # We return false in order to tell that we can't parse this line

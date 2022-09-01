@@ -6,32 +6,14 @@
 import json
 import time
 import http.client as http
-from tkinter import (
-    W,
-    E,
-    EW,
-    X,
-    BOTH,
-    LEFT,
-    TOP,
-    RIGHT,
-    BOTTOM,
-    RAISED,
-    DISABLED,
-    IntVar,
-    Tk,
-    Toplevel,
-    Button,
-    Frame,
-    Label,
-    Spinbox,
-    LabelFrame,
-)
+import tkinter as tk
+from tkinter import ttk
 
 from globalConfig import config as gconfig
-import tkExtra
 import Utils
 from globalConstants import __prg__
+
+from gui import utils
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "vvlachoudis@gmail.com"
@@ -40,9 +22,9 @@ __email__ = "vvlachoudis@gmail.com"
 # =============================================================================
 # Check for updates of bCNC
 # =============================================================================
-class CheckUpdateDialog(Toplevel):
+class CheckUpdateDialog(tk.Toplevel):
     def __init__(self, master, version):
-        Toplevel.__init__(self, master)
+        tk.Toplevel.__init__(self, master)
         self.title("Check for updates")
         self.transient(master)
 
@@ -50,45 +32,45 @@ class CheckUpdateDialog(Toplevel):
         self.version = version
 
         # -----
-        la = Label(self, image=Utils.icons["bCNC"],
-                   relief=RAISED, padx=0, pady=0)
-        la.pack(side=TOP, fill=BOTH)
+        la = ttk.Label(self, image=Utils.icons["bCNC"],)
+                    #   relief="raised", padx=0, pady=0)
+        la.pack(side="top", fill="both")
 
         # ----
-        frame = LabelFrame(self, text="Version", padx=3, pady=5)
-        frame.pack(side=TOP, fill=BOTH)
+        frame = tk.LabelFrame(self, text="Version", padx=3, pady=5)
+        frame.pack(side="top", fill="both")
 
-        la = Label(frame, text=_("Installed Version:"))
-        la.grid(row=0, column=0, sticky=E, pady=1)
+        la = ttk.Label(frame, text=_("Installed Version:"))
+        la.grid(row=0, column=0, sticky="e", pady=1)
 
-        la = Label(frame, text=version, anchor=W)
-        la.grid(row=0, column=1, sticky=EW)
-        tkExtra.Balloon.set(la, _("Running version of bCNC"))
+        la = ttk.Label(frame, text=version,)  # anchor="w")
+        la.grid(row=0, column=1, sticky="ew")
+        utils.ToolTip(la, _("Running version of bCNC"))
 
-        la = Label(frame, text=_("Latest Github Version:"))
-        la.grid(row=1, column=0, sticky=E, pady=1)
+        la = ttk.Label(frame, text=_("Latest Github Version:"))
+        la.grid(row=1, column=0, sticky="e", pady=1)
 
-        self.webversion = Label(frame, anchor=W)
-        self.webversion.grid(row=1, column=1, sticky=EW)
-        tkExtra.Balloon.set(self.webversion,
-                            _("Latest release version on github"))
-        la = Label(frame, text=_("Published at:"))
-        la.grid(row=2, column=0, sticky=E, pady=1)
+        self.webversion = ttk.Label(frame, )  # anchor="w")
+        self.webversion.grid(row=1, column=1, sticky="ew")
+        utils.ToolTip(self.webversion,
+                      _("Latest release version on github"))
+        la = ttk.Label(frame, text=_("Published at:"))
+        la.grid(row=2, column=0, sticky="e", pady=1)
 
-        self.published = Label(frame, anchor=W)
-        self.published.grid(row=2, column=1, sticky=EW)
-        tkExtra.Balloon.set(
+        self.published = ttk.Label(frame, )  # anchor="w")
+        self.published.grid(row=2, column=1, sticky="ew")
+        utils.ToolTip(
             self.published, _("Published date of the latest github release")
         )
 
         frame.grid_columnconfigure(1, weight=1)
 
         # ----
-        frame = LabelFrame(self, text=_("Check Interval"), padx=3, pady=5)
-        frame.pack(fill=BOTH)
+        frame = tk.LabelFrame(self, text=_("Check Interval"),)  # padx=3, pady=5)
+        frame.pack(fill="both")
 
-        la = Label(frame, text=_("Last Check:"))
-        la.grid(row=0, column=0, sticky=E, pady=1)
+        la = ttk.Label(frame, text=_("Last Check:"))
+        la.grid(row=0, column=0, sticky="e", pady=1)
 
         # Last check
         lastCheck = gconfig.getint(__prg__, "lastcheck", 0)
@@ -97,49 +79,49 @@ class CheckUpdateDialog(Toplevel):
         else:
             lastCheckStr = time.asctime(time.localtime(lastCheck))
 
-        la = Label(frame, text=lastCheckStr, anchor=W)
-        la.grid(row=0, column=1, sticky=EW)
-        tkExtra.Balloon.set(la, _("Date last checked"))
+        la = ttk.Label(frame, text=lastCheckStr,)  # anchor="w")
+        la.grid(row=0, column=1, sticky="ew")
+        utils.ToolTip(la, _("Date last checked"))
 
-        la = Label(frame, text=_("Interval (days):"))
-        la.grid(row=1, column=0, sticky=E, pady=1)
+        la = ttk.Label(frame, text=_("Interval (days):"))
+        la.grid(row=1, column=0, sticky="e", pady=1)
 
         checkInt = gconfig.getint(__prg__, "checkinterval", 30)
-        self.checkInterval = IntVar()
+        self.checkInterval = tk.IntVar()
         self.checkInterval.set(checkInt)
 
-        s = Spinbox(
+        s = ttk.Spinbox(
             frame,
             text=self.checkInterval,
             from_=0,
             to_=365,
-            background=tkExtra.GLOBAL_CONTROL_BACKGROUND,
+            # background=gconfig.getstr('_colors', "GLOBAL_CONTROL_BACKGROUND"),
         )
-        s.grid(row=1, column=1, sticky=EW)
+        s.grid(row=1, column=1, sticky="ew")
         frame.grid_columnconfigure(1, weight=1)
-        tkExtra.Balloon.set(s, _("Days-interval to remind again for checking"))
+        utils.ToolTip(s, _("Days-interval to remind again for checking"))
 
         # ----
-        frame = Frame(self)
-        frame.pack(side=BOTTOM, fill=X)
-        b = Button(
+        frame = ttk.Frame(self)
+        frame.pack(side="bottom", fill="x")
+        b = ttk.Button(
             frame,
             text=_("Close"),
             image=Utils.icons["x"],
-            compound=LEFT,
+            compound="left",
             command=self.later,
         )
-        b.pack(side=RIGHT)
+        b.pack(side="right")
 
-        self.checkButton = Button(
+        self.checkButton = ttk.Button(
             frame,
             text=_("Check Now"),
             image=Utils.icons["global"],
-            compound=LEFT,
+            compound="left",
             command=self.check,
         )
-        self.checkButton.pack(side=RIGHT)
-        tkExtra.Balloon.set(
+        self.checkButton.pack(side="right")
+        utils.ToolTip(
             self.checkButton, _("Check the web site for new versions of bCNC")
         )
 
@@ -179,11 +161,11 @@ class CheckUpdateDialog(Toplevel):
                     text=_("Download"), background="LightYellow",
                     command=self.download
                 )
-                tkExtra.Balloon.set(
+                utils.ToolTip(
                     self.checkButton, _("Open web browser to download bCNC")
                 )
             else:
-                self.checkButton.config(state=DISABLED)
+                self.checkButton.config(state="disabled")
 
         else:
             self.webversion.config(
@@ -234,8 +216,8 @@ def need2Check():
 
 # =============================================================================
 if __name__ == "__main__":
-    tk = Tk()
+    root = tk.Tk()
     Utils.loadIcons()
     gconfig.load_configuration()
-    dlg = CheckUpdateDialog(tk, 0)
-    tk.mainloop()
+    dlg = CheckUpdateDialog(tk.Tk, 0)
+    root.mainloop()

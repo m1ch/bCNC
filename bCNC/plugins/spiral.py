@@ -8,7 +8,11 @@ import sys  # Trouble Shooting Only!
 
 from tkinter import messagebox
 
-from CNC import CNC, Block
+from cnc import globCNC
+from gcode import globGCode
+from sender import globSender
+
+from cnc import  Block
 from ToolsPage import Plugin
 
 __author__ = "T Marks"
@@ -48,11 +52,11 @@ class Spiral:
         blocks = []
 
         # Load tool and material settings
-        toolDiam = CNC.vars["diameter"]
+        toolDiam = globCNC.vars["diameter"]
         toolRadius = toolDiam / 2.0
 
         # Calc tool diameter with Maximum Step Over allowed
-        StepOverInUnitMax = toolDiam * CNC.vars["stepover"] / 100.0
+        StepOverInUnitMax = toolDiam * globCNC.vars["stepover"] / 100.0
 
         # Check parameters
         if RotAxis == "":
@@ -103,7 +107,7 @@ class Spiral:
         block = Block(self.name + " Outline")
         block.enable = False
         block.append(
-            CNC.grapid(CNC.vars["wx"], CNC.vars["wy"], ZApproach)
+            globCNC.grapid(globCNC.vars["wx"], globCNC.vars["wy"], ZApproach)
         )  # Cannot trust Safe-Z with 4th axis!!
         if AlignAxis == "X":
             outlineWidth = StockLeng
@@ -115,7 +119,7 @@ class Spiral:
             outlineHeight = 0
         xR, yR = self.RectPath(XStart, YStart, outlineWidth, outlineHeight)
         for x, y in zip(xR, yR):
-            block.append(CNC.gline(x, y))
+            block.append(globCNC.gline(x, y))
         blocks.append(block)
 
         if StockLeng < toolDiam:
@@ -366,65 +370,65 @@ class Spiral:
 
         # Move safe to first point
         block.append(
-            CNC.grapid(CNC.vars["mx"], CNC.vars["my"], ZApproach)
+            globCNC.grapid(globCNC.vars["mx"], globCNC.vars["my"], ZApproach)
         )  # Cannot trust Safe-Z with 4th axis!!
         if AlignAxis == "X":
-            block.append(CNC.grapid(XStart + toolRadius, YStart))
+            block.append(globCNC.grapid(XStart + toolRadius, YStart))
         elif AlignAxis == "Y":
-            block.append(CNC.grapid(XStart, YStart + toolRadius))
+            block.append(globCNC.grapid(XStart, YStart + toolRadius))
         else:
             app.setStatus(_("Spiral abort: Rotary Axis Not Assigned."))
             return
 
-        block.append(CNC.zenter(ZApproach))
-        block.append(CNC.gcode_generate(1, [("f", CNC.vars["cutfeed"])]))
+        block.append(globCNC.zenter(ZApproach))
+        block.append(globCNC.gcode_generate(1, [("f", globCNC.vars["cutfeed"])]))
 
         for g, x, y, z, r in zip(gP, xP, yP, zP, rP):
             if RotAxis == "A":
                 if g == 0:
                     block.append(
-                        CNC.grapidABC(
-                            x, y, z, r, CNC.vars["wb"], CNC.vars["wc"])
+                        globCNC.grapidABC(
+                            x, y, z, r, globCNC.vars["wb"], globCNC.vars["wc"])
                     )
                 else:
                     block.append(
-                        CNC.glineABC(
-                            x, y, z, r, CNC.vars["wb"], CNC.vars["wc"])
+                        globCNC.glineABC(
+                            x, y, z, r, globCNC.vars["wb"], globCNC.vars["wc"])
                     )
             elif RotAxis == "B":
                 if g == 0:
                     block.append(
-                        CNC.grapidABC(
-                            x, y, z, CNC.vars["wa"], r, CNC.vars["wc"])
+                        globCNC.grapidABC(
+                            x, y, z, globCNC.vars["wa"], r, globCNC.vars["wc"])
                     )
                 else:
                     block.append(
-                        CNC.glineABC(
-                            x, y, z, CNC.vars["wa"], r, CNC.vars["wc"])
+                        globCNC.glineABC(
+                            x, y, z, globCNC.vars["wa"], r, globCNC.vars["wc"])
                     )
             elif RotAxis == "C":
                 if g == 0:
                     block.append(
-                        CNC.grapidABC(
-                            x, y, z, CNC.vars["wa"], CNC.vars["wb"], r)
+                        globCNC.grapidABC(
+                            x, y, z, globCNC.vars["wa"], globCNC.vars["wb"], r)
                     )
                 else:
                     block.append(
-                        CNC.glineABC(
-                            x, y, z, CNC.vars["wa"], CNC.vars["wb"], r)
+                        globCNC.glineABC(
+                            x, y, z, globCNC.vars["wa"], globCNC.vars["wb"], r)
                     )
 
         block.append(
-            CNC.grapid(CNC.vars["wx"], CNC.vars["wy"], ZApproach)
+            globCNC.grapid(globCNC.vars["wx"], globCNC.vars["wy"], ZApproach)
         )  # Cannot trust Safe-Z with 4th axis!!
         if AlignAxis == "X":
-            block.append(CNC.grapid(XStart + toolRadius, YStart))
+            block.append(globCNC.grapid(XStart + toolRadius, YStart))
         elif AlignAxis == "Y":
-            block.append(CNC.grapid(XStart, YStart + toolRadius))
+            block.append(globCNC.grapid(XStart, YStart + toolRadius))
         else:
             app.setStatus(_("Spiral abort: Rotary Axis Not Assigned."))
             return
-        block.append(CNC.zexit(ZApproach))
+        block.append(globCNC.zexit(ZApproach))
         blocks.append(block)
         messagebox.showinfo(
             "Crash Risk",
@@ -508,6 +512,6 @@ class Tool(Plugin):
             active = app.activeBlock()
             if active == 0:
                 active = 1
-            app.gcode.insBlocks(active, blocks, "Spiral")
+            globGCode.insBlocks(active, blocks, "Spiral")
             app.refresh()
             app.setStatus(_("Spiral: Reduced 4th Axis Stock"))
