@@ -118,7 +118,7 @@ class Tool(Plugin):
                     blocks.append(eblock)
                     entry = False
 
-                # Continuity BEGINING
+                # Continuity BEGINNING
                 # calculate number of subsegments to be transformed to
                 # trochoidal motion
                 srdoc = rdoc

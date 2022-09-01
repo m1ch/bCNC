@@ -7,7 +7,7 @@
 # A special thanks to Filippo Rivato and Vasilis.
 # This plugin is based on a variation
 # of yours plugin Driller and My_Plugin example.
-# To correct: Thats why the first point starts,
+# To correct: That's why the first point starts,
 
 from cnc import globCNC
 from gcode import globGCode
@@ -23,10 +23,10 @@ __version__ = "1.0"
 
 
 # =============================================================================
-# Create Trochoidadl rute along selected blocks
+# Create Trochoidadl route along selected blocks
 # =============================================================================
 class Tool(Plugin):
-    __doc__ = _("Create a trochoid rute along selected blocks")
+    __doc__ = _("Create a trochoid route along selected blocks")
 
     def __init__(self, master):
         Plugin.__init__(self, master, "Trochoid_Path")  # NAME OF THE PLUGIN

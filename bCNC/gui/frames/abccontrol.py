@@ -357,7 +357,7 @@ class SideFrame(utils.CollapsiblePageLabelFrame):
     def moveBdownCup(self, event=None):
         if event is not None and not self.acceptKey():
             return
-        # XXX: Posible error in original code lead to %C string; fixed by guessing from methods below.
+        # XXX: Possible error in original code lead to %C string; fixed by guessing from methods below.
         # Original: globSender.mcontrol.jog("B-%C%s"%(self.step.get(),self.step.get()))
         globSender.mcontrol.jog(f"B-{self.step.get()}C{self.step.get()}")
 

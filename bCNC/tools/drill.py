@@ -47,7 +47,7 @@ class Tool(DataBase):
             "* dwell: Dwell time at the bottom. If pecking is defined, dwell "
             + "also at lifted height.",
             "",
-            "* distance: Distance between drills if drilling alog path. "
+            "* distance: Distance between drills if drilling along path. "
             + "(Number of drills will superceed this parameter))",
             "",
             "* number: Number of drills if drilling along path. If nonzero, "

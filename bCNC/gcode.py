@@ -1483,7 +1483,7 @@ class GCode:
                     drillHole(lines)
 
             elif distance is None and number == 0:
-                # Drill on path begining only
+                # Drill on path beginning only
                 for i, line in enumerate(block):
                     cmds = globCNC.parseLine(line)
                     if cmds is None:
@@ -1935,7 +1935,7 @@ class GCode:
                 # tablock.color = "#FF0000"
                 tablock.color = "orange"
                 tablock.enable = (
-                    False  # Prevent tabs from being accidentaly cut as path
+                    False  # Prevent tabs from being accidentally cut as path
                 )
 
                 # Add regular tabs
@@ -2022,7 +2022,7 @@ class GCode:
             if abs(direction) > 1 and side == 0:
                 msg = "Conventional/Climb feature only works for paths with "\
                       + "'in/out/pocket' tags!\n"
-                msg += "Some of the selected paths were not taged (or are"\
+                msg += "Some of the selected paths were not tagged (or are "\
                        + "both in+out). You can still use CW/CCW for them."
                 continue
             if direction == 2:

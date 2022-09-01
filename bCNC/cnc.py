@@ -957,7 +957,7 @@ class CNC:
         )
 
     # ----------------------------------------------------------------------
-    # Number formating
+    # Number formatting
     # ----------------------------------------------------------------------
     def fmt(self, c, v, d=None):
         if d is None:
@@ -1168,7 +1168,7 @@ class CNC:
             return None
 
         out = []  # output list of commands
-        braket = 0  # bracket count []
+        bracket = 0  # bracket count []
         paren = 0  # parenthesis count ()
         expr = ""  # expression string
         cmd = ""  # cmd string
@@ -1177,7 +1177,7 @@ class CNC:
             if ch == "(":
                 # comment start?
                 paren += 1
-                inComment = braket == 0
+                inComment = bracket == 0
                 if not inComment:
                     expr += ch
             elif ch == ")":
@@ -1192,8 +1192,8 @@ class CNC:
                 if not inComment:
                     if self.stdexpr:
                         ch = "("
-                    braket += 1
-                    if braket == 1:
+                    bracket += 1
+                    if bracket == 1:
                         if cmd:
                             out.append(cmd)
                             cmd = ""
@@ -1206,8 +1206,8 @@ class CNC:
                 if not inComment:
                     if self.stdexpr:
                         ch = ")"
-                    braket -= 1
-                    if braket == 0:
+                    bracket -= 1
+                    if bracket == 0:
                         try:
                             out.append(compile(expr, "", "eval"))
                         except Exception:
@@ -1220,7 +1220,7 @@ class CNC:
                     self.comment += ch
             elif ch == "=":
                 # check for assignments (FIXME very bad)
-                if not out and braket == 0 and paren == 0:
+                if not out and bracket == 0 and paren == 0:
                     for i in " ()-+*/^$":
                         if i in cmd:
                             cmd += ch
@@ -1239,7 +1239,7 @@ class CNC:
                 else:
                     expr += ch
 
-            elif braket > 0:
+            elif bracket > 0:
                 expr += ch
 
             elif not inComment:

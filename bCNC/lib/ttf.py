@@ -42,7 +42,7 @@
 # ----------------------------------------------------------------------------
 
 #
-# Deriver from Alex Holkner work for pyglet
+# Derived from Alex Holkner work for pyglet
 # Glyph data ported from
 # * http://stevehanov.ca/blog/index.php?id=143
 # the JavaScript code to extract also Glyph data as vector.
@@ -515,7 +515,7 @@ class TruetypeInfo:
             ce, g_offset = self._get_data(">H", g_offset)  # uint16
             glyph.contoursEnd.append(ce)
 
-        # skip over intructions
+        # skip over instructions
         seek, g_offset = self._get_data(">H", g_offset)  # uint16
         g_offset += seek
 

@@ -32,7 +32,7 @@ class Tool(DataBase):
         + "\"cut contours of islands\"",
         "If you want islands to get finishing pass, cou can use "
         + "\"cut contours of selected islands\" or cut them "
-        + "individualy afterwards.",
+        + "individually afterwards.",
     ])
     icon = "cut"
     variables = [
@@ -76,7 +76,7 @@ class Tool(DataBase):
             "exitpoint",
             "on path,inside,outside",
             "on path",
-            _("Exit strategy (usefull for threads)"),
+                _("Exit strategy (useful for threads)"),
             _(
                 "You should probably always use 'on path', unless "
                 + "you are threadmilling!"
@@ -96,7 +96,7 @@ class Tool(DataBase):
             _("Compensate islands for cutter radius"),
             _(
                 "Add additional margin/offset around islands to "
-                + "compensate for endmill radius. This is automaticaly "
+                    + "compensate for endmill radius. This is automatically "
                 + "done for all islands if they are marked as tabs."
             ),
         ),

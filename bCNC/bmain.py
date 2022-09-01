@@ -603,7 +603,7 @@ class Application(tk.Tk):
         self.setStatus(_(event.data))
 
     # -----------------------------------------------------------------------
-    # Show popup dialog asking for value entry, usefull in g-code scripts
+    # Show popup dialog asking for value entry, useful in g-code scripts
     # -----------------------------------------------------------------------
     def entry(
         self,
@@ -811,23 +811,23 @@ class Application(tk.Tk):
         self.canvasFrame.saveConfig()
 
     # -----------------------------------------------------------------------
-    # def loadHistory(self):
-    #     try:
-    #         f = open(__hisFile__)
-    #     except Exception:
-    #         return
-    #     self.history = [x.strip() for x in f]
-    #     self._historySearch = None
-    #     f.close()
+    def loadHistory(self):
+        try:
+            f = open(Utils.hisFile)
+        except Exception:
+            return
+        self.history = [x.strip() for x in f]
+        self._historySearch = None
+        f.close()
 
     # -----------------------------------------------------------------------
-    # def saveHistory(self):
-    #     try:
-    #         f = open(__hisFile__, "w")
-    #     except Exception:
-    #         return
-    #     f.write("\n".join(self.history))
-    #     f.close()
+    def saveHistory(self):
+        try:
+            f = open(Utils.hisFile, "w")
+        except Exception:
+            return
+        f.write("\n".join(self.history))
+        f.close()
 
     # -----------------------------------------------------------------------
     def cut(self, event=None):
@@ -1183,7 +1183,7 @@ class Application(tk.Tk):
             except Exception:
                 self.importFile()
 
-        # INK*SCAPE: remove uneccessary Z motion as a result of inkscape
+        # INK*SCAPE: remove unnecessary Z motion as a result of inkscape
         # gcodetools
         elif rexx.abbrev("INKSCAPE", cmd, 3):
             if len(line) > 1 and rexx.abbrev("ALL", line[1].upper()):

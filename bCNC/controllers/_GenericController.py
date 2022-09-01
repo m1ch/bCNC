@@ -219,7 +219,7 @@ class _GenericController:
         # Do not show g-code errors, when machine is already in alarm state
         if (globCNC.vars["state"].startswith("ALARM:")
                 and state.startswith("error:")):
-            print(f"Supressed: {state}")
+            print(f"Suppressed: {state}")
             return
 
         # Do not show alarm without number when we already
