@@ -21,10 +21,15 @@ from queue import (
 from globalConfig import config as gconfig
 import Pendant
 import rexx
+<<<<<<< ours:bCNC/sender.py
 from globalConstants import __hisFile__
 
 from cnc import MSG, UPDATE, WAIT, globCNC
 from gcode import globGCode
+=======
+import Utils
+from CNC import CNC, MSG, UPDATE, WAIT, GCode
+>>>>>>> theirs:bCNC/Sender.py
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "vvlachoudis@gmail.com"

@@ -24,7 +24,7 @@ class SVGcode:
             path = Path(path)
 
         def rv(v):
-            return ("{round(v, d):{d}}").rstrip("0").rstrip(".")
+            return (f"{round(v, d):{d}}").rstrip("0").rstrip(".")
 
         for segment in path:
             subdiv = max(1, round(segment.length(

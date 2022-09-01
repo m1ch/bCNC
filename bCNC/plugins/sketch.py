@@ -294,11 +294,9 @@ class Tool(Plugin):
         # Info block
         block = Block("Info")
         block.append(
-            "(Sketch size W={:d} x H={:d} x distance={:d})".format(
-                int(self.imgWidth * self.ratio),
-                int(self.imgHeight * self.ratio),
-                int(depth))
-        )
+            f"(Sketch size W={int(self.imgWidth * self.ratio):d} x "
+            + f"H={int(self.imgHeight * self.ratio):d} x "
+            + f"distance={int(depth):d})")
         block.append(f"(Channel = {channel})")
         blocks.append(block)
 
