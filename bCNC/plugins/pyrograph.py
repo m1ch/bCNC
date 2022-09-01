@@ -3,9 +3,11 @@
 # Author:    Filippo Rivato
 # Date: 16 October 2015
 
-from CNC import CNC, Block
-from ToolsPage import Plugin
-from Helpers import _
+from cnc import globCNC
+from gcode import globGCode
+
+from cnc import Block
+from tools._plugin import Plugin
 
 __author__ = "Filippo Rivato"
 __email__ = "f.rivato@gmail.com"
@@ -173,41 +175,41 @@ class Tool(Plugin):
 
         # Gcode Horizontal
         if len(xH) > 1 and len(yH) > 1:
-            block.append(CNC.zsafe())
-            block.append(CNC.grapid(xH[0], yH[0]))
-            block.append(CNC.zenter(depth))
+            block.append(globCNC.zsafe())
+            block.append(globCNC.grapid(xH[0], yH[0]))
+            block.append(globCNC.zenter(depth))
             for x, y, f in zip(xH, yH, fH):
-                block.append(CNC.gline(x, y, depth, f=f))
+                block.append(globCNC.gline(x, y, depth, f=f))
 
         # Gcode Vertical
         if len(xV) > 1 and len(yV) > 1:
-            block.append(CNC.zsafe())
-            block.append(CNC.grapid(xV[0], yV[0]))
-            block.append(CNC.zenter(depth))
+            block.append(globCNC.zsafe())
+            block.append(globCNC.grapid(xV[0], yV[0]))
+            block.append(globCNC.zenter(depth))
             for x, y, f in zip(xV, yV, fV):
-                block.append(CNC.gline(x, y, depth, f=f))
+                block.append(globCNC.gline(x, y, depth, f=f))
 
         # Draw Border if required
         if drawBorder:
-            block.append(CNC.zsafe())
-            block.append(CNC.grapid(0, 0))
-            block.append(CNC.zenter(depth))
-            block.append(CNC.gcode(1, [("f", feedMin)]))
-            block.append(CNC.gline(newWidth * toolSize - toolSize, 0))
+            block.append(globCNC.zsafe())
+            block.append(globCNC.grapid(0, 0))
+            block.append(globCNC.zenter(depth))
+            block.append(globCNC.gcode_generate(1, [("f", feedMin)]))
+            block.append(globCNC.gline(newWidth * toolSize - toolSize, 0))
             block.append(
-                CNC.gline(newWidth * toolSize - toolSize, newHeight * toolSize)
+                globCNC.gline(newWidth * toolSize - toolSize, newHeight * toolSize)
             )
-            block.append(CNC.gline(0, newHeight * toolSize))
-            block.append(CNC.gline(0, 0))
+            block.append(globCNC.gline(0, newHeight * toolSize))
+            block.append(globCNC.gline(0, 0))
 
         # Gcode Zsafe
-        block.append(CNC.zsafe())
+        block.append(globCNC.zsafe())
 
         blocks.append(block)
         active = app.activeBlock()
         if active == 0:
             active = 1
-        app.gcode.insBlocks(active, blocks, "Pyrograph")
+        globGCode.insBlocks(active, blocks, "Pyrograph")
         app.refresh()
         app.setStatus(_("Generated Pyrograph W={:g} x "
                         + "H={:g} x D={:g}").format(

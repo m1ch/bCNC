@@ -21,6 +21,8 @@ except ImportError:
     print("Unable to import Image, ImageTk from Pillow\n")
     cv = None
 
+from globalConfig import config as gconfig
+
 
 # -----------------------------------------------------------------------------
 def hasOpenCV():
@@ -39,7 +41,7 @@ class Camera:
         if cv is None:
             return
         self.prefix = prefix
-        self.idx = Utils.getInt("Camera", prefix)
+        self.idx = gconfig.getint("Camera", prefix)
         self.props = self._getCameraProperties(prefix)
         self.camera = None
         self.image = None
@@ -64,57 +66,57 @@ class Camera:
         """
         try:
             POSSIBLE_PROPERTIES = {
-                "height": (Utils.getInt, cv.CAP_PROP_FRAME_HEIGHT),
-                "width": (Utils.getInt, cv.CAP_PROP_FRAME_WIDTH),
-                "fps": (Utils.getInt, cv.CAP_PROP_FPS),
-                "codec": (Utils.getStr, cv.CAP_PROP_FOURCC),
-                "brightness": (Utils.getInt, cv.CAP_PROP_BRIGHTNESS),
-                "contrast": (Utils.getInt, cv.CAP_PROP_CONTRAST),
-                "saturation": (Utils.getInt, cv.CAP_PROP_SATURATION),
-                "hue": (Utils.getInt, cv.CAP_PROP_HUE),
-                "gain": (Utils.getInt, cv.CAP_PROP_GAIN),
-                "exposure": (Utils.getInt, cv.CAP_PROP_EXPOSURE),
+                "height": (gconfig.getint, cv.CAP_PROP_FRAME_HEIGHT),
+                "width": (gconfig.getint, cv.CAP_PROP_FRAME_WIDTH),
+                "fps": (gconfig.getint, cv.CAP_PROP_FPS),
+                "codec": (gconfig.getstr, cv.CAP_PROP_FOURCC),
+                "brightness": (gconfig.getint, cv.CAP_PROP_BRIGHTNESS),
+                "contrast": (gconfig.getint, cv.CAP_PROP_CONTRAST),
+                "saturation": (gconfig.getint, cv.CAP_PROP_SATURATION),
+                "hue": (gconfig.getint, cv.CAP_PROP_HUE),
+                "gain": (gconfig.getint, cv.CAP_PROP_GAIN),
+                "exposure": (gconfig.getint, cv.CAP_PROP_EXPOSURE),
             }
         except AttributeError:
             POSSIBLE_PROPERTIES = {
                 "height": (
-                    Utils.getInt,
+                    gconfig.getint,
                     cv.cv.CV_CAP_PROP_FRAME_HEIGHT,
                 ),
                 "width": (
-                    Utils.getInt,
+                    gconfig.getint,
                     cv.cv.CV_CAP_PROP_FRAME_WIDTH,
                 ),
                 "fps": (
-                    Utils.getInt,
+                    gconfig.getint,
                     cv.cv.CV_CAP_PROP_FPS,
                 ),
                 "codec": (
-                    Utils.getStr,
+                    gconfig.getstr,
                     cv.cv.CV_CAP_PROP_FOURCC,
                 ),
                 "brightness": (
-                    Utils.getInt,
+                    gconfig.getint,
                     cv.cv.CV_CAP_PROP_BRIGHTNESS,
                 ),
                 "contrast": (
-                    Utils.getInt,
+                    gconfig.getint,
                     cv.cv.CV_CAP_PROP_CONTRAST,
                 ),
                 "saturation": (
-                    Utils.getInt,
+                    gconfig.getint,
                     cv.cv.CV_CAP_PROP_SATURATION,
                 ),
                 "hue": (
-                    Utils.getInt,
+                    gconfig.getint,
                     cv.cv.CV_CAP_PROP_HUE,
                 ),
                 "gain": (
-                    Utils.getInt,
+                    gconfig.getint,
                     cv.cv.CV_CAP_PROP_GAIN,
                 ),
                 "exposure": (
-                    Utils.getInt,
+                    gconfig.getint,
                     cv.cv.CV_CAP_PROP_EXPOSURE,
                 ),
             }
@@ -164,16 +166,16 @@ class Camera:
 
     # -----------------------------------------------------------------------
     def set(self):
-        width = Utils.getInt("Camera", self.prefix + "_width", 0)
+        width = gconfig.getint("Camera", self.prefix + "_width", 0)
         if width:
             self.camera.set(3, width)
-        height = Utils.getInt("Camera", self.prefix + "_height", 0)
+        height = gconfig.getint("Camera", self.prefix + "_height", 0)
         if height:
             self.camera.set(4, height)
-        self.angle = Utils.getInt("Camera", self.prefix + "_angle") // 90 % 4
-        self.rotation = Utils.getFloat("Camera", self.prefix + "_rotation")
-        self.xcenter = Utils.getFloat("Camera", self.prefix + "_xcenter")
-        self.ycenter = Utils.getFloat("Camera", self.prefix + "_ycenter")
+        self.angle = gconfig.getint("Camera", self.prefix + "_angle") // 90 % 4
+        self.rotation = gconfig.getfloat("Camera", self.prefix + "_rotation")
+        self.xcenter = gconfig.getfloat("Camera", self.prefix + "_xcenter")
+        self.ycenter = gconfig.getfloat("Camera", self.prefix + "_ycenter")
 
     # -----------------------------------------------------------------------
     # Read one image and rotated if needed

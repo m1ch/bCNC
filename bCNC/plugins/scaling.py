@@ -12,9 +12,11 @@ from math import (
     sqrt,
 )
 
-from CNC import CNC, Block
-from ToolsPage import Plugin
-from Helpers import _
+from cnc import globCNC
+from gcode import globGCode
+
+from cnc import Block
+from tools._plugin import Plugin
 
 __author__ = "Mario S Basz"
 __email__ = "mariob_1960@yaho.com.ar"
@@ -48,7 +50,7 @@ class Tool(Plugin):
 
     # -----------------------------------------------------
     def scaling(self, xyz, center, xscale, yscale, zscale):
-        safe = CNC.vars["safe"]
+        safe = globCNC.vars["safe"]
 
         A = xyz[0]
         B = xyz[1]
@@ -78,26 +80,26 @@ class Tool(Plugin):
     # Extract all segments from commands ------------ -----------------------
     def extractAllSegments(self, app, selectedBlock):
         allSegments = []
-        allBlocks = app.gcode.blocks
+        allBlocks = globGCode.blocks
 
         for bid in selectedBlock:
             bidSegments = []
             block = allBlocks[bid]
             if block.name() in ("Header", "Footer"):
                 continue
-            app.gcode.initPath(bid)
+            globGCode.initPath(bid)
             for line in block:
                 try:
-                    cmd = app.cnc.breakLine(
-                        app.gcode.evaluate(app.cnc.compileLine(line))
+                    cmd = globCNC.breakLine(
+                        globGCode.evaluate(globCNC.compileLine(line))
                     )
                 except Exception:
                     cmd = None
 
                 if cmd:
-                    app.cnc.motionStart(cmd)
-                    xyz = app.cnc.motionPath()
-                    app.cnc.motionEnd()
+                    globCNC.motionStart(cmd)
+                    xyz = globCNC.motionPath()
+                    globCNC.motionEnd()
                     if xyz:
                         # coment its?
                         # -----------------------------------------------------
@@ -145,12 +147,12 @@ class Tool(Plugin):
         if zscale == "":
             zscale = 1
 
-        surface = CNC.vars["surface"]
+        surface = globCNC.vars["surface"]
         if zscale > 0:
             surface *= zscale
 
         feed = self["feed"]
-        zfeed = CNC.vars["cutfeedz"]
+        zfeed = globCNC.vars["cutfeedz"]
         rpm = self["rpm"]
         if self["zfeed"]:
             zfeed = self["zfeed"]
@@ -165,9 +167,9 @@ class Tool(Plugin):
         elements = len(app.editor.getSelectedBlocks())
         print("elements", elements)
         for bid in app.editor.getSelectedBlocks():
-            if len(app.gcode.toPath(bid)) < 1:
+            if len(globGCode.toPath(bid)) < 1:
                 continue
-            path = app.gcode.toPath(bid)[0]
+            path = globGCode.toPath(bid)[0]
             if centered:
                 center = path.center()
             else:
@@ -212,7 +214,7 @@ class Tool(Plugin):
                                      + " )")
                     bid_block.append("M03")
                     bid_block.append("S " + str(rpm))
-                    bid_block.append(CNC.zsafe())
+                    bid_block.append(globCNC.zsafe())
                     bid_block.append("F " + str(zfeed))
                     bid_block.append("g0 x "
                                      + str(info[0])
@@ -249,7 +251,7 @@ class Tool(Plugin):
                     oldfeed = currentfeed
 
             bid_block.append(
-                CNC.zsafe()
+                globCNC.zsafe()
             )  # <<< Move rapid Z axis to the safe height in Stock Material
             all_blocks.append(bid_block)
         self.finish_blocks(app, all_blocks, elements)
@@ -261,6 +263,6 @@ class Tool(Plugin):
         active = app.activeBlock()
         if elements > 1:
             active = -2
-        app.gcode.insBlocks(active + 1, blocks, "scale ")
+        globGCode.insBlocks(active + 1, blocks, "scale ")
         app.refresh()
         app.setStatus(_("Scaling Generated"))

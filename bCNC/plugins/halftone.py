@@ -1,13 +1,15 @@
 # $Id$
 #
 # Author:    Filippo Rivato
-# Date: 14 Febbruary 2016
+# Date: 14 February 2016
 
 import math
 
-from CNC import CNC, CW, Block
-from ToolsPage import Plugin
-from Helpers import _
+from cnc import globCNC
+from gcode import globGCode
+
+from cnc import  CW, Block
+from tools._plugin import Plugin
 
 __author__ = "Filippo Rivato"
 __email__ = "f.rivato@gmail.com"
@@ -213,17 +215,17 @@ class Tool(Plugin):
         # Border block
         if drawBorder:
             block = Block(f"{self.name}-border")
-            block.append(CNC.zsafe())
-            block.append(CNC.grapid(0, 0))
-            block.append(CNC.zenter(depth))
-            block.append(CNC.gcode(1, [("f", CNC.vars["cutfeed"])]))
-            block.append(CNC.gline(self.imgWidth * self.ratio, 0))
+            block.append(globCNC.zsafe())
+            block.append(globCNC.grapid(0, 0))
+            block.append(globCNC.zenter(depth))
+            block.append(globCNC.gcode_generate(1, [("f", globCNC.vars["cutfeed"])]))
+            block.append(globCNC.gline(self.imgWidth * self.ratio, 0))
             block.append(
-                CNC.gline(self.imgWidth * self.ratio,
+                globCNC.gline(self.imgWidth * self.ratio,
                           self.imgHeight * self.ratio)
             )
-            block.append(CNC.gline(0, self.imgHeight * self.ratio))
-            block.append(CNC.gline(0, 0))
+            block.append(globCNC.gline(0, self.imgHeight * self.ratio))
+            block.append(globCNC.gline(0, 0))
             blocks.append(block)
 
         # Draw block
@@ -248,18 +250,18 @@ class Tool(Plugin):
             x, y, r = c
             r = min(dMax / 2.0, r)
             if r >= dMin / 2.0:
-                block.append(CNC.zsafe())
-                block.append(CNC.grapid(x + r, y))
-                block.append(CNC.zenter(depth))
+                block.append(globCNC.zsafe())
+                block.append(globCNC.grapid(x + r, y))
+                block.append(globCNC.zenter(depth))
                 block.append(
-                    CNC.garc(
+                    globCNC.garc(
                         CW,
                         x + r,
                         y,
                         i=-r,
                     )
                 )
-        block.append(CNC.zsafe())
+        block.append(globCNC.zsafe())
         if conical:
             block.enable = False
         blocks.append(block)
@@ -269,16 +271,16 @@ class Tool(Plugin):
             for c in circles:
                 x, y, r = c
                 if r >= dMin / 2.0:
-                    blockCon.append(CNC.zsafe())
-                    blockCon.append(CNC.grapid(x, y))
+                    blockCon.append(globCNC.zsafe())
+                    blockCon.append(globCNC.grapid(x, y))
                     dv = r / math.tan(math.radians(v_angle / 2.0))
-                    blockCon.append(CNC.zenter(-dv))
-            blockCon.append(CNC.zsafe())
+                    blockCon.append(globCNC.zenter(-dv))
+            blockCon.append(globCNC.zsafe())
             blocks.append(blockCon)
 
         # Gcode Zsafe
         active = app.activeBlock()
-        app.gcode.insBlocks(active, blocks, "Halftone")
+        globGCode.insBlocks(active, blocks, "Halftone")
         app.refresh()
         app.setStatus(
             _(

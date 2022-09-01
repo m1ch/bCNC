@@ -1,9 +1,11 @@
 # Author: @harvie Tomas Mudrunka
 # Date: 7 july 2018
 
-from CNC import Block, Segment
-from ToolsPage import Plugin
-from Helpers import _
+from cnc import Block
+from bpath import Segment
+from gcode import globGCode
+
+from tools._plugin import Plugin
 
 __author__ = "@harvie Tomas Mudrunka"
 # __email__  = ""
@@ -30,15 +32,15 @@ class Tool(Plugin):
     # ----------------------------------------------------------------------
     def execute(self, app):
         for bid in app.editor.getSelectedBlocks():
-            if len(app.gcode.toPath(bid)) < 1:
+            if len(globGCode.toPath(bid)) < 1:
                 continue
 
-            eblock = Block("closed " + app.gcode[bid].name())
-            for path in app.gcode.toPath(bid):
+            eblock = Block("closed " + globGCode[bid].name())
+            for path in globGCode.toPath(bid):
                 if not path.isClosed():
                     path.append(Segment(Segment.LINE, path[-1].B, path[0].A))
-                eblock = app.gcode.fromPath(path, eblock)
-            app.gcode[bid] = eblock
+                eblock = globGCode.fromPath(path, eblock)
+            globGCode[bid] = eblock
 
         app.refresh()  # <<< refresh editor
         app.setStatus(_("Generated: Closepath"))  # <<< feed back result

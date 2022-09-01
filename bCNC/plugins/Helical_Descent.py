@@ -38,9 +38,11 @@ from math import (
     pi,
 )
 
-from CNC import CNC, Block
-from ToolsPage import Plugin
-from Helpers import _
+from cnc import globCNC
+from gcode import globGCode
+
+from cnc import Block
+from tools._plugin import Plugin
 
 __author__ = "Mario Basz"
 __email__ = "mariob_1960@yahoo.com.ar"
@@ -93,7 +95,7 @@ class Tool(Plugin):
                 _("Helical Type"),
             ),
             ("Entry", "Center,Edge", "Center", _("Entry and Exit")),
-            ("ClearanceEntry", "mm", 0.0, _("If Eddge, Edge Clearance")),
+            ("ClearanceEntry", "mm", 0.0, _("If Edge, Edge Clearance")),
             ("NoReturnToSafeZ", "bool", "False", _("End in the Deep")),
         ]
 
@@ -117,26 +119,26 @@ class Tool(Plugin):
     # Extract all segments from commands ------------------------------------
     def extractAllSegments(self, app, selectedBlock):
         allSegments = []
-        allBlocks = app.gcode.blocks
+        allBlocks = globGCode.blocks
 
         for bid in selectedBlock:
             bidSegments = []
             block = allBlocks[bid]
             if block.name() in ("Header", "Footer"):
                 continue
-            app.gcode.initPath(bid)
+            globGCode.initPath(bid)
             for line in block:
                 try:
-                    cmd = app.cnc.breakLine(
-                        app.gcode.evaluate(app.cnc.compileLine(line))
+                    cmd = globCNC.breakLine(
+                        globGCode.evaluate(globCNC.compileLine(line))
                     )
                 except Exception:
                     cmd = None
 
                 if cmd:
-                    app.cnc.motionStart(cmd)
-                    xyz = app.cnc.motionPath()
-                    app.cnc.motionEnd()
+                    globCNC.motionStart(cmd)
+                    xyz = globCNC.motionPath()
+                    globCNC.motionEnd()
 
                     if xyz:
                         # exclude if fast move or z only movement
@@ -183,13 +185,13 @@ class Tool(Plugin):
         y = self["Y"]
         z = self["Z"]
         if z == "":
-            z = CNC.vars["surface"]
+            z = globCNC.vars["surface"]
 
         cutDiam = self.fromMm("CutDiam")
         cutRadius = cutDiam / 2.0
         if self["endmill"]:
             self.master["endmill"].makeCurrent(self["endmill"])
-        toolDiam = CNC.vars["diameter"]
+        toolDiam = globCNC.vars["diameter"]
         pitch = self.fromMm("Pitch")
         Depth = self.fromMm("Depth")
         Mult_F_Z = self["Mult_Feed_Z"]
@@ -204,13 +206,13 @@ class Tool(Plugin):
         if noreturnToSafeZ:
             returnToSafeZ = 0
 
-        toolDiam = CNC.vars["diameter"]
+        toolDiam = globCNC.vars["diameter"]
         toolRadius = toolDiam / 2.0
         Radio = cutRadius - toolRadius
         if Radio < 0:
             Radio = 0
 
-        toolDiam = CNC.vars["diameter"]
+        toolDiam = globCNC.vars["diameter"]
         toolRadius = toolDiam / 2.0
         Radio = cutRadius - toolRadius
 
@@ -266,7 +268,7 @@ class Tool(Plugin):
 
         elif entry == "":
             app.setStatus(
-                _("Helical Abort: Please selecte Entry and Exit type"))
+                _("Helical Abort: Please select Entry and Exit type"))
             return
 
         elif clearanceEntry < 0 or clearanceEntry == "":
@@ -289,9 +291,9 @@ class Tool(Plugin):
         )
 
         # <<< Get cut feed Z for the current material
-        cutFeed = CNC.vars["cutfeedz"]
+        cutFeed = globCNC.vars["cutfeedz"]
         # <<< Get cut feed XY for the current material
-        cutFeedMax = CNC.vars["cutfeed"]
+        cutFeedMax = globCNC.vars["cutfeed"]
         # -------------------------------------------------------------------
         # Get selected blocks from editor
         selBlocks = app.editor.getSelectedBlocks()
@@ -352,7 +354,7 @@ class Tool(Plugin):
             cutFeed = cutFeed * Mult_F_Z
 
         block.append(
-            CNC.zsafe()
+            globCNC.zsafe()
         )  # <<< Move rapid Z axis to the safe height in Stock Material
 
         # Move rapid to X and Y coordinate
@@ -362,11 +364,11 @@ class Tool(Plugin):
             or helicalCut == "Internal Left Thread"
         ):
             if entry == "Center":
-                block.append(CNC.grapid(x, y))
+                block.append(globCNC.grapid(x, y))
             else:
                 block.append("(First go to the center)")
-                block.append(CNC.grapid(x, y))
-                block.append(CNC.grapid(x - Radio + clearance, y))
+                block.append(globCNC.grapid(x, y))
+                block.append(globCNC.grapid(x - Radio + clearance, y))
 
         if (
             helicalCut == "External Right Thread"
@@ -375,19 +377,19 @@ class Tool(Plugin):
             if entry == "Center":
                 clearance = 0.0
             block.append("First go to the center")
-            block.append(CNC.grapid(x, y))
-            block.append(CNC.grapid(x - Radio - clearance, y))
+            block.append(globCNC.grapid(x, y))
+            block.append(globCNC.grapid(x - Radio - clearance, y))
 
-        block.append(CNC.fmt("f", cutFeed))  # <<< Set cut feed
-        block.append(CNC.zenter(z))
-        block.append(CNC.gline(x - Radio, y))
-        block.append(CNC.fmt("F", cutFeed))  # <<< Set cut feed
+        block.append(globCNC.fmt("f", cutFeed))  # <<< Set cut feed
+        block.append(globCNC.zenter(z))
+        block.append(globCNC.gline(x - Radio, y))
+        block.append(globCNC.fmt("F", cutFeed))  # <<< Set cut feed
 
         # ---------------------------------------------------------------------
         # Uncomment for first flat pass
         if helicalCut == "Helical Cut":
             block.append(
-                CNC.gcode(
+                globCNC.gcode_generate(
                     turn, [("X", x - Radio),
                            ("Y", y),
                            ("Z", z),
@@ -402,7 +404,7 @@ class Tool(Plugin):
             while (z - pitch) < Depth:
                 z = z - pitch
                 block.append(
-                    CNC.gcode(
+                    globCNC.gcode_generate(
                         turn, [("X",
                                 x - Radio),
                                ("Y", y),
@@ -416,7 +418,7 @@ class Tool(Plugin):
             while (z - pitch) >= Depth:
                 z = z - pitch
                 block.append(
-                    CNC.gcode(
+                    globCNC.gcode_generate(
                         turn, [("X", x - Radio),
                                ("Y", y),
                                ("Z", z),
@@ -441,7 +443,7 @@ class Tool(Plugin):
 
         if helicalCut == "Helical Cut":
             block.append(
-                CNC.gcode(
+                globCNC.gcode_generate(
                     turn, [("X", x - Radio),
                            ("Y", y),
                            ("Z", z),
@@ -451,7 +453,7 @@ class Tool(Plugin):
             )
             # Last flat pass
             block.append(
-                CNC.gcode(
+                globCNC.gcode_generate(
                     turn, [("X", x - Radio),
                            ("Y", y),
                            ("Z", z),
@@ -464,7 +466,7 @@ class Tool(Plugin):
             or helicalCut == "External Right Thread"
         ):
             block.append(
-                CNC.gcode(
+                globCNC.gcode_generate(
                     turn,
                     [
                         ("X", x - Radiox),
@@ -479,7 +481,7 @@ class Tool(Plugin):
         elif (helicalCut == "Internal Left Thread"
               or helicalCut == "External Left Thread"):
             block.append(
-                CNC.gcode(
+                globCNC.gcode_generate(
                     turn,
                     [
                         ("X", x - Radiox),
@@ -494,13 +496,13 @@ class Tool(Plugin):
         # Exit clearance
         if returnToSafeZ == 1:
             if helicalCut == "Internal Right Thread":
-                block.append(CNC.gline(x - xsi, y - ysi))
+                block.append(globCNC.gline(x - xsi, y - ysi))
             elif helicalCut == "Internal Left Thread":
-                block.append(CNC.gline(x - xsi, y + ysi))
+                block.append(globCNC.gline(x - xsi, y + ysi))
             elif helicalCut == "External Right Thread":
-                block.append(CNC.gline(x - xse, y - yse))
+                block.append(globCNC.gline(x - xse, y - yse))
             elif helicalCut == "External Left Thread":
-                block.append(CNC.gline(x - xse, y + yse))
+                block.append(globCNC.gline(x - xse, y + yse))
 
             # Return to Z Safe
             if (
@@ -509,12 +511,12 @@ class Tool(Plugin):
                 or helicalCut == "Internal Left Thread"
             ):
                 if entry == "Center":
-                    block.append(CNC.gline(x, y))
-            block.append(CNC.zsafe())
+                    block.append(globCNC.gline(x, y))
+            block.append(globCNC.zsafe())
 
         blocks.append(block)
         active = app.activeBlock()
-        app.gcode.insBlocks(
+        globGCode.insBlocks(
             active, blocks, "Helical_Descent inserted"
         )  # <<< insert blocks over active block in the editor
         app.refresh()  # <<< refresh editor

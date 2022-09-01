@@ -6,8 +6,9 @@ from copy import deepcopy
 from tkinter import messagebox
 
 from bpath import Path, Segment
-from ToolsPage import Plugin
-from Helpers import _
+from gcode import globGCode
+
+from tools._plugin import Plugin
 
 __author__ = "@DodoLaSaumure  (Pierre Klein)"
 
@@ -557,7 +558,7 @@ Grey is simulation of how part will look after machining
             diameter,
             stepover,
             name,
-            app.gcode,
+            globGCode,
             app,
         )
         if msg:

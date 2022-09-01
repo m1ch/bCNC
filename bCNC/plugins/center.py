@@ -2,9 +2,11 @@
 # Date: 7 july 2018
 
 
-from CNC import CNC, Block
-from ToolsPage import Plugin
-from Helpers import _
+from cnc import globCNC
+from gcode import globGCode
+
+from cnc import Block
+from tools._plugin import Plugin
 
 __author__ = "@harvie Tomas Mudrunka"
 # __email__  = ""
@@ -45,22 +47,22 @@ class Tool(Plugin):
     def execute(self, app):
         blocks = []
         for bid in app.editor.getSelectedBlocks():
-            if len(app.gcode.toPath(bid)) < 1:
+            if len(globGCode.toPath(bid)) < 1:
                 continue
-            path = app.gcode.toPath(bid)[0]
+            path = globGCode.toPath(bid)[0]
             x, y = path.center()
-            eblock = Block("center of " + app.gcode[bid].name())
+            eblock = Block("center of " + globGCode[bid].name())
             eblock.append("G0 x"
-                          + str(round(x, CNC.digits))
+                          + str(round(x, globCNC.digits))
                           + " y"
-                          + str(round(y, CNC.digits))
+                          + str(round(y, globCNC.digits))
                           )
             eblock.append("G1 Z0 F200")
             eblock.append("G0 Z10")
             blocks.append(eblock)
 
         active = -1  # add to end
-        app.gcode.insBlocks(
+        globGCode.insBlocks(
             active, blocks, "Center created"
         )  # <<< insert blocks over active block in the editor
         app.refresh()  # <<< refresh editor

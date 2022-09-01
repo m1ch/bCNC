@@ -10,8 +10,9 @@ import tempfile
 import threading
 
 import Camera
-from CNC import CNC
-from Utils import prgpath
+from cnc import globCNC
+
+from globalConstants import __prgpath__
 
 import urllib.parse as urlparse
 import http.server as httpserver
@@ -28,8 +29,8 @@ HOSTNAME = "localhost"
 port = 8080
 
 httpd = None
-webpath = f"{prgpath}/pendant"
-iconpath = f"{prgpath}/icons/"
+webpath = f"{__prgpath__}/pendant"
+iconpath = f"{__prgpath__}/icons/"
 
 
 # =============================================================================
@@ -70,9 +71,9 @@ class Pendant(httpserver.BaseHTTPRequestHandler):
             for key, value in arg.items():
                 if key == "gcode":
                     for line in value.split("\n"):
-                        httpd.app.queue.put(line + "\n")
+                        httpd.app.sender.queue.put(line + "\n")
                 elif key == "cmd":
-                    httpd.app.pendant.put(urlparse.unquote(value))
+                    httpd.app.sender.pendant.put(urlparse.unquote(value))
             # send empty response so browser does not generate errors
             self.do_HEAD(200, "text/text", cl=len(""))
             self.wfile.write(b"")
@@ -102,7 +103,7 @@ class Pendant(httpserver.BaseHTTPRequestHandler):
                 "OvRapid",
                 "OvSpindle",
             ]:
-                tmp[name] = CNC.vars[name]
+                tmp[name] = globCNC.vars[name]
             contentToSend = json.dumps(tmp)
             self.do_HEAD(200, content="text/text", cl=len(contentToSend))
             self.wfile.write(contentToSend.encode())

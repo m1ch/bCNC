@@ -3,9 +3,9 @@
 # Author:    Vasilis.Vlachoudis@cern.ch
 # Date:      20-Aug-2015
 
-from ToolsPage import Plugin
+from gcode import globGCode
+from tools._plugin import Plugin
 from tkinter import messagebox
-from Helpers import _
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"
@@ -41,7 +41,8 @@ class Tool(Plugin):
             blocks = app.editor.getSelectedBlocks()
 
         if not blocks:
-            messagebox.showerror(_("Tile error"), _("No g-code blocks selected"))
+            messagebox.showerror(_("Tile error"),
+                                 _("No g-code blocks selected"))
             return
 
         try:
@@ -69,14 +70,14 @@ class Tool(Plugin):
                 undoinfo = []  # FIXME it should be only one UNDO
                 newblocks = []
                 for bid in blocks:
-                    undoinfo.append(app.gcode.cloneBlockUndo(bid, pos))
+                    undoinfo.append(globGCode.cloneBlockUndo(bid, pos))
                     newblocks.append((pos, None))
                     pos += 1
                 app.addUndo(undoinfo)
 
                 # FIXME but the moveLines already does the addUndo
                 # I should correct it
-                app.gcode.moveLines(newblocks, x, y)
+                globGCode.moveLines(newblocks, x, y)
                 x += dx
             y += dy
 

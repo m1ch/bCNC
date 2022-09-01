@@ -5,8 +5,8 @@
 
 from tkinter import messagebox
 
-from ToolsPage import Plugin
-from Helpers import _
+from gcode import globGCode
+from tools._plugin import Plugin
 
 __author__ = "DodoLaSaumure"
 __email__ = ""
@@ -56,11 +56,11 @@ class Tool(Plugin):
             undoinfo = []
             newblocks = []
             for bid in blocks:
-                undoinfo.append(app.gcode.cloneBlockUndo(bid, pos))
+                undoinfo.append(globGCode.cloneBlockUndo(bid, pos))
                 newblocks.append((pos, None))
                 pos += 1
             app.addUndo(undoinfo)
-            app.gcode.rotateLines(newblocks, alpha_current, xcenter, ycenter)
+            globGCode.rotateLines(newblocks, alpha_current, xcenter, ycenter)
             alpha_current += alpha
         if not keep:
             app.editor.deleteBlock()

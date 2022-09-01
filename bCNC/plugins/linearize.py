@@ -2,9 +2,9 @@
 # Date: 25 sept 2018
 
 
-from CNC import Block
-from ToolsPage import Plugin
-from Helpers import _
+from gcode import globGCode
+from cnc import Block
+from tools._plugin import Plugin
 
 __author__ = "@harvie Tomas Mudrunka"
 
@@ -37,7 +37,7 @@ class Tool(Plugin):
                 "1",
                 _("segment size"),
                 _(
-                    "Maximal length of resulting lines, smaller number means more precise output and longer g-code. Length will be automaticaly truncated to be even across whole subdivided segment."
+                    "Maximal length of resulting lines, smaller number means more precise output and longer g-code. Length will be automatically truncated to be even across whole subdivided segment."
                 ),
             ),
             (
@@ -55,8 +55,8 @@ class Tool(Plugin):
         )  # <<< This is the button added at bottom to call the execute method below
         self.help = """
 This plugin will subdivide the toolpath in such way, that all segments are broken to very short lines, which means that there will be no arcs or splines.
-This is exact opposite of "arcfit" plugin. This is not very usefull for common CNC operation. However this might be useful when you need to proces arcs in CAD/CAM software which only support straight lines.
-It usualy happens that new development features and plugins in bCNC only support straight lines and they add support for arcs later. So if you are early adopter of development features or encounter arc-related bug, you might try to use this plugin to convert your g-code to lines before working using these new features.
+This is exact opposite of "arcfit" plugin. This is not very useful for common CNC operation. However this might be useful when you need to process arcs in CAD/CAM software which only support straight lines.
+It usually happens that new development features and plugins in bCNC only support straight lines and they add support for arcs later. So if you are early adopter of development features or encounter arc-related bug, you might try to use this plugin to convert your g-code to lines before working using these new features.
 Also if you are working with some primitive motion controller, which only supports straight lines (G1). You might use this plugin to preprocess the g-code to get support for arcs (G2 and G3).
 
 If you set the segment size large enough, you can even use this to create inscribed polygons in arcs and circles.
@@ -71,17 +71,17 @@ If you set the segment size large enough, you can even use this to create inscri
 
         blocks = []
         for bid in app.editor.getSelectedBlocks():
-            if len(app.gcode.toPath(bid)) < 1:
+            if len(globGCode.toPath(bid)) < 1:
                 continue
 
-            eblock = Block("lin " + app.gcode[bid].name())
-            opath = app.gcode.toPath(bid)[0]
+            eblock = Block("lin " + globGCode[bid].name())
+            opath = globGCode.toPath(bid)[0]
             npath = opath.linearize(maxseg, splitlines)
-            eblock = app.gcode.fromPath(npath, eblock)
+            eblock = globGCode.fromPath(npath, eblock)
             blocks.append(eblock)
 
         active = -1  # add to end
-        app.gcode.insBlocks(
+        globGCode.insBlocks(
             active, blocks, "Linearized"
         )  # <<< insert blocks over active block in the editor
         app.refresh()  # <<< refresh editor

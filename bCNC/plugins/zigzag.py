@@ -5,9 +5,12 @@
 
 import math
 
-from CNC import CNC, Block
-from ToolsPage import Plugin
-from Helpers import _
+from cnc import globCNC
+from gcode import globGCode
+from sender import globSender
+
+from cnc import Block
+from tools._plugin import Plugin
 
 __author__ = "Carlos Garcia Saura"
 __email__ = "@CarlosGS"
@@ -67,11 +70,11 @@ class ZigZag:
 
         points = self.zigzag(Nlines, LineLen, StartEndLen, Step, CornerRes)
 
-        block.append(CNC.zsafe())
-        block.append(CNC.grapid(points[0][0], points[0][1]))
+        block.append(globCNC.zsafe())
+        block.append(globCNC.grapid(points[0][0], points[0][1]))
 
         currDepth = 0.0
-        stepz = CNC.vars["stepz"]
+        stepz = globCNC.vars["stepz"]
         if stepz == 0:
             stepz = 0.001  # avoid infinite while loop
 
@@ -79,14 +82,15 @@ class ZigZag:
             currDepth -= stepz
             if currDepth < Depth:
                 currDepth = Depth
-            block.append(CNC.zenter(currDepth))
-            block.append(CNC.gcode(1, [("f", CNC.vars["cutfeed"])]))
+            block.append(globCNC.zenter(currDepth))
+            block.append(
+                globCNC.gcode_generate(1, [("f", globCNC.vars["cutfeed"])]))
             for (x, y) in points:
-                block.append(CNC.gline(x, y))
+                block.append(globCNC.gline(x, y))
             if currDepth <= Depth:
                 break
 
-        block.append(CNC.zsafe())
+        block.append(globCNC.zsafe())
         blocks.append(block)
         return blocks
 
@@ -153,6 +157,6 @@ class Tool(Plugin):
         active = app.activeBlock()
         if active == 0:
             active = 1
-        app.gcode.insBlocks(active, blocks, "Zig-Zag")
+        globGCode.insBlocks(active, blocks, "Zig-Zag")
         app.refresh()
         app.setStatus(_("Generated: Zig-Zag"))

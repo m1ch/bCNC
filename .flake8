@@ -1,0 +1,7 @@
+[flake8]
+ignore=
+    N802,
+    W503
+    ; F821
+builtins=
+    _

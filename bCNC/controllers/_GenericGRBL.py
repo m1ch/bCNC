@@ -3,8 +3,8 @@
 
 import time
 
+from sender import globSender
 from _GenericController import _GenericController
-from Helpers import _
 
 # From https://github.com/grbl/grbl/wiki/Interfacing-with-Grbl
 # and  https://github.com/terjeio/grblHAL
@@ -20,7 +20,7 @@ ERROR_CODES = {
     ),
     "Jog": _("Grbl executes jogging motion"),
     "Sleep": _(
-        "Grbl is in sleep mode. Motors are disabled, so you can move them manualy. That also means that your machine might have lost the position (or microsteps) and you may need to re-zero. Perform reset+unlock (or stop) to wake Grbl again."
+        "Grbl is in sleep mode. Motors are disabled, so you can move them manually. That also means that your machine might have lost the position (or microsteps) and you may need to re-zero. Perform reset+unlock (or stop) to wake Grbl again."
     ),
     "Queue": _(
         "Grbl is in queue state. This also means you have relatively old GRBL version, there are even 0.9 versions newer than this."
@@ -123,7 +123,7 @@ ERROR_CODES = {
     "error:62": _("SD Card directory listing failed. (grblHAL bdring)"),
     "error:63": _("SD Card directory not found. (grblHAL bdring)"),
     "error:64": _("SD Card file empty. (grblHAL bdring)"),
-    "error:70": _("Bluetooth initalisation failed. (grblHAL bdring)"),
+    "error:70": _("Bluetooth initialisation failed. (grblHAL bdring)"),
     "ALARM:1": _(
         "Hard limit triggered. Machine position is likely lost due to sudden and immediate halt. Re-homing is highly recommended."
     ),
@@ -224,29 +224,29 @@ class _GenericGRBL(_GenericController):
         print("test supergen grbl")
 
     def viewSettings(self):
-        self.master.sendGCode("$$")
+        globSender.sendGCode("$$")
 
     def viewBuild(self):
-        self.master.sendGCode("$I")
+        globSender.sendGCode("$I")
 
     def viewStartup(self):
-        self.master.sendGCode("$N")
+        globSender.sendGCode("$N")
 
     def checkGcode(self):
-        self.master.sendGCode("$C")
+        globSender.sendGCode("$C")
 
     def grblHelp(self):
-        self.master.sendGCode("$")
+        globSender.sendGCode("$")
 
     def grblRestoreSettings(self):
-        self.master.sendGCode("$RST=$")
+        globSender.sendGCode("$RST=$")
 
     def grblRestoreWCS(self):
-        self.master.sendGCode("$RST=#")
+        globSender.sendGCode("$RST=#")
 
     def grblRestoreAll(self):
-        self.master.sendGCode("$RST=#")
+        globSender.sendGCode("$RST=#")
 
     def purgeControllerExtra(self):
         time.sleep(1)
-        self.master.unlock(False)
+        globSender.unlock(False)

@@ -10,9 +10,11 @@ import re
 from collections import OrderedDict
 
 import Utils
-from CNC import CNC, Block
-from ToolsPage import Plugin
-from Helpers import _
+from cnc import globCNC
+from gcode import globGCode
+
+from cnc import Block
+from tools._plugin import Plugin
 
 __author__ = "Filippo Rivato"
 __email__ = "f.rivato@gmail.com"
@@ -85,11 +87,11 @@ class Tool(Plugin):
 
     # Convert to systemsetting
     def convunit(self, value, unitinch):
-        if unitinch == CNC.inch:
+        if unitinch == globCNC.inch:
             return value
-        if unitinch is True and CNC.inch is False:
+        if unitinch is True and globCNC.inch is False:
             return value * 25.4
-        if unitinch is False and CNC.inch:
+        if unitinch is False and globCNC.inch:
             return value / 25.4
 
     # Excellon Import
@@ -155,7 +157,7 @@ class Tool(Plugin):
                                 (x, y, targetDepth)
                             )
 
-        unittext = "inch" if CNC.inch else "mm"
+        unittext = "inch" if globCNC.inch else "mm"
         n = self["name"]
         if not n or n == "default":
             n = "Driller"
@@ -163,13 +165,13 @@ class Tool(Plugin):
         blocks = []
         for tool in data["tools"]:
             dia = self.convunit(data["tools"][tool]["diameter"], unitinch)
-            # Duplicates shouldn't be in the list - remove unnessesary
+            # Duplicates shouldn't be in the list - remove unnecessary
             blockholes = [data["tools"][tool]["holes"]]
             block, holesCount = self.create_block(
                 blockholes, n + " (" + str(dia) + " " + unittext + ")"
             )
             holesCounter = holesCounter + holesCount
-            if not CNC.lasercutter:
+            if not globCNC.lasercutter:
                 block.insert(
                     0, "M6 T" + str(dia).replace(".", "")
                 )  # added a tool change command
@@ -194,26 +196,26 @@ class Tool(Plugin):
     # TODO Move to Utils? A few plugins use this
     def extractAllSegments(self, app, selectedBlock):
         allSegments = []
-        allBlocks = app.gcode.blocks
+        allBlocks = globGCode.blocks
 
         for bid in selectedBlock:
             bidSegments = []
             block = allBlocks[bid]
             if block.name() in ("Header", "Footer"):
                 continue
-            app.gcode.initPath(bid)
+            globGCode.initPath(bid)
             for line in block:
                 try:
-                    cmd = app.cnc.breakLine(
-                        app.gcode.evaluate(app.cnc.compileLine(line))
+                    cmd = globCNC.breakLine(
+                        globGCode.evaluate(globCNC.compileLine(line))
                     )
                 except Exception:
                     cmd = None
 
                 if cmd:
-                    app.cnc.motionStart(cmd)
-                    xyz = app.cnc.motionPath()
-                    app.cnc.motionEnd()
+                    globCNC.motionStart(cmd)
+                    xyz = globCNC.motionPath()
+                    globCNC.motionEnd()
 
                     if xyz:
                         # Exclude if fast move or z only movement
@@ -256,7 +258,7 @@ class Tool(Plugin):
         # Custom for laser in M3 mode
         self.useCustom = self["useCustom"]
 
-        self.rFeed = int(min(CNC.feedmax_x, CNC.feedmax_y))
+        self.rFeed = int(min(globCNC.feedmax_x, globCNC.feedmax_y))
         if self["rFeed"]:
             self.rFeed = self["rFeed"]
 
@@ -400,16 +402,16 @@ class Tool(Plugin):
         if self.useCustom:
             block.append("M3 S0")
         else:
-            block.append(CNC.zsafe())
+            block.append(globCNC.zsafe())
 
         for bid in holes:
             for xH, yH, zH in bid:
                 holesCount += 1
 
                 if self.useCustom:
-                    block.append(CNC.grapid(x=xH, y=yH) + CNC.fmt(" F", self.rFeed))
+                    block.append(globCNC.grapid(x=xH, y=yH) + globCNC.fmt(" F", self.rFeed))
                 else:
-                    block.append(CNC.grapid(xH, yH))
+                    block.append(globCNC.grapid(xH, yH))
 
                 if peck != 0:
                     z = 0
@@ -421,29 +423,29 @@ class Tool(Plugin):
                             )
                             break
                         else:
-                            block.append(CNC.zenter(zH + z))
-                            block.append(CNC.zsafe())
+                            block.append(globCNC.zenter(zH + z))
+                            block.append(globCNC.zsafe())
 
                 if self.useCustom:
                     block.append(f"G1 S{self.spinMax}")
-                    block.append(CNC.gline(x=xH, y=yH))
+                    block.append(globCNC.gline(x=xH, y=yH))
                 else:
-                    block.append(CNC.zenter(targetDepth))
+                    block.append(globCNC.zenter(targetDepth))
 
                 # Dwell time only on last pass
                 if dwell != 0:
-                    block.append(CNC.gcode(4, [("P", dwell)]))
+                    block.append(globCNC.gcode_generate(4, [("P", dwell)]))
 
                 if self.useCustom:
                     block.append(f"G1 S{self.spinMin}")
                 else:
-                    block.append(CNC.zsafe())
+                    block.append(globCNC.zsafe())
 
         # Gcode Zsafe on finish
         if self.useCustom:
             block.append("M5")
         else:
-            block.append(CNC.zsafe())
+            block.append(globCNC.zsafe())
         return (block, holesCount)
 
     # Insert created blocks
@@ -451,6 +453,6 @@ class Tool(Plugin):
         active = app.activeBlock()
         if active == 0:
             active = 1
-        app.gcode.insBlocks(active, blocks, "Driller")
+        globGCode.insBlocks(active, blocks, "Driller")
         app.refresh()
         app.setStatus(_("Generated Driller: {} holes").format(numberholes))

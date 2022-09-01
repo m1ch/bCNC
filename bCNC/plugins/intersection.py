@@ -7,10 +7,10 @@ from math import (
     sin,
 )
 
+from gcode import globGCode
 from bpath import EPS, Path, Segment, eq
-from CNC import Block
-from ToolsPage import Plugin
-from Helpers import _
+from cnc import Block
+from tools._plugin import Plugin
 
 __author__ = "@harvie Tomas Mudrunka"
 # __email__  = ""
@@ -52,10 +52,10 @@ class Tool(Plugin):
         blocks = []
 
         bid = app.editor.getSelectedBlocks()[0]
-        xbasepath = app.gcode.toPath(bid)[0]
+        xbasepath = globGCode.toPath(bid)[0]
 
         bid = app.editor.getSelectedBlocks()[1]
-        xislandpath = app.gcode.toPath(bid)[0]
+        xislandpath = globGCode.toPath(bid)[0]
 
         xbasepath.intersectPath(xislandpath)
         xislandpath.intersectPath(xbasepath)
@@ -63,11 +63,11 @@ class Tool(Plugin):
         xnewisland = self.pathBoolIntersection(xislandpath, xbasepath)
 
         block = Block("intersect")
-        block.extend(app.gcode.fromPath(xnewisland))
+        block.extend(globGCode.fromPath(xnewisland))
         blocks.append(block)
 
         active = app.activeBlock()
-        app.gcode.insBlocks(
+        globGCode.insBlocks(
             active, blocks, "Intersect"
         )  # <<< insert blocks over active block in the editor
         app.refresh()  # <<< refresh editor

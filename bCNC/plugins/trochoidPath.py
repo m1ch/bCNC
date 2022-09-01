@@ -7,12 +7,12 @@
 # A special thanks to Filippo Rivato and Vasilis.
 # This plugin is based on a variation
 # of yours plugin Driller and My_Plugin example.
-# To correct: Thats why the first point starts,
+# To correct: That's why the first point starts,
 
-
-from CNC import CNC  # , Block  # << without this error it does not find CNC.vars
-from ToolsPage import Plugin
-from Helpers import _
+from cnc import globCNC
+from gcode import globGCode
+# from cnc import CNC  # , Block  # << without this error it does not find globCNC.vars
+from tools._plugin import Plugin
 
 __author__ = "Mario Basz"
 __email__ = "mariob_1960@yahoo.com.ar"
@@ -23,10 +23,10 @@ __version__ = "1.0"
 
 
 # =============================================================================
-# Create Trochoidadl rute along selected blocks
+# Create Trochoidadl route along selected blocks
 # =============================================================================
 class Tool(Plugin):
-    __doc__ = _("Create a trochoid rute along selected blocks")
+    __doc__ = _("Create a trochoid route along selected blocks")
 
     def __init__(self, master):
         Plugin.__init__(self, master, "Trochoid_Path")  # NAME OF THE PLUGIN
@@ -66,7 +66,7 @@ class Tool(Plugin):
 
     # ----------------------------------------------------------------------
     def update(self):
-        self.master.cnc()["trochcutdiam"] = self.fromMm("trochcutdiam")
+        globCNC["trochcutdiam"] = self.fromMm("trochcutdiam")
 
     # ----------------------------------------------------------------------
     def execute(self, app):
@@ -82,7 +82,7 @@ class Tool(Plugin):
         tabsHeight = self["tabsHeight"]
 
         trochcutdiam = self.fromMm("trochcutdiam")
-        mintrochdiameter = CNC.vars["diameter"]
+        mintrochdiameter = globCNC.vars["diameter"]
         cornerradius = (trochcutdiam - mintrochdiameter) / 2.0
         direction = self["direction"]
         name = self["name"]
@@ -95,7 +95,7 @@ class Tool(Plugin):
             self["overcut"],
             self["adaptative"],
             cornerradius,
-            CNC.vars["diameter"],
+            globCNC.vars["diameter"],
             targetDepth,
             depthIncrement,
             tabsnumber,

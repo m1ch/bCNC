@@ -1,6 +1,8 @@
-from CNC import CNC, Block
-from ToolsPage import Plugin
-from Helpers import _
+from cnc import globCNC
+from gcode import globGCode
+
+from cnc import Block
+from tools._plugin import Plugin
 
 __author__ = "kswiorek"
 __email__ = "ks@baskijski.net"
@@ -9,7 +11,7 @@ __name__ = _("Function")
 __version__ = "2.5.1"
 
 
-# I'm not commenting theese lines, I just copied them from https://github.com/vlachoudis/bCNC/wiki/Tutorials:-How-to-create-a-plugin
+# I'm not commenting these lines, I just copied them from https://github.com/vlachoudis/bCNC/wiki/Tutorials:-How-to-create-a-plugin
 class Tool(Plugin):
     __doc__ = _("""Generates gcode from a formula""")
 
@@ -38,7 +40,7 @@ class Tool(Plugin):
 
         self.help = """
 This plugin plots graph of a function.
-There are some examples of function formulas that can be ploted:
+There are some examples of function formulas that can be plotted:
 
 - x**2
 - sin(x)
@@ -91,12 +93,12 @@ TODO
         X = []
         Y = []
 
-        e_old = ""  # Store old exception to comapre
+        e_old = ""  # Store old exception to compare
 
         # Calculate values for arguments with a resolution
         for i in range(
             0, int(ran[0] / res + 1)
-        ):  # Complaints about values beeing floats
+        ):  # Complaints about values being floats
             x = i * res + minX  # Iterate x
             X.append(x)
             try:
@@ -124,58 +126,58 @@ TODO
             if not Y[i] is None:
                 Ynn.append(Y[i])
 
-        block.append(CNC.gcode(1, [("f", CNC.vars["cutfeed"])]))  # Set feedrate
+        block.append(globCNC.gcode_generate(1, [("f", globCNC.vars["cutfeed"])]))  # Set feedrate
 
         if draw:  # If the user selected to draw the coordinate system
             # X axis
-            block.append(CNC.grapid(z=3))
+            block.append(globCNC.grapid(z=3))
             # 1st point of X axis line
-            block.append(CNC.grapid(0, mapc(cent[1], 1)))
-            block.append(CNC.grapid(z=0))
+            block.append(globCNC.grapid(0, mapc(cent[1], 1)))
+            block.append(globCNC.grapid(z=0))
 
             block.append(
-                CNC.gline(dim[0] + lin * 1.2, mapc(cent[1], 1))
+                globCNC.gline(dim[0] + lin * 1.2, mapc(cent[1], 1))
             )  # End of X axis line + a bit more for the arrow
 
             block.append(
-                CNC.gline(dim[0] - lin / 2, mapc(cent[1], 1) - lin / 2)
+                globCNC.gline(dim[0] - lin / 2, mapc(cent[1], 1) - lin / 2)
             )  # bottom part of the arrow
 
-            block.append(CNC.grapid(z=3))
+            block.append(globCNC.grapid(z=3))
             block.append(
-                CNC.grapid(dim[0] + lin * 1.2, mapc(cent[1], 1), 0)
+                globCNC.grapid(dim[0] + lin * 1.2, mapc(cent[1], 1), 0)
             )  # End of X axis line
-            block.append(CNC.grapid(z=0))
+            block.append(globCNC.grapid(z=0))
 
             block.append(
-                CNC.gline(dim[0] - lin / 2, mapc(cent[1], 1) + lin / 2)
+                globCNC.gline(dim[0] - lin / 2, mapc(cent[1], 1) + lin / 2)
             )  # top part of the arrow
-            block.append(CNC.grapid(z=3))
+            block.append(globCNC.grapid(z=3))
 
             # Y axis, just inverted x with y
-            block.append(CNC.grapid(z=3))
+            block.append(globCNC.grapid(z=3))
             # 1st point of Y axis line
-            block.append(CNC.grapid(mapc(cent[0], 0), 0))
-            block.append(CNC.grapid(z=0))
+            block.append(globCNC.grapid(mapc(cent[0], 0), 0))
+            block.append(globCNC.grapid(z=0))
 
             block.append(
-                CNC.gline(mapc(cent[0], 0), dim[1] + lin * 1.2)
+                globCNC.gline(mapc(cent[0], 0), dim[1] + lin * 1.2)
             )  # End of Y axis line + a bit more for the arrow
 
             block.append(
-                CNC.gline(mapc(cent[0], 0) - lin / 2, dim[1] - lin / 2)
+                globCNC.gline(mapc(cent[0], 0) - lin / 2, dim[1] - lin / 2)
             )  # left part of the arrow
 
-            block.append(CNC.grapid(z=3))
+            block.append(globCNC.grapid(z=3))
             block.append(
-                CNC.grapid(mapc(cent[0], 0), dim[1] + lin * 1.2)
+                globCNC.grapid(mapc(cent[0], 0), dim[1] + lin * 1.2)
             )  # End of Y axis line
-            block.append(CNC.grapid(z=0))
+            block.append(globCNC.grapid(z=0))
 
             block.append(
-                CNC.gline(mapc(cent[0], 0) + lin / 2, dim[1] - lin / 2)
+                globCNC.gline(mapc(cent[0], 0) + lin / 2, dim[1] - lin / 2)
             )  # right part of the arrow
-            block.append(CNC.grapid(z=3))
+            block.append(globCNC.grapid(z=3))
 
             # X axis number lines
             i = 0
@@ -184,13 +186,13 @@ TODO
 
                 # Draw lines right of the center
                 block.append(
-                    CNC.grapid(mapc(i + cent[0], 0), mapc(cent[1], 1) + lin / 2)
+                    globCNC.grapid(mapc(i + cent[0], 0), mapc(cent[1], 1) + lin / 2)
                 )
-                block.append(CNC.grapid(z=0))
+                block.append(globCNC.grapid(z=0))
                 block.append(
-                    CNC.gline(mapc(i + cent[0], 0), mapc(cent[1], 1) - lin / 2)
+                    globCNC.gline(mapc(i + cent[0], 0), mapc(cent[1], 1) - lin / 2)
                 )
-                block.append(CNC.grapid(z=3))
+                block.append(globCNC.grapid(z=3))
 
             i = 0
             while (
@@ -200,13 +202,13 @@ TODO
 
                 # Draw lines left of the center
                 block.append(
-                    CNC.grapid(mapc(i + cent[0], 0), mapc(cent[1], 1) + lin / 2)
+                    globCNC.grapid(mapc(i + cent[0], 0), mapc(cent[1], 1) + lin / 2)
                 )
-                block.append(CNC.grapid(z=0))
+                block.append(globCNC.grapid(z=0))
                 block.append(
-                    CNC.gline(mapc(i + cent[0], 0), mapc(cent[1], 1) - lin / 2)
+                    globCNC.gline(mapc(i + cent[0], 0), mapc(cent[1], 1) - lin / 2)
                 )
-                block.append(CNC.grapid(z=3))
+                block.append(globCNC.grapid(z=3))
 
             # Y axis number lines
             i = 0
@@ -215,13 +217,13 @@ TODO
 
                 # Draw lines top of the center (everything just inverted)
                 block.append(
-                    CNC.grapid(mapc(cent[0], 0) + lin / 2, mapc(i + cent[1], 1))
+                    globCNC.grapid(mapc(cent[0], 0) + lin / 2, mapc(i + cent[1], 1))
                 )
-                block.append(CNC.grapid(z=0))
+                block.append(globCNC.grapid(z=0))
                 block.append(
-                    CNC.gline(mapc(cent[0], 0) - lin / 2, mapc(i + cent[1], 1))
+                    globCNC.gline(mapc(cent[0], 0) - lin / 2, mapc(i + cent[1], 1))
                 )
-                block.append(CNC.grapid(z=3))
+                block.append(globCNC.grapid(z=3))
 
             i = 0
             while i > -1 * cent[1]:
@@ -229,13 +231,13 @@ TODO
 
                 # Draw lines bottom of the center
                 block.append(
-                    CNC.grapid(mapc(cent[0], 0) + lin / 2, mapc(i + cent[1], 1))
+                    globCNC.grapid(mapc(cent[0], 0) + lin / 2, mapc(i + cent[1], 1))
                 )
-                block.append(CNC.grapid(z=0))
+                block.append(globCNC.grapid(z=0))
                 block.append(
-                    CNC.gline(mapc(cent[0], 0) - lin / 2, mapc(i + cent[1], 1))
+                    globCNC.gline(mapc(cent[0], 0) - lin / 2, mapc(i + cent[1], 1))
                 )
-                block.append(CNC.grapid(z=3))
+                block.append(globCNC.grapid(z=3))
 
             raised = True  # Z was raised
 
@@ -245,28 +247,28 @@ TODO
                 x = mapc(X[i] + cent[0], 0)  # Take an argument
                 y = mapc(Y[i] + cent[1], 1)  # Take a value
             else:
-                y = Y[i]  # only for tne None checks next
+                y = Y[i]  # only for the None checks next
 
             # If a None "period" just started raise Z
             if y is None and not raised:
                 raised = True
-                block.append(CNC.grapid(z=3))
+                block.append(globCNC.grapid(z=3))
             # If Z was raised and the None "period" ended move to new
             # coordinates
             elif (y is not None and raised):
 
-                block.append(CNC.grapid(round(x, 2), round(y, 2)))
-                block.append(CNC.grapid(z=0))  # Lower Z
+                block.append(globCNC.grapid(round(x, 2), round(y, 2)))
+                block.append(globCNC.grapid(z=0))  # Lower Z
                 raised = False
             # Nothing to do with Nones? Just draw
             elif y is not None and not raised:
-                block.append(CNC.gline(round(x, 2), round(y, 2)))
+                block.append(globCNC.gline(round(x, 2), round(y, 2)))
 
-        block.append(CNC.grapid(z=3))  # Raise on the end
+        block.append(globCNC.grapid(z=3))  # Raise on the end
 
         blocks.append(block)
         active = app.activeBlock()
-        app.gcode.insBlocks(
+        globGCode.insBlocks(
             active, blocks, "Function inserted"
         )  # insert blocks over active block in the editor
         app.refresh()  # refresh editor

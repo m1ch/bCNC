@@ -1,9 +1,10 @@
 # Author: @harvie Tomas Mudrunka
 # Date: 25 sept 2018
 
-from CNC import Block
-from ToolsPage import Plugin
-from Helpers import _
+from cnc import Block
+from gcode import globGCode
+
+from tools._plugin import Plugin
 
 __author__ = "@harvie Tomas Mudrunka"
 # __email__  = ""
@@ -54,12 +55,12 @@ class Tool(Plugin):
         )  # <<< This is the button added at bottom to call the execute method below
         self.help = """
 This plugin will try to simplify the g-code by replacing amounts of short subsequent lines by one long arc.
-There are some precision tunables which will allow you to define how much the resulting arc can differ from orignal lines.
+There are some precision tunables which will allow you to define how much the resulting arc can differ from original lines.
 This plugin can reverse the output of "linearize" plugin, which does the opposite.
 This is not really meant to fillet sharp corners. But rather to reduce the number of g-code lines while preserving the toolpath shape.
 This can be also useful for postprocessing of imported DXF/SVG splines. Splines have to be subdivided to short lines when importing and this can simplify the resulting code.
 Another usecase is to postprocess mesh slices as STL/PLY format is based on triangles, it will never perfectly describe circles and arcs. You can use this plugin to simplify/smooth shapes imported from 3D mesh files.
-Before this plugin tries to fit arcs it also tries to fit and merge longest possible lines within given precision. Line precision should be set much lower than arc precision, otherwise the line merging algorithm will "eat" lines that belong to arcs. Unless you want to do massive shape simplification and don't mind loosing details.
+Before this plugin tries to fit arcs it also tries to fit and merge longest possible lines within given precision. Line precision should be set much lower than arc precision, otherwise the line merging algorithm will "eat" lines that belong to arcs. Unless you want to do massive shape simplification and don't mind losing details.
 """
 
     # ----------------------------------------------------------------------
@@ -72,22 +73,22 @@ Before this plugin tries to fit arcs it also tries to fit and merge longest poss
 
         blocks = []
         for bid in app.editor.getSelectedBlocks():
-            if len(app.gcode.toPath(bid)) < 1:
+            if len(globGCode.toPath(bid)) < 1:
                 continue
 
-            eblock = Block("fit " + app.gcode[bid].name())
-            npath = app.gcode.toPath(bid)[0]
+            eblock = Block("fit " + globGCode[bid].name())
+            npath = globGCode.toPath(bid)[0]
             npath = npath.mergeLines(linpreci)
             npath = npath.arcFit(preci, numseg)
             if npath.length() <= 0:
                 # FIXME: not sure how this could happen
                 print("Warning: ignoring zero length path!")
                 continue
-            eblock = app.gcode.fromPath(npath, eblock)
+            eblock = globGCode.fromPath(npath, eblock)
             blocks.append(eblock)
 
         active = -1  # add to end
-        app.gcode.insBlocks(
+        globGCode.insBlocks(
             active, blocks, "Arc fit"
         )  # <<< insert blocks over active block in the editor
         app.refresh()  # <<< refresh editor

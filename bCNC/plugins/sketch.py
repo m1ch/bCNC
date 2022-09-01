@@ -10,9 +10,11 @@ import math
 # import time
 import random
 
-from CNC import CNC, Block
-from ToolsPage import Plugin
-from Helpers import _
+from cnc import globCNC
+from gcode import globGCode
+
+from cnc import Block
+from tools._plugin import Plugin
 
 __author__ = "Filippo Rivato"
 __email__ = "f.rivato@gmail.com"
@@ -275,7 +277,7 @@ class Tool(Plugin):
         else:
             img = img.convert("L")  # to calculate luminance
 
-        img = img.transpose(Image.FLIP_TOP_BOTTOM)  # ouput correct image
+        img = img.transpose(Image.FLIP_TOP_BOTTOM)  # output correct image
         pix = img.load()
         # Get image size
         self.imgWidth, self.imgHeight = img.size
@@ -291,26 +293,24 @@ class Tool(Plugin):
         # Info block
         block = Block("Info")
         block.append(
-            "(Sketch size W={:d} x H={:d} x distance={:d})".format(
-                int(self.imgWidth * self.ratio),
-                int(self.imgHeight * self.ratio),
-                int(depth))
-        )
+            f"(Sketch size W={int(self.imgWidth * self.ratio):d} x "
+            + f"H={int(self.imgHeight * self.ratio):d} x "
+            + f"distance={int(depth):d})")
         block.append(f"(Channel = {channel})")
         blocks.append(block)
 
         # Border block
         block = Block(f"{self.name}-border")
         block.enable = drawBorder
-        block.append(CNC.zsafe())
-        block.append(CNC.grapid(0, 0))
-        block.append(CNC.zenter(depth))
-        block.append(CNC.gcode(1, [("f", CNC.vars["cutfeed"])]))
-        block.append(CNC.gline(self.imgWidth * self.ratio, 0))
+        block.append(globCNC.zsafe())
+        block.append(globCNC.grapid(0, 0))
+        block.append(globCNC.zenter(depth))
+        block.append(globCNC.gcode_generate(1, [("f", globCNC.vars["cutfeed"])]))
+        block.append(globCNC.gline(self.imgWidth * self.ratio, 0))
         block.append(
-            CNC.gline(self.imgWidth * self.ratio, self.imgHeight * self.ratio))
-        block.append(CNC.gline(0, self.imgHeight * self.ratio))
-        block.append(CNC.gline(0, 0))
+            globCNC.gline(self.imgWidth * self.ratio, self.imgHeight * self.ratio))
+        block.append(globCNC.gline(0, self.imgHeight * self.ratio))
+        block.append(globCNC.gline(0, 0))
         blocks.append(block)
 
         # choose a nice starting point
@@ -332,12 +332,12 @@ class Tool(Plugin):
             total_line += 1
             total_length += 1
             # move there
-            block.append(CNC.zsafe())
-            block.append(CNC.grapid(x * self.ratio, y * self.ratio))
+            block.append(globCNC.zsafe())
+            block.append(globCNC.grapid(x * self.ratio, y * self.ratio))
             # tool down
-            block.append(CNC.zenter(depth))
+            block.append(globCNC.zenter(depth))
             # restore cut/draw feed
-            block.append(CNC.gcode(1, [("f", CNC.vars["cutfeed"])]))
+            block.append(globCNC.gcode_generate(1, [("f", globCNC.vars["cutfeed"])]))
 
             s = 0
             while s < squiggleLength:
@@ -347,16 +347,16 @@ class Tool(Plugin):
                 s += max(1, distance * self.ratio)  # add traveled distance
                 total_length += 1
                 # move there
-                block.append(CNC.gline(x * self.ratio, y * self.ratio))
+                block.append(globCNC.gline(x * self.ratio, y * self.ratio))
                 self.fadePixel(
                     x, y, pix, fading, repetition
                 )  # adjustbrightness int the bright map
             # tool up
             # Gcode Zsafe
-            block.append(CNC.zsafe())
+            block.append(globCNC.zsafe())
             blocks.append(block)
         active = app.activeBlock()
-        app.gcode.insBlocks(active, blocks, "Sketch")
+        globGCode.insBlocks(active, blocks, "Sketch")
         app.refresh()
         app.setStatus(
             _(

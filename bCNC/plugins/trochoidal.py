@@ -8,9 +8,9 @@ from math import (
     sin,
 )
 
-from CNC import Block
-from ToolsPage import Plugin
-from Helpers import _
+from gcode import globGCode
+from cnc import Block
+from tools._plugin import Plugin
 
 __author__ = "@harvie Tomas Mudrunka"
 # __email__  = ""
@@ -82,7 +82,7 @@ class Tool(Plugin):
         blocks = []
         # Loop over selected blocks
         for bid in app.editor.getSelectedBlocks():
-            path = app.gcode.toPath(bid)[0]
+            path = globGCode.toPath(bid)[0]
 
             # create new block which encorporates trochoidal path
             block = Block(
@@ -118,7 +118,7 @@ class Tool(Plugin):
                     blocks.append(eblock)
                     entry = False
 
-                # Continuity BEGINING
+                # Continuity BEGINNING
                 # calculate number of subsegments to be transformed to
                 # trochoidal motion
                 srdoc = rdoc
@@ -166,7 +166,7 @@ class Tool(Plugin):
             blocks.append(block)
 
         active = app.activeBlock()
-        app.gcode.insBlocks(
+        globGCode.insBlocks(
             active, blocks, "Trochoidal created"
         )  # <<< insert blocks over active block in the editor
         app.refresh()  # <<< refresh editor

@@ -1,17 +1,31 @@
 #!/usr/bin/env python3
 
 import os
+# from pydoc import Helper
 import sys
 import argparse
+from typing import Final
+
+from globalConstants import (
+    __prg__,
+    __version__,
+    __libpath__,
+    __pluginpath__,
+    __controllerpath__,
+    _maxRecent,
+)
+
+from globalConfig import config as gconfig
+
 
 PRGPATH = os.path.abspath(os.path.dirname(__file__))
-sys.path.insert(1, os.path.join(PRGPATH, "lib"))
-sys.path.insert(1, os.path.join(PRGPATH, "plugins"))
-sys.path.insert(1, os.path.join(PRGPATH, "controllers"))
+sys.path.insert(1, __libpath__)
+sys.path.insert(1, __pluginpath__)
+sys.path.insert(1, __controllerpath__)
 
 sys.stdout.write("=" * 80 + "\n")
 sys.stdout.write(
-    "WARNING: bCNC was resently ported to only support \n"
+    "WARNING: bCNC was recently ported to only support \n"
     + "python3.8 and newer.\n"
 )
 sys.stdout.write(
@@ -25,12 +39,11 @@ sys.stdout.write("=" * 80 + "\n")
 
 
 def get_arguments() -> argparse.Namespace:
-    import Utils
     """Get parsed passed in arguments."""
 
     parser = argparse.ArgumentParser(
-        prog=Utils.__prg__,
-        description=f"{Utils.__prg__} - a CAM tool and g-code sender",
+        prog=__prg__,
+        description=f"{__prg__} - a CAM tool and g-code sender",
         epilog="If restart is requested, exits with code 23",
     )
 
@@ -38,7 +51,7 @@ def get_arguments() -> argparse.Namespace:
                         nargs='*',
                         help="Path to a g-Code file")
     parser.add_argument("--version", action="version",
-                        version=Utils.__version__)
+                        version=__version__)
     developer = parser.add_mutually_exclusive_group()
     developer.add_argument("-d", action="store_true",
                            help="Enable developer features")
@@ -47,7 +60,6 @@ def get_arguments() -> argparse.Namespace:
     parser.add_argument("-f", "--fullscreen", action="store_true",
                         help="Enable fullscreen mode")
     parser.add_argument("-g", type=str,
-                        metavar="path_to_ini_file",
                         help="Set the default geometry")
     parser.add_argument("-i", "--ini",
                         help="Alternative ini file for testing")
@@ -83,21 +95,19 @@ def get_arguments() -> argparse.Namespace:
 
 
 def select_recent_file():
-    import Utils
-
     # display list of recent files
     maxlen = 10
-    for i in range(Utils._maxRecent):
+    for i in range(_maxRecent):
         try:
-            filename = Utils.getRecent(i)
+            filename = gconfig.getrecent(i)
         except Exception:
             continue
         maxlen = max(maxlen, len(os.path.basename(filename)))
 
     sys.stdout.write("Recent files:\n")
     num_recent = 0
-    for i in range(Utils._maxRecent):
-        filename = Utils.getRecent(i)
+    for i in range(_maxRecent):
+        filename = gconfig.getrecent(i)
         num_recent = i
         if filename is None:
             break
@@ -121,11 +131,16 @@ def select_recent_file():
 
 # -----------------------------------------------------------------------------
 def main() -> int:
+    # initialize the global variables:
+    # import globalVariables as gv
+    from cnc import globCNC
+    from sender import globSender
+
     import bmain
-    import tkExtra
+    from gui import tkextra
     import Utils
     import Updates
-    from CNC import CNC
+
     try:
         import serial
     except ImportError:
@@ -141,10 +156,16 @@ def main() -> int:
     fullscreen = args.fullscreen
 
     if args.ini:
-        Utils.iniUser = args.ini
-        Utils.loadConfiguration()
+        gconfig.set_userini(args.ini)
 
-    CNC.developer = args.d
+    gconfig.load_configuration()
+    # DEBUG: print the entire config
+    # gconfig.print_configuration()
+
+    globCNC.loadConfig()  # must run after config is loaded!
+    globCNC.developer = args.d
+
+    globSender.loadConfig()
 
     r = -1
     if args.recent:
@@ -155,13 +176,13 @@ def main() -> int:
 
     if r >= 0:
         try:
-            recent = Utils.getRecent(r)
+            recent = gconfig.getrecent(r)
         except Exception:
             sys.stderr.write(
                 "\nERROR: There is no recent file available!\n")
             sys.exit(1)
 
-    application = bmain.Application(className=f"  {Utils.__prg__}  ")
+    application = bmain.Application(className=f"  {__prg__}  ")
 
     palette = {"background": application.cget("background")}
 
@@ -178,18 +199,19 @@ def main() -> int:
         "selectBackground",
         "selectForeground",
     ):
-        color2 = Utils.getStr("Color", "global." + color_name.lower(), None)
+        color2 = gconfig.getstr("Color", f"global.{color_name.lower()}", None)
         color_count += 1
         if (color2 is not None) and (color2.strip() != ""):
             palette[color_name] = color2.strip()
             custom_color_count += 1
 
-            if color_count == 0:
-                tkExtra.GLOBAL_CONTROL_BACKGROUND = color2
+            if color_count == 0:  # FIXME: Cannot be reached!
+                tkextra.GLOBAL_CONTROL_BACKGROUND = color2
             elif color_count == 1:
-                tkExtra.GLOBAL_FONT_COLOR = color2
+                tkextra.GLOBAL_FONT_COLOR = color2
 
     if custom_color_count > 0:
+        # FIXME: Move to styles.py
         print("Changing palette")
         application.tk_setPalette(**palette)
 
@@ -216,7 +238,10 @@ def main() -> int:
         application.quit()
 
     application.close()
-    Utils.saveConfiguration()
+    globSender.close()
+    globSender.quit()
+    gconfig.save_configuration()
+    Utils.delIcons()
 
     return exit_code
 

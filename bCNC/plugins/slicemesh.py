@@ -13,9 +13,10 @@ import numpy as np
 import ply
 import stl  # FIXME: write smaller STL parser
 
-from CNC import Block
-from ToolsPage import Plugin
-from Helpers import _
+from gcode import globGCode
+
+from cnc import Block
+from tools._plugin import Plugin
 
 __author__ = "@harvie Tomas Mudrunka"
 # __email__  = ""
@@ -94,7 +95,7 @@ STL (Binary and ASCII)
 PLY (ASCII only)
 
 You can use external software to edit and convert meshes to desired format.
-It can also help you to visualy inspect your meshes before slicing.
+It can also help you to visually inspect your meshes before slicing.
 Example of useful free software for working with meshes is called "MeshLab".
 
 WARNING:
@@ -181,7 +182,7 @@ Also note you can export resulting slices to DXF and SVG if needed.
 
         # Insert blocks to bCNC
         active = app.activeBlock()
-        app.gcode.insBlocks(
+        globGCode.insBlocks(
             active, blocks, "Mesh sliced"
         )  # <<< insert blocks over active block in the editor
         app.refresh()  # <<< refresh editor
@@ -271,7 +272,8 @@ Also note you can export resulting slices to DXF and SVG if needed.
                 ).format(i, len(verts)),
                 True,
             )
-            D[i] = D[:, i] = np.sqrt(np.sum(np.square(verts - verts[i]), axis=1))
+            D[i] = D[:, i] = np.sqrt(
+                np.sum(np.square(verts - verts[i]), axis=1))
         return D
 
     def pdist_squareformed_numpy(self, a):

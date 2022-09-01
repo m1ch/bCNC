@@ -8,9 +8,10 @@ from math import (
 )
 
 from bpath import EPS, Path, eq
-from CNC import Block
-from ToolsPage import Plugin
-from Helpers import _
+from cnc import Block
+from gcode import globGCode
+
+from tools._plugin import Plugin
 
 __author__ = "@harvie Tomas Mudrunka"
 # __email__  = ""
@@ -54,10 +55,10 @@ class Tool(Plugin):
         paths_isl = []
 
         for bid in app.editor.getSelectedBlocks():
-            if app.gcode[bid].operationTest("island"):
-                paths_isl.extend(app.gcode.toPath(bid))
+            if globGCode[bid].operationTest("island"):
+                paths_isl.extend(globGCode.toPath(bid))
             else:
-                paths_base.extend(app.gcode.toPath(bid))
+                paths_base.extend(globGCode.toPath(bid))
 
         for island in paths_isl:
             paths_newbase = []
@@ -88,10 +89,10 @@ class Tool(Plugin):
         for base in paths_base:
             print(base)
             block = Block("diff")
-            block.extend(app.gcode.fromPath(base))
+            block.extend(globGCode.fromPath(base))
             blocks.append(block)
 
-        app.gcode.insBlocks(
+        globGCode.insBlocks(
             -1, blocks, "Diff"
         )  # <<< insert blocks over active block in the editor
         app.refresh()  # <<< refresh editor

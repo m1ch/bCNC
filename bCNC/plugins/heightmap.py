@@ -12,7 +12,10 @@
 import math
 import importlib
 
-from CNC import CNC, Block
+from cnc import globCNC
+from gcode import globGCode
+
+from cnc import Block
 from imageToGcode import (
     Image_Matrix_Numpy,
     Image_Matrix_List,
@@ -31,8 +34,7 @@ from imageToGcode import (
     vee_common,
     ball_tool,
 )
-from ToolsPage import Plugin
-from Helpers import _
+from tools._plugin import Plugin
 
 __author__ = "Filippo Rivato"
 __email__ = "f.rivato@gmail.com"
@@ -127,7 +129,7 @@ class Tool(Plugin):
         pixel_size = image_h / (float(MAT.width) - 1.0)
 
         tolerance = 0.1
-        safe_z = CNC.vars["safe"]
+        safe_z = globCNC.vars["safe"]
         splitstep = 0.0  # Offset Stepover
         toptol = -0.1  # Top Tolerance
         depth = -self["Depth"]
@@ -142,16 +144,16 @@ class Tool(Plugin):
         tool = app.tools["EndMill"]
         tool_shape = tool["shape"]
 
-        tool_diameter = CNC.vars["diameter"]
-        feed_rate = CNC.vars["cutfeed"]
+        tool_diameter = globCNC.vars["diameter"]
+        feed_rate = globCNC.vars["cutfeed"]
 
-        zStep = CNC.vars["stepz"]
+        zStep = globCNC.vars["stepz"]
         if self["SinglePass"]:
             zStep = 0.0
-        rough_feed = CNC.vars["cutfeed"]
+        rough_feed = globCNC.vars["cutfeed"]
 
-        plunge_feed = CNC.vars["cutfeedz"]
-        stepover = tool_diameter * CNC.vars["stepover"] / 100.0
+        plunge_feed = globCNC.vars["cutfeedz"]
+        stepover = tool_diameter * globCNC.vars["stepover"] / 100.0
         step = max(1, int(math.floor(float(stepover) / pixel_size)))
 
         edge_offset = 0
@@ -394,7 +396,7 @@ class Tool(Plugin):
         active = app.activeBlock()
         if active == 0:
             active = 1
-        app.gcode.insBlocks(active, blocks, n)
+        globGCode.insBlocks(active, blocks, n)
         app.refresh()
         app.setStatus(
             _("Generated Heightmap {} x {} x "

@@ -6,9 +6,11 @@
 
 import math
 
-from CNC import CNC, Block
-from ToolsPage import Plugin
-from Helpers import _
+from cnc import globCNC
+from gcode import globGCode
+
+from cnc import Block
+from tools._plugin import Plugin
 
 __author__ = "Filippo Rivato"
 __email__ = "f.rivato@gmail.com"
@@ -225,9 +227,9 @@ class Tool(Plugin):
         block = Block(self.name)
         block.append("(Midi2CNC)")
         block.append(f"(Midi:{fileName})")
-        block.append(CNC.zsafe())
-        block.append(CNC.grapid(0, 0))
-        block.append(CNC.zenter(0))
+        block.append(globCNC.zsafe())
+        block.append(globCNC.grapid(0, 0))
+        block.append(globCNC.zenter(0))
 
         for note in noteEventList:
             if last_time < note[0]:
@@ -314,14 +316,14 @@ class Tool(Plugin):
                     z = z + (distance_xyz[2] * z_dir)
 
                     v = (x, y, z)
-                    block.append(CNC.glinev(1, v, combined_feedrate))
+                    block.append(globCNC.glinev(1, v, combined_feedrate))
 
                 else:
                     # Handle 'rests' in addition to notes.
                     duration = (
                         ((note[0] - last_time) + 0.0) / (midi.division + 0.0)
                     ) * (tempo / 1000000.0)
-                    block.append(CNC.gcode(4, [("P", duration)]))
+                    block.append(globCNC.gcode_generate(4, [("P", duration)]))
 
                 # finally, set this absolute time as the new starting time
                 last_time = note[0]
@@ -340,6 +342,6 @@ class Tool(Plugin):
         active = app.activeBlock()
         if active == 0:
             active = 1
-        app.gcode.insBlocks(active, blocks, "Midi2CNC")
+        globGCode.insBlocks(active, blocks, "Midi2CNC")
         app.refresh()
         app.setStatus(_("Generated Midi2CNC, ready to play?"))

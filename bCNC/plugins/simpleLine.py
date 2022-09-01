@@ -4,9 +4,11 @@
 # Date:      30-Dec-2019
 
 from bmath import Vector
-from CNC import CNC, Block
-from ToolsPage import Plugin
-from Helpers import _
+from cnc import globCNC
+from gcode import globGCode
+
+from cnc import Block
+from tools._plugin import Plugin
 
 __author__ = "DodoLaSaumure"
 __email__ = ""
@@ -27,12 +29,12 @@ class SimpleLine:
         last = points[1]
         blocks = []
         block = Block(self.name)
-        block.append(CNC.grapid(first.x(), first.y()))
-        block.append(CNC.grapid(z=0.0))
+        block.append(globCNC.grapid(first.x(), first.y()))
+        block.append(globCNC.grapid(z=0.0))
         block.append("(entered)")
-        block.append(CNC.gline(last.x(), last.y()))
+        block.append(globCNC.gline(last.x(), last.y()))
         block.append("(exiting)")
-        block.append(CNC.grapid(z=CNC.vars["safe"]))
+        block.append(globCNC.grapid(z=globCNC.vars["safe"]))
         blocks.append(block)
         return blocks
 
@@ -70,7 +72,7 @@ class Tool(Plugin):
         active = app.activeBlock()
         if active == 0:
             active = 1
-        app.gcode.insBlocks(active, blocks, _("Create Simple Line"))
+        globGCode.insBlocks(active, blocks, _("Create Simple Line"))
         app.refresh()
         app.setStatus(_("Generated: Simple Line"))
 
