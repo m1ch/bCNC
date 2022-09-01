@@ -47,13 +47,9 @@ import tkinter as tk
 from tkinter import ttk
 import tkinter.messagebox as messagebox
 
-<<<<<<< ours:bCNC/gui/bfiledialog.py
 from globalConfig import config as gconfig
 
 from . import tkextra
-=======
-import tkExtra
->>>>>>> theirs:bCNC/lib/bFileDialog.py
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"

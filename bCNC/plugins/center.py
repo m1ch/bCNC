@@ -4,10 +4,9 @@
 
 from cnc import globCNC
 from gcode import globGCode
-from sender import globSender
 
-from cnc import  Block
-from ToolsPage import Plugin
+from cnc import Block
+from tools._plugin import Plugin
 
 __author__ = "@harvie Tomas Mudrunka"
 # __email__  = ""

@@ -24,12 +24,9 @@ import bmath
 import Camera
 from . import tkextra
 import Utils
-<<<<<<< ours:bCNC/gui/cnccanvas.py
 from . import commands as cmd
 from . import utils
-=======
-from CNC import CNC
->>>>>>> theirs:bCNC/CNCCanvas.py
+
 
 # Probe mapping we need PIL and numpy
 try:

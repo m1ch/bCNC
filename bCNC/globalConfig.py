@@ -423,5 +423,11 @@ class _Config(configparser.ConfigParser):
             controllers[key] = value
         return sorted(controllers.keys())
 
+    def getplugins(self):
+        plugins = {}
+        for key, value in self.items("_plugins"):
+            plugins[key] = value
+        return plugins
+
 
 config = _Config()

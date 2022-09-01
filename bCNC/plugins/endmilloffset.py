@@ -6,11 +6,9 @@ from copy import deepcopy
 from tkinter import messagebox
 
 from bpath import Path, Segment
-from cnc import globCNC
 from gcode import globGCode
-from sender import globSender
 
-from ToolsPage import Plugin
+from tools._plugin import Plugin
 
 __author__ = "@DodoLaSaumure  (Pierre Klein)"
 

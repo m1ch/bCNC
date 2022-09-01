@@ -8,10 +8,9 @@ import math
 
 from cnc import globCNC
 from gcode import globGCode
-from sender import globSender
 
-from cnc import  Block
-from ToolsPage import Plugin
+from cnc import Block
+from tools._plugin import Plugin
 from Helpers import to_zip
 
 __author__ = "Filippo Rivato"
@@ -95,7 +94,8 @@ class Spirograph:
             if currDepth < self.Depth:
                 currDepth = self.Depth
             block.append(globCNC.zenter(currDepth))
-            block.append(globCNC.gcode_generate(1, [("f", globCNC.vars["cutfeed"])]))
+            block.append(
+                globCNC.gcode_generate(1, [("f", globCNC.vars["cutfeed"])]))
             for x, y in zip(xi, yi):
                 block.append(globCNC.gline(x, y))
             block.append(globCNC.gline(xi[0], yi[0]))

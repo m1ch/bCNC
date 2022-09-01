@@ -7,9 +7,10 @@ from math import (
     sin,
 )
 
+from gcode import globGCode
 from bpath import EPS, Path, Segment, eq
 from cnc import Block
-from ToolsPage import Plugin
+from tools._plugin import Plugin
 
 __author__ = "@harvie Tomas Mudrunka"
 # __email__  = ""

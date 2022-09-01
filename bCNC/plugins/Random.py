@@ -4,9 +4,10 @@
 # Date:      20-Aug-2015
 
 import random
-
-from ToolsPage import Plugin
 from tkinter import messagebox
+
+from gcode import globGCode
+from tools._plugin import Plugin
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"

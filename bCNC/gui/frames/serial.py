@@ -39,6 +39,8 @@ class SideFrame(utils.PageLabelFrame):
 
         # ---
         frame = self.frame
+        frame.columnconfigure(1, weight=1)
+
         col, row = 0, 0
         b = ttk.Label(frame, text=_("Port:"))
         b.grid(row=row, column=col, sticky="e")

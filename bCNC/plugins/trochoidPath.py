@@ -12,7 +12,7 @@
 from cnc import globCNC
 from gcode import globGCode
 # from cnc import CNC  # , Block  # << without this error it does not find globCNC.vars
-from ToolsPage import Plugin
+from tools._plugin import Plugin
 
 __author__ = "Mario Basz"
 __email__ = "mariob_1960@yahoo.com.ar"
@@ -66,7 +66,7 @@ class Tool(Plugin):
 
     # ----------------------------------------------------------------------
     def update(self):
-        globGCode["trochcutdiam"] = self.fromMm("trochcutdiam")
+        globCNC["trochcutdiam"] = self.fromMm("trochcutdiam")
 
     # ----------------------------------------------------------------------
     def execute(self, app):

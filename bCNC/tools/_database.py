@@ -7,6 +7,7 @@
 import tkinter as tk
 
 from globalConfig import config as gconfig
+from gcode import globGCode
 from gui import tkextra
 import Unicode
 import Utils

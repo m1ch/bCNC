@@ -10,7 +10,7 @@ from gcode import globGCode
 from sender import globSender
 
 from cnc import Block
-from ToolsPage import Plugin
+from tools._plugin import Plugin
 
 __author__ = "Carlos Garcia Saura"
 __email__ = "@CarlosGS"

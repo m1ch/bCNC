@@ -2,8 +2,9 @@
 # Date: 25 sept 2018
 
 
+from gcode import globGCode
 from cnc import Block
-from ToolsPage import Plugin
+from tools._plugin import Plugin
 
 __author__ = "@harvie Tomas Mudrunka"
 

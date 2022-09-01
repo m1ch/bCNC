@@ -5,10 +5,9 @@
 
 from cnc import globCNC
 from gcode import globGCode
-from sender import globSender
 
-from cnc import  Block
-from ToolsPage import Plugin
+from cnc import Block
+from tools._plugin import Plugin
 
 __author__ = "Filippo Rivato"
 __email__ = "f.rivato@gmail.com"
@@ -158,7 +157,8 @@ class Tool(Plugin):
             block.append(
                 globCNC.grapid(xO + cont[0].x * scale, yO + cont[0].y * scale))
             block.append(globCNC.zenter(depth))
-            block.append(globCNC.gcode_generate(1, [("f", globCNC.vars["cutfeed"])]))
+            block.append(
+                globCNC.gcode_generate(1, [("f", globCNC.vars["cutfeed"])]))
             for p in cont:
                 block.append(globCNC.gline(xO + p.x * scale, yO + p.y * scale))
 

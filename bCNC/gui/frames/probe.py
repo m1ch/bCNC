@@ -271,7 +271,7 @@ class SideFrame(cncribbon.PageFrame):
             text=_("Center"),
             compound="top",
             command=self.probeCenter,
-            width=48,
+            # width=48,
             # padx=5,
             # pady=0,
         )

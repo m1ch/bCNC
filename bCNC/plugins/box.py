@@ -11,10 +11,9 @@ from bmath import (
 )
 from cnc import globCNC
 from gcode import globGCode
-from sender import globSender
 
-from cnc import  Block
-from ToolsPage import Plugin
+from cnc import Block
+from tools._plugin import Plugin
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"
@@ -362,14 +361,14 @@ class Tool(Plugin):
         box.name = self["name"]
         if box.name == "default":
             box.name = "Box"
-        box.thick = app.cnc["thickness"]
-        box.feed = app.cnc["cutfeed"]
-        box.feedz = app.cnc["cutfeedz"]
-        box.safe = app.cnc["safe"]
-        box.stepz = app.cnc["stepz"]
+        box.thick = globCNC["thickness"]
+        box.feed = globCNC["cutfeed"]
+        box.feedz = globCNC["cutfeedz"]
+        box.safe = globCNC["safe"]
+        box.stepz = globCNC["stepz"]
         box.setNTeeth(self["nx"], self["ny"], self["nz"])
         if self["profile"]:
-            box.setTool(app.cnc["diameter"])
+            box.setTool(globCNC["diameter"])
         else:
             box.setTool(0.0)
 

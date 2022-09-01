@@ -13,8 +13,10 @@ import numpy as np
 import ply
 import stl  # FIXME: write smaller STL parser
 
+from gcode import globGCode
+
 from cnc import Block
-from ToolsPage import Plugin
+from tools._plugin import Plugin
 
 __author__ = "@harvie Tomas Mudrunka"
 # __email__  = ""
@@ -270,7 +272,8 @@ Also note you can export resulting slices to DXF and SVG if needed.
                 ).format(i, len(verts)),
                 True,
             )
-            D[i] = D[:, i] = np.sqrt(np.sum(np.square(verts - verts[i]), axis=1))
+            D[i] = D[:, i] = np.sqrt(
+                np.sum(np.square(verts - verts[i]), axis=1))
         return D
 
     def pdist_squareformed_numpy(self, a):

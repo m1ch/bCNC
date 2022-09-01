@@ -10,11 +10,11 @@ import tkinter as tk
 from globalConfig import config as gconfig
 from cnc import globCNC
 from gcode import globGCode
-from sender import globSender
+# from sender import globSender
 
 from .. import tkextra
 from tkinter import ttk
-from .. import cncribbon
+# from .. import cncribbon
 from .. import utils
 
 from .probecommon import SideFrame as ProbeCommonFrame

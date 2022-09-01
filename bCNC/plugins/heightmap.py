@@ -14,9 +14,8 @@ import importlib
 
 from cnc import globCNC
 from gcode import globGCode
-from sender import globSender
 
-from cnc import  Block
+from cnc import Block
 from imageToGcode import (
     Image_Matrix_Numpy,
     Image_Matrix_List,
@@ -35,7 +34,7 @@ from imageToGcode import (
     vee_common,
     ball_tool,
 )
-from ToolsPage import Plugin
+from tools._plugin import Plugin
 
 __author__ = "Filippo Rivato"
 __email__ = "f.rivato@gmail.com"

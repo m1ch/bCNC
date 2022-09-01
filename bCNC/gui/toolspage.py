@@ -73,6 +73,12 @@ class Tools:
             tool = mod.Tool(self)
             self.addTool(tool)
 
+        # Load plugins:
+        for name, module in gconfig.items("_plugins"):
+            my_class = locate(f"{module}.Tool")
+            plugin = my_class(self)
+            self.addTool(plugin)
+
         return  # FIXME
         # Find plugins in the plugins directory and load them
         for f in glob.glob(f"{__prgpath__}/plugins/*.py"):

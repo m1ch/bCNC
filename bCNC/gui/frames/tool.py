@@ -432,5 +432,5 @@ class SideFrame(utils.PageLabelFrame):
         self.set()
         if self.check4Errors():
             return
-        lines = self.app.cnc.toolChange(0)
+        lines = globCNC.toolChange(0)
         self.app.run(lines=lines)

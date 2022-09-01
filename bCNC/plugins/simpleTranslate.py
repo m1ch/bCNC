@@ -5,7 +5,8 @@
 
 from tkinter import messagebox
 
-from ToolsPage import Plugin
+from gcode import globGCode
+from tools._plugin import Plugin
 
 __author__ = "DodoLaSaumure"
 __email__ = ""

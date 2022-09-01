@@ -214,10 +214,12 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
                     col += 1
                     row = 0
 
-    # ----------------------------------------------------------------------
-    def createMenu(self):
-        # FIXME: No redefinition required!
-        menu = tk.Menu(self, tearoff=False)
+        self.add_menu()
+
+    def add_menu(self):
+        self.label.menu = tk.Menu(self.label, tearoff=False)
+        self.label["menu"] = self.label.menu
+        menu = self.label.menu
         for group in ("Artistic", "Generator", "Development"):
             submenu = tk.Menu(menu, tearoff=False)
             menu.add_cascade(label=group, menu=submenu)
@@ -225,21 +227,54 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
             for tool in self.app.tools.pluginList():
                 if tool.group != group:
                     continue
+                # cmd = lambda a=self.app, t=tool: a.tools[t.name.upper()
+                #         ].execute(a),
                 if tool.oneshot:
+                    cmd = self.app.tools[tool.name.upper()].execute
                     submenu.add_command(
                         label=_(tool.name),
                         image=Utils.icons[tool.icon],
                         compound="left",
-                        command=lambda s=self, a=self.app, t=tool: a.tools[
-                            t.name.upper()
-                        ].execute(a),
+                        command=lambda cmd=cmd, a=self.app: cmd(a)
                     )
                 else:
-                    submenu.add_radiobutton(
+                    val = tool.name
+                    cmd = self.app.tools.active.set
+                    submenu.add_command(
                         label=_(tool.name),
                         image=Utils.icons[tool.icon],
                         compound="left",
-                        variable=self.app.tools.active,
-                        value=tool.name,
+                        command=lambda cmd=cmd, v=val: cmd(v)
+                        # variable=self.app.tools.active,
+                        # value=tool.name,
                     )
-        return menu
+
+    # ----------------------------------------------------------------------
+    # def createMenu(self):
+    #     # FIXME: No redefinition required!
+    #     menu = tk.Menu(self, tearoff=False)
+    #     for group in ("Artistic", "Generator", "Development"):
+    #         submenu = tk.Menu(menu, tearoff=False)
+    #         menu.add_cascade(label=group, menu=submenu)
+    #         # Find plugins in the plugins directory and load them
+    #         for tool in self.app.tools.pluginList():
+    #             if tool.group != group:
+    #                 continue
+    #             if tool.oneshot:
+    #                 submenu.add_command(
+    #                     label=_(tool.name),
+    #                     image=Utils.icons[tool.icon],
+    #                     compound="left",
+    #                     command=lambda s=self, a=self.app, t=tool: a.tools[
+    #                         t.name.upper()
+    #                     ].execute(a),
+    #                 )
+    #             else:
+    #                 submenu.add_radiobutton(
+    #                     label=_(tool.name),
+    #                     image=Utils.icons[tool.icon],
+    #                     compound="left",
+    #                     variable=self.app.tools.active,
+    #                     value=tool.name,
+    #                 )
+    #     return menu

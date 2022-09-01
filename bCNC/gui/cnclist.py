@@ -9,14 +9,12 @@ import re
 import tkinter as tk
 import tkinter.font as tkfont
 
-<<<<<<< ours:bCNC/gui/cnclist.py
 from cnc import globCNC, Block
 from gcode import globGCode
 
 from . import tkextra
 
-=======
->>>>>>> theirs:bCNC/CNCList.py
+
 BLOCK_COLOR = "LightYellow"
 COMMENT_COLOR = "Blue"
 DISABLE_COLOR = "Gray"

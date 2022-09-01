@@ -593,6 +593,7 @@ class PageLabelFrame(ttk.Frame, _LinkApp):
         ttk.Frame.__init__(self, master, **kw)
         _LinkApp.__init__(self, app)
 
+        self.columnconfigure(1, weight=1)
         ttk.Separator(self, orient="horizontal").grid(
             row=0, column=0, columnspan=2, sticky="ew")
         ttk.Label(self,

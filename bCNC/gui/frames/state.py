@@ -12,13 +12,11 @@ import Utils
 from .. import tkextra
 from globalConfig import config as gconfig
 from cnc import globCNC
-from gcode import globGCode
 from sender import globSender, NOT_CONNECTED, CONNECTED
 
 from cnc import DISTANCE_MODE, FEED_MODE, PLANE, WCS
 
 from .. import utils
-from .. import cncribbon
 
 
 OVERRIDES = ["Feed", "Rapid", "Spindle"]

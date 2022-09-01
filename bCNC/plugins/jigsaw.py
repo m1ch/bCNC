@@ -10,10 +10,9 @@ import time
 
 from cnc import globCNC
 from gcode import globGCode
-from sender import globSender
 
 from cnc import CCW, CW, Block
-from ToolsPage import Plugin
+from tools._plugin import Plugin
 
 __author__ = "Gonzalo Cobos Bergillos"
 __email__ = "gcobos@gmail.com"
@@ -381,10 +380,10 @@ class Tool(Plugin):
 
         jigsaw = Jigsaw(
             name,
-            thickness=app.cnc["thickness"],
-            cut_feed=app.cnc["cutfeed"],
-            z_safe=app.cnc["safe"],
-            step_z=app.cnc["stepz"],
+            thickness=globCNC["thickness"],
+            cut_feed=globCNC["cutfeed"],
+            z_safe=globCNC["safe"],
+            step_z=globCNC["stepz"],
         )
         t0 = time.time()
         app.setStatus(_("Generating puzzle..."))

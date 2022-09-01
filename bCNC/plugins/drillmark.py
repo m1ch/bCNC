@@ -8,10 +8,9 @@ import math
 # Here import the libraries you need, these are necessary to modify the code
 from cnc import globCNC
 from gcode import globGCode
-from sender import globSender
 
-from cnc import  Block
-from ToolsPage import Plugin
+from cnc import Block
+from tools._plugin import Plugin
 
 __author__ = "Attila Kolinger"
 # <<< here put an email where plugins users can contact you
@@ -273,8 +272,8 @@ class Tool(Plugin):
 
         x0 = self.fromMm("PosX")
         y0 = self.fromMm("PosY")
-        movefeed = app.cnc["cutfeed"]
-        drawfeed = app.cnc["cutfeedz"]
+        movefeed = globCNC["cutfeed"]
+        drawfeed = globCNC["cutfeedz"]
         marksizehalf = self.fromMm("Mark size") / 2
         marktype = self["Mark type"]
         if "None" == marktype:

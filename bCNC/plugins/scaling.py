@@ -14,10 +14,9 @@ from math import (
 
 from cnc import globCNC
 from gcode import globGCode
-from sender import globSender
 
-from cnc import  Block
-from ToolsPage import Plugin
+from cnc import Block
+from tools._plugin import Plugin
 
 __author__ = "Mario S Basz"
 __email__ = "mariob_1960@yaho.com.ar"
@@ -91,16 +90,16 @@ class Tool(Plugin):
             globGCode.initPath(bid)
             for line in block:
                 try:
-                    cmd = app.cnc.breakLine(
-                        globGCode.evaluate(app.cnc.compileLine(line))
+                    cmd = globCNC.breakLine(
+                        globGCode.evaluate(globCNC.compileLine(line))
                     )
                 except Exception:
                     cmd = None
 
                 if cmd:
-                    app.cnc.motionStart(cmd)
-                    xyz = app.cnc.motionPath()
-                    app.cnc.motionEnd()
+                    globCNC.motionStart(cmd)
+                    xyz = globCNC.motionPath()
+                    globCNC.motionEnd()
                     if xyz:
                         # coment its?
                         # -----------------------------------------------------
