@@ -157,14 +157,15 @@ class _Config(configparser.ConfigParser):
     # Load configuration
     # -------------------------------------------------------------------------
     def load_configuration(self, system_only=False):
-        global _errorReport, language
+        # global _errorReport, language
+        from globalVariables import glob_error_report, glob_language
         ini_files = [__iniSystem__]
         if not system_only:
             ini_files.append(self._user_ini)
         try:
             self.read(ini_files)
         except Exception:
-            _errorReport = self.getint("Connection", "errorreport", 1)
+            glob_error_report = self.getint("Connection", "errorreport", 1)
 
         self.initiate_translation()
         self.define_colors()

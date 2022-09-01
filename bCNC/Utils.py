@@ -32,7 +32,6 @@ images = {}
 
 language = ""
 
-_errorReport = True
 errors = []
 
 
@@ -85,7 +84,7 @@ def fontString(font):
     name = str(font[0])
     size = str(font[1])
     if name.find(" ") >= 0:
-        s = f'"{name}" {size}'
+        s = f"\"{name}\" {size}"
     else:
         s = f"{name} {size}"
 
@@ -130,15 +129,16 @@ def comports(include_links=True):
 
 # =============================================================================
 def addException():
-    global errors
+    from globalVariables import glob_errors
+    # global errors
     try:
         typ, val, tb = sys.exc_info()
         traceback.print_exception(typ, val, tb)
-        if errors:
-            errors.append("")
+        if glob_errors:
+            glob_errors.append("")
         exception = traceback.format_exception(typ, val, tb)
-        errors.extend(exception)
-        if len(errors) > 100:
+        glob_errors.extend(exception)
+        if len(glob_errors) > 100:
             # If too many errors are found send the error report
             # FIXME: self outside of Class
             tkdialogs.ReportDialog(self.widget)  # noqa: F821 - see fixme
