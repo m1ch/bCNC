@@ -8,10 +8,10 @@
 from globalConfig import config as gconfig
 from .. import cncribbon
 from .. import tkextra
-import Utils
 from .. import utils
 
 from globalVariables import N_
+from globalConfig import icon as gicon
 
 name = "SelectGroup"
 
@@ -30,10 +30,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             app,
             "<<SelectAll>>",
-            image=Utils.icons["select_all"],
+            image=gicon["select_all"],
             text=_("All"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -46,10 +45,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             app,
             "<<SelectNone>>",
-            image=Utils.icons["select_none"],
+            image=gicon["select_none"],
             text=_("None"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -62,10 +60,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             app,
             "<<SelectInvert>>",
-            image=Utils.icons["select_invert"],
+            image=gicon["select_invert"],
             text=_("Invert"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -78,10 +75,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             app,
             "<<SelectLayer>>",
-            image=Utils.icons["select_layer"],
+            image=gicon["select_layer"],
             text=_("Layer"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -94,7 +90,6 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             _("Filter"),
             "DarkGray",
-            background=gconfig.getstr('_colors', "GLOBAL_CONTROL_BACKGROUND"),
             width=16,
         )
         self.filterString.grid(

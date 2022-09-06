@@ -8,10 +8,10 @@
 import tkinter as tk
 from tkinter import ttk
 
-import Utils
 from cnc import globCNC
 from sender import globSender, NOT_CONNECTED
 from globalConfig import config as gconfig
+from globalConfig import icon as gicon
 
 from .. import utils
 from .. import cncribbon
@@ -38,7 +38,8 @@ class SideFrame(cncribbon.PageFrame):
 
         row = 0
         col = 0
-        ttk.Label(self, text=_("Status:")).grid(row=row, column=col, sticky="e")
+        ttk.Label(self, text=_("Status:")).grid(
+            row=row, column=col, sticky="e")
         col += 1
         self.stateBtn = ttk.Button(
             self,
@@ -67,7 +68,8 @@ class SideFrame(cncribbon.PageFrame):
             self,
             font=self.dro_wpos,
             style="Panel.TEntry",
-            # background=gconfig.getstr('_colors', "GLOBAL_CONTROL_BACKGROUND"),
+            # background=gconfig.getstr('_colors',
+            # "GLOBAL_CONTROL_BACKGROUND"),
             # relief="flat",
             # borderwidth=0,
             # justify="right",
@@ -84,7 +86,8 @@ class SideFrame(cncribbon.PageFrame):
             self,
             font=self.dro_wpos,
             style="Panel.TEntry",
-            # background=gconfig.getstr('_colors', "GLOBAL_CONTROL_BACKGROUND"),
+            # background=gconfig.getstr('_colors',
+            # "GLOBAL_CONTROL_BACKGROUND"),
             # relief="flat",
             # borderwidth=0,
             # justify="right",
@@ -101,7 +104,8 @@ class SideFrame(cncribbon.PageFrame):
             self,
             font=self.dro_wpos,
             style="Panel.TEntry",
-            # background=gconfig.getstr('_colors', "GLOBAL_CONTROL_BACKGROUND"),
+            # background=gconfig.getstr('_colors',
+            # "GLOBAL_CONTROL_BACKGROUND"),
             # relief="flat",
             # borderwidth=0,
             # justify="right",
@@ -121,7 +125,8 @@ class SideFrame(cncribbon.PageFrame):
         self.xmachine = ttk.Label(
             self,
             # font=self.dro_mpos,
-            # background=gconfig.getstr('_colors', "GLOBAL_CONTROL_BACKGROUND"),
+            # background=gconfig.getstr('_colors',
+            # "GLOBAL_CONTROL_BACKGROUND"),
             # anchor="e",
         )
         self.xmachine.grid(row=row, column=col, padx=1, sticky="ew")
@@ -130,7 +135,8 @@ class SideFrame(cncribbon.PageFrame):
         self.ymachine = ttk.Label(
             self,
             # font=self.dro_mpos,
-            # background=gconfig.getstr('_colors', "GLOBAL_CONTROL_BACKGROUND"),
+            # background=gconfig.getstr('_colors',
+            # "GLOBAL_CONTROL_BACKGROUND"),
             # anchor="e",
         )
         self.ymachine.grid(row=row, column=col, padx=1, sticky="ew")
@@ -139,7 +145,8 @@ class SideFrame(cncribbon.PageFrame):
         self.zmachine = ttk.Label(
             self,
             # font=self.dro_mpos,
-            # background=gconfig.getstr('_colors', "GLOBAL_CONTROL_BACKGROUND"),
+            # background=gconfig.getstr('_colors',
+            # "GLOBAL_CONTROL_BACKGROUND"),
             # anchor="e",
         )
         self.zmachine.grid(row=row, column=col, padx=1, sticky="ew")
@@ -239,7 +246,7 @@ class SideFrame(cncribbon.PageFrame):
         b = ttk.Button(
             f,
             text=_("Set WPOS"),
-            image=Utils.icons["origin"],
+            image=gicon["origin"],
             compound="left",
             # activebackground="LightYellow",
             command=lambda s=self: s.event_generate("<<SetWPOS>>"),
@@ -253,7 +260,7 @@ class SideFrame(cncribbon.PageFrame):
         b = ttk.Button(
             f,
             text=_("Move Gantry"),
-            image=Utils.icons["gantry"],
+            image=gicon["gantry"],
             compound="left",
             # activebackground="LightYellow",
             command=lambda s=self: s.event_generate("<<MoveGantry>>"),
@@ -274,13 +281,13 @@ class SideFrame(cncribbon.PageFrame):
 
         menu.add_command(
             label=_("Show Info"),
-            image=Utils.icons["info"],
+            image=gicon["info"],
             compound="left",
             command=self.showState,
         )
         menu.add_command(
             label=_("Clear Message"),
-            image=Utils.icons["clear"],
+            image=gicon["clear"],
             compound="left",
             command=lambda s=self: s.event_generate("<<AlarmClear>>"),
         )
@@ -288,13 +295,13 @@ class SideFrame(cncribbon.PageFrame):
 
         menu.add_command(
             label=_("Feed hold"),
-            image=Utils.icons["pause"],
+            image=gicon["pause"],
             compound="left",
             command=lambda s=self: s.event_generate("<<FeedHold>>"),
         )
         menu.add_command(
             label=_("Resume"),
-            image=Utils.icons["start"],
+            image=gicon["start"],
             compound="left",
             command=lambda s=self: s.event_generate("<<Resume>>"),
         )

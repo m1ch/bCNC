@@ -27,12 +27,12 @@ class Page(_page.Page):
     # ----------------------------------------------------------------------
     # Add a widget in the widgets list to enable disable during the run
     # ----------------------------------------------------------------------
-    def register(self):
-        self._register(
-            groups=("File", "Pendant", "Options", "Close"),
-            frames=("Serial"),
-        )
-        # self._register(
-        #     (FileGroup, PendantGroup, OptionsGroup, CloseGroup),
-        # (SerialFrame,)
-        # )
+    # def register(self):
+    #     self._register(
+    #         groups=("File", "Pendant", "Options", "Close"),
+    #         frames=("Serial", "Terminal"),
+    #     )
+    #     # self._register(
+    #     #     (FileGroup, PendantGroup, OptionsGroup, CloseGroup),
+    #     # (SerialFrame,)
+    #     # )

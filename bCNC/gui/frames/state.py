@@ -8,9 +8,9 @@
 import tkinter as tk
 from tkinter import ttk
 
-import Utils
 from .. import tkextra
 from globalConfig import config as gconfig
+from globalConfig import icon as gicon
 from cnc import globCNC
 from sender import globSender, NOT_CONNECTED, CONNECTED
 
@@ -307,7 +307,7 @@ class SideFrame(utils.CollapsiblePageLabelFrame):
         b = ttk.Checkbutton(
             f,
             text=_("Spindle"),
-            image=Utils.icons["spinningtop"],
+            image=gicon["spinningtop"],
             command=self.spindleControl,
             variable=self.spindle,
             style="Panel.TCheckbutton",

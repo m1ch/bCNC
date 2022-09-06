@@ -43,17 +43,16 @@ from tkinter.scrolledtext import ScrolledText
 from tkinter import ttk
 
 from globalConstants import (__prg__,
-                               __version__,
-                               __www__,
-                               __contribute__,
-                               __translations__,
-                               __credits__,
-                               __date__)
+                             __version__,
+                             __www__,
+                             __contribute__,
+                             __translations__,
+                             __credits__,
+                             __date__)
 from globalConfig import config as gconfig
+from globalConfig import icon as gicon
 from cnc import globCNC
 
-import Utils
-from . import bfiledialog
 from . import tkextra
 
 __author__ = "Vasilis Vlachoudis"
@@ -734,7 +733,7 @@ class AboutDialog(tk.Toplevel):
         row = 0
         la = ttk.Label(
             frame,
-            image=Utils.icons["bCNC"],
+            image=gicon["bCNC"],
             style="Dialog.TLabel"
         )
         la.grid(row=row, column=0, columnspan=2, padx=5, pady=5)

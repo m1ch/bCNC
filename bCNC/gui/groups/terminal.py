@@ -5,10 +5,10 @@
              @m1ch
 """
 
-import Utils
 from globalVariables import N_
 from .. import utils
 from .. import cncribbon
+from globalConfig import icon as gicon
 
 name = "TerminalGroup"
 
@@ -24,7 +24,7 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             self,
             "<<TerminalClear>>",
-            image=Utils.icons["clean32"],
+            image=gicon["clean32"],
             text=_("Clear"),
             compound="top",
             style='RibbonGroup.TButton',

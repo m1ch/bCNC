@@ -5,12 +5,13 @@
              @m1ch
 """
 
-import Utils
 from globalVariables import N_
+from globalConfig import icon as gicon
+
+from sender import globSender
 
 from .. import utils
 from .. import cncribbon
-from .. import commands as cmd
 
 name = "ConnectionGroup"
 
@@ -25,7 +26,7 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
             master,
             N_("Connection"),
             app,
-            [(_("Hard Reset"), "reset", cmd.hardReset)],
+            [(_("Hard Reset"), "reset", globSender.hardReset)],
         )
         self.grid2rows()
 
@@ -33,11 +34,10 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
         col, row = 0, 0
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["home32"],
+            image=gicon["home32"],
             text=_("Home"),
             compound="top",
-            anchor="w",
-            command=cmd.home,
+            command=globSender.home,
             style='RibbonGroup.TButton',
         )
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky="nsew")
@@ -48,11 +48,10 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
         col, row = 1, 0
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["unlock"],
+            image=gicon["unlock"],
             text=_("Unlock"),
             compound="left",
-            anchor="w",
-            command=cmd.unlock,
+            command=globSender.unlock,
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -62,10 +61,9 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
         row += 1
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["serial"],
+            image=gicon["serial"],
             text=_("Connection"),
             compound="left",
-            anchor="w",
             command=lambda s=self: s.event_generate("<<Connect>>"),
             style='RibbonGroup.Toolbutton',
         )
@@ -76,11 +74,10 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
         row += 1
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["reset"],
+            image=gicon["reset"],
             text=_("Reset"),
             compound="left",
-            anchor="w",
-            command=cmd.softReset,
+            command=globSender.softReset,
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")

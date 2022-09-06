@@ -9,12 +9,11 @@ import sys
 import tkinter as tk
 from tkinter import ttk
 
-import Utils
 from globalConfig import config as gconfig
+from globalConfig import icon as gicon
 from sender import globSender
 
 from .. import utils
-from .. import commands
 
 try:
     from serial.tools.list_ports import comports
@@ -56,7 +55,8 @@ class SideFrame(utils.PageLabelFrame):
         # self.portCombo = tkextra.Combobox(
         #     frame,
         #     False,
-        #     background=gconfig.getstr('_colors', "GLOBAL_CONTROL_BACKGROUND"),
+        #     background=gconfig.getstr('_colors',
+        # "GLOBAL_CONTROL_BACKGROUND"),
         #     width=16,
         #     command=self.comportClean,
         # )
@@ -80,7 +80,8 @@ class SideFrame(utils.PageLabelFrame):
         self.baudCombo['background'] = gconfig.getstr(
             '_colors', "GLOBAL_CONTROL_BACKGROUND")
         # self.baudCombo = tkextra.Combobox(
-        #     frame, True, background=gconfig.getstr('_colors', "GLOBAL_CONTROL_BACKGROUND")
+        #     frame, True, background=gconfig.getstr('_colors',
+        # "GLOBAL_CONTROL_BACKGROUND")
         # )
         # self.baudCombo.fill(BAUDS)
         self.baudCombo.grid(row=row, column=col + 1, sticky="ew")
@@ -126,7 +127,7 @@ class SideFrame(utils.PageLabelFrame):
         col += 2
         self.comrefBtn = utils.LabelButton(
             frame,
-            image=Utils.icons["refresh"],
+            image=gicon["refresh"],
             text=_("Refresh"),
             compound="top",
             command=lambda s=self: s.comportRefresh(True),
@@ -142,7 +143,7 @@ class SideFrame(utils.PageLabelFrame):
             frame,
             self,
             "<<Connect>>",
-            image=Utils.icons["serial48"],
+            image=gicon["serial48"],
             text=_("Open"),
             compound="top",
             # command=lambda s=self: s.event_generate("<<Connect>>"),
@@ -156,9 +157,10 @@ class SideFrame(utils.PageLabelFrame):
 
     # -----------------------------------------------------------------------
     def ctrlChange(self, event=None):
-        gconfig.setstr("Connection", "controller",self.ctrlCombo.get())
+        gconfig.setstr("Connection", "controller", self.ctrlCombo.get())
         # globSender.controllerSet(self.ctrlCombo.get())
-        # self.app.mcontrol = globSender.mcontrol  # FIXME: Should not be necessary
+        # self.app.mcontrol = globSender.mcontrol
+        # # FIXME: Should not be necessary
 
     # -----------------------------------------------------------------------
     def comportClean(self, event=None):

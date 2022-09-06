@@ -6,7 +6,6 @@
 
 import os
 import socket
-from struct import pack
 import sys
 import time
 import traceback
@@ -68,7 +67,7 @@ import Pendant
 from gui.toolspage import Tools  # , ToolsPage
 from gui import utils
 from gui import styles
-from sender import NOT_CONNECTED, STATECOLOR, STATECOLORDEF
+from sender import NOT_CONNECTED, STATECOLOR
 
 
 if not (sys.version_info.major == 3 and sys.version_info.minor >= 8):
@@ -130,39 +129,20 @@ class Application(tk.Tk):
     groups = {}
     leftpanels = {}
 
-    def __init__(self, **kw):
-        tk.Tk.__init__(self, **kw)
-        styles.load_styles()
-        Utils.loadIcons()
-        tkinter.CallWrapper = Utils.CallWrapper
-        tkextra.bindClasses(self)
+    def initiate_active_groups_frames(self):
+        for g in gconfig.active_groups:
+            module_path = gconfig.getstr("_guigroups", g)
+            group_class = locate(module_path)
+            w = group_class.RibbonGroup(self.ribbon._ribbonFrame, self)
+            self.groups[w.name] = w
 
-        # self.sender = globSender
+        for p in gconfig.active_pannels:
+            module_path = gconfig.getstr("_guiframes", p)
+            frame_class = locate(module_path)
+            w = frame_class.SideFrame(self.ribbon._pageFrame, self)
+            self.leftpanels[w.name] = w
 
-        photo = tk.PhotoImage(file=f"{__prgpath__}/bCNC.png")
-        self.iconphoto(True, photo)
-        self.title(f"{__prg__} {__version__} {__platform_fingerprint__}")
-        self.widgets = []
-
-        # Global variables
-        # self.gcode = globGCode
-        self.mcontrol = None
-        self.tools = Tools()
-        self.loadConfig()
-
-        # build sceleton of main window ---------------------------------------
-        # --- Ribbon ---
-        self.ribbon = Ribbon.TabRibbonFrame(self)
-        self.ribbon.pack(side="top", fill="x")
-        # --- main frame ---
-        self.mainframe()
-        # Add status bar on bottom of main window
-        self.statusbar()
-
-        # Add pages as defined in the ini-file --------------------------------
-        # NOTE: Not required pages wound be loaded anymore!
-
-        errors = []
+    def initiate_active_pages(self):
         for name in gconfig.getstr(__prg__, "ribbon").split():
             side = "left"
             if name[-1] == ">":
@@ -180,6 +160,66 @@ class Application(tk.Tk):
             # page = page_class(self.ribbon, self)
             self.pages[page.name] = page
             self.ribbon.addPage(page, side)
+
+    def __init__(self, **kw):
+        tk.Tk.__init__(self, **kw)
+        styles.load_styles()
+        # Utils.loadIcons()
+        tkinter.CallWrapper = Utils.CallWrapper
+        tkextra.bindClasses(self)
+
+        # self.sender = globSender
+
+        photo = tk.PhotoImage(file=f"{__prgpath__}/bCNC.png")
+        self.iconphoto(True, photo)
+        self.title(f"{__prg__} {__version__} {__platform_fingerprint__}")
+        self.widgets = []
+
+        # Global variables
+        # self.gcode = globGCode
+        # self.mcontrol = None
+        self.tools = Tools()
+        self.tools.loadConfig()
+
+        self.loadConfig()
+
+        # build sceleton of main window ---------------------------------------
+        # --- Ribbon ---
+        self.ribbon = Ribbon.TabRibbonFrame(self)
+        self.ribbon.pack(side="top", fill="x")
+        # --- main frame ---
+        self.mainframe()
+        # Add status bar on bottom of main window
+        self.statusbar()
+
+        # Add pages as defined in the ini-file --------------------------------
+        # NOTE: Not required pages wound be loaded anymore!
+        errors = []
+
+        self.initiate_active_groups_frames()
+        # self.initiate_active_frames()
+        self.initiate_active_pages()
+
+        pass
+
+        # for name in gconfig.getstr(__prg__, "ribbon").split():
+        #     side = "left"
+        #     if name[-1] == ">":
+        #         name = name[:-1]
+        #         side = "right"
+        #     if name == "CAM":
+        #         name = "Tools"
+        #     # FIXME: Maybe add the filename rather than the tab-name to the ini
+        #     #        to avoid this explicit assertion
+        #     m = gconfig.getstr("_guipages", name.lower())
+        #     page_module = locate(m)
+        #     page = page_module.Page(self.ribbon, self)
+
+        #     # page_class = locate(f"gui.pages.{name.lower()}.{module}")
+        #     # page = page_class(self.ribbon, self)
+        #     self.pages[page.name] = page
+        #     self.ribbon.addPage(page, side)
+
         # create page widgets -------------------------------------------------
         # fist create Pages
         # for cls in (
@@ -194,41 +234,41 @@ class Application(tk.Tk):
         #     self.pages[page.name] = page
 
         # then add their properties (in separate loop)
-        for name, page in self.pages.items():
-            for n in gconfig.getstr(__prg__,
-                                    f"{page.name}.ribbon").split():
-                try:
-                    page.addRibbonGroup(n)
-                except KeyError:
-                    errors.append(n)
+        # for name, page in self.pages.items():
+        #     for n in gconfig.getstr(__prg__,
+        #                             f"{page.name}.ribbon").split():
+        #         try:
+        #             page.addRibbonGroup(n)
+        #         except KeyError:
+        #             errors.append(n)
 
-            for n in gconfig.getstr(__prg__, f"{page.name}.page").split():
-                last = n[-1]
-                if ((n == "abcDRO" or n == "abcControl")
-                        and globCNC.enable6axisopt is False):
-                    sys.stdout.write("Not Loading 6 axis displays\n")
+        #     for n in gconfig.getstr(__prg__, f"{page.name}.page").split():
+        #         last = n[-1]
+        #         if ((n == "abcDRO" or n == "abcControl")
+        #                 and globCNC.enable6axisopt is False):
+        #             sys.stdout.write("Not Loading 6 axis displays\n")
 
-                else:
-                    try:
-                        if last == "*":
-                            page.addPageFrame(n[:-1], fill="both", expand=True)
-                        else:
-                            page.addPageFrame(n)
-                    except KeyError:
-                        errors.append(n)
+        #         else:
+        #             try:
+        #                 if last == "*":
+        #                     page.addPageFrame(n[:-1], fill="both", expand=True)
+        #                 else:
+        #                     page.addPageFrame(n)
+        #             except KeyError:
+        #                 errors.append(n)
 
-        if errors:
-            tk.messagebox.showwarning(
-                "bCNC configuration",
-                f"The following pages \"{' '.join(errors)}\" are found in "
-                "your ${HOME}/.bCNC initialization "
-                "file, which are either spelled wrongly or "
-                "no longer exist in bCNC",
-                parent=self,
-            )
+        # if errors:
+        #     tk.messagebox.showwarning(
+        #         "bCNC configuration",
+        #         f"The following pages \"{' '.join(errors)}\" are found in "
+        #         "your ${HOME}/.bCNC initialization "
+        #         "file, which are either spelled wrongly or "
+        #         "no longer exist in bCNC",
+        #         parent=self,
+        #     )
 
         # remember the editor list widget
-        self.dro = self.leftpanels["DRO"]
+        # self.dro = self.leftpanels["DRO"]
         self.abcdro = self.leftpanels["abcDRO"]
         self.gstate = self.leftpanels["State"]
         self.control = self.leftpanels["Control"]
@@ -253,9 +293,21 @@ class Application(tk.Tk):
         # Restore last page
         # Select "Probe:Probe" tab to show the dialogs!
         self.pages["Probe"].tabChange()
+
         self.ribbon.changePage(gconfig.getstr(__prg__, "page", "File"))
 
         probe = self.leftpanels["Probe:Probe"]
+
+        self.command.bind("<Return>", self.cmdExecute)
+        self.command.bind("<Up>", self.commandHistoryUp)
+        self.command.bind("<Down>", self.commandHistoryDown)
+        self.command.bind("<FocusIn>", self.commandFocusIn)
+        self.command.bind("<FocusOut>", self.commandFocusOut)
+        self.command.bind("<Key>", self.commandKey)
+        self.command.bind("<Control-Key-z>", self.undo)
+        self.command.bind("<Control-Key-Z>", self.redo)
+        self.command.bind("<Control-Key-y>", self.redo)
+
         tkextra.bindEventData(
             self, "<<OrientSelect>>", lambda e, f=probe: f.selectMarker(
                 int(e.data))
@@ -283,37 +335,22 @@ class Application(tk.Tk):
         self.bind("<<SaveAs>>", self.saveDialog)
         self.bind("<<Reload>>", self.reload)
 
-        # self.bind("<<Recent0>>", self.sender._loadRecent0)
-        self.bind("<<Recent0>>", lambda event, a=0:
-                  globSender.loadRecent(a))
-        self.bind("<<Recent1>>", lambda event, a=1:
-                  globSender.loadRecent(a))
-        self.bind("<<Recent2>>", lambda event, a=2:
-                  globSender.loadRecent(a))
-        self.bind("<<Recent3>>", lambda event, a=3:
-                  globSender.loadRecent(a))
-        self.bind("<<Recent4>>", lambda event, a=4:
-                  globSender.loadRecent(a))
-        self.bind("<<Recent5>>", lambda event, a=5:
-                  globSender.loadRecent(a))
-        self.bind("<<Recent6>>", lambda event, a=6:
-                  globSender.loadRecent(a))
-        self.bind("<<Recent7>>", lambda event, a=7:
-                  globSender.loadRecent(a))
-        self.bind("<<Recent8>>", lambda event, a=8:
-                  globSender.loadRecent(a))
-        self.bind("<<Recent9>>", lambda event, a=9:
-                  globSender.loadRecent(a))
-
         self.bind("<<TerminalClear>>", self.leftpanels["Terminal"].clear)
         self.bind("<<AlarmClear>>", self.alarmClear)
+
+        for i in range(10):
+            self.bind(f"<<Recent{i}>>", lambda event, a=i:
+                      globSender.loadRecent(a))
+
         self.bind("<<Help>>", globSender.help)
         # Do not send the event otherwise it will skip the feedHold/resume
-        self.bind("<<FeedHold>>", lambda e: globSender.feedHold())
-        self.bind("<<Resume>>", lambda e: globSender.resume())
-        self.bind("<<Run>>", lambda e: globSender.run())
+        self.bind("<<FeedHold>>", globSender.feedHold)
+        self.bind("<<Resume>>", globSender.resume)
+        self.bind("<<Run>>", self.run)
         self.bind("<<Stop>>", globSender.stopRun)
         self.bind("<<Pause>>", globSender.pause)
+        self.bind("<Key-exclam>", globSender.feedHold)
+        self.bind("<Key-asciitilde>", globSender.resume)
 
         tkextra.bindEventData(self, "<<Status>>", self.updateStatus)
         tkextra.bindEventData(self, "<<Coords>>", self.updateCanvasCoords)
@@ -408,14 +445,15 @@ class Application(tk.Tk):
         self.bind("<Prior>", self.control.moveZup)
         self.bind("<Next>", self.control.moveZdown)
 
-        if self._swapKeyboard == 1:
+        _swapKeyboard = gconfig.getint("Control", "swap", 0)
+        if _swapKeyboard == 1:
             self.bind("<Right>", self.control.moveYup)
             self.bind("<Left>", self.control.moveYdown)
             self.bind("<Up>", self.control.moveXdown)
             self.bind("<Down>", self.control.moveXup)
             self.bind(".", self.abccontrol.moveAup)
             self.bind(",", self.abccontrol.moveAdown)
-        elif self._swapKeyboard == -1:
+        elif _swapKeyboard == -1:
             self.bind("<Right>", self.control.moveYdown)
             self.bind("<Left>", self.control.moveYup)
             self.bind("<Up>", self.control.moveXup)
@@ -434,12 +472,12 @@ class Application(tk.Tk):
             self.bind("<KP_Prior>", self.control.moveZup)
             self.bind("<KP_Next>", self.control.moveZdown)
 
-            if self._swapKeyboard == 1:
+            if _swapKeyboard == 1:
                 self.bind("<KP_Right>", self.control.moveYup)
                 self.bind("<KP_Left>", self.control.moveYdown)
                 self.bind("<KP_Up>", self.control.moveXdown)
                 self.bind("<KP_Down>", self.control.moveXup)
-            elif self._swapKeyboard == -1:
+            elif _swapKeyboard == -1:
                 self.bind("<KP_Right>", self.control.moveYdown)
                 self.bind("<KP_Left>", self.control.moveYup)
                 self.bind("<KP_Up>", self.control.moveXup)
@@ -467,9 +505,6 @@ class Application(tk.Tk):
         self.bind("<Key-1>", self.control.setStep1)
         self.bind("<Key-2>", self.control.setStep2)
         self.bind("<Key-3>", self.control.setStep3)
-
-        self.bind("<Key-exclam>", globSender.feedHold)
-        self.bind("<Key-asciitilde>", globSender.resume)
 
         for x in self.widgets:
             if isinstance(x, ttk.Entry):
@@ -528,15 +563,6 @@ class Application(tk.Tk):
         self.cmdlabel.pack(side="left")
         self.command = ttk.Entry(f,)
         self.command.pack(side="right", fill="x", expand=True)
-        self.command.bind("<Return>", self.cmdExecute)
-        self.command.bind("<Up>", self.commandHistoryUp)
-        self.command.bind("<Down>", self.commandHistoryDown)
-        self.command.bind("<FocusIn>", self.commandFocusIn)
-        self.command.bind("<FocusOut>", self.commandFocusOut)
-        self.command.bind("<Key>", self.commandKey)
-        self.command.bind("<Control-Key-z>", self.undo)
-        self.command.bind("<Control-Key-Z>", self.redo)
-        self.command.bind("<Control-Key-y>", self.redo)
         utils.ToolTip(
             self.command,
             _(
@@ -759,35 +785,30 @@ class Application(tk.Tk):
                 f"{gconfig.getint(__prg__, 'width', 900)}",
                 f"{gconfig.getint(__prg__, 'height', 650)}"
             ])
-        try:
-            self.geometry(geometry)
-        except Exception:
-            pass
+        self.geometry(geometry)
 
         # restore windowsState
+        # FIXME: Is this necessary?
         try:
             self.wm_state(gconfig.getstr(__prg__, "windowstate", "normal"))
         except Exception:
             pass
 
-        self._swapKeyboard = gconfig.getint("Control", "swap", 0)
-
         # self._onStart = gconfig.getstr("Events", "onstart", "")
         # globSender._onStop = gconfig.getstr("Events", "onstop", "")
 
-        tkextra.Balloon.font = gconfig.getfont("balloon", tkextra.Balloon.font)
+        # FIXME: Part of styles now
+        # tkextra.Balloon.font = gconfig.getfont("balloon", tkextra.Balloon.font)
+        # Ribbon._FONT = gconfig.getfont("ribbon.label", Ribbon._FONT)
+        # Ribbon._TABFONT = gconfig.getfont("ribbon.tab", Ribbon._TABFONT)
 
-        Ribbon._FONT = gconfig.getfont("ribbon.label", Ribbon._FONT)
-        Ribbon._TABFONT = gconfig.getfont("ribbon.tab", Ribbon._TABFONT)
+        # Ribbon._ACTIVE_COLOR = gconfig.getstr(
+        #     "Color", "ribbon.active", Ribbon._ACTIVE_COLOR
+        # )
+        # Ribbon._LABEL_SELECT_COLOR = gconfig.getstr(
+        #     "Color", "ribbon.select", Ribbon._LABEL_SELECT_COLOR
+        # )
 
-        Ribbon._ACTIVE_COLOR = gconfig.getstr(
-            "Color", "ribbon.active", Ribbon._ACTIVE_COLOR
-        )
-        Ribbon._LABEL_SELECT_COLOR = gconfig.getstr(
-            "Color", "ribbon.select", Ribbon._LABEL_SELECT_COLOR
-        )
-
-        self.tools.loadConfig()
         self.loadShortcuts()
 
     # -----------------------------------------------------------------------
@@ -1905,10 +1926,10 @@ class Application(tk.Tk):
             filetypes=FILETYPES,
         )
         # filename = bfiledialog.asksaveasfilename(
-        #     master=self,
-        #     title=_("Save file"),
-        #     initialfile=os.path.join(gconfig.getstr("File", "dir"), fn + ext),
-        #     filetypes=FILETYPES,
+        #   master=self,
+        #   title=_("Save file"),
+        #   initialfile=os.path.join(gconfig.getstr("File", "dir"), fn + ext),
+        #   filetypes=FILETYPES,
         # )
         if filename:
             self.save(filename)
@@ -2125,7 +2146,8 @@ class Application(tk.Tk):
     # -----------------------------------------------------------------------
     def close(self):
         try:
-            self.dro.updateState()
+            dro = self.leftpanels["DRO"]
+            dro.updateState()
         except tk.TclError:
             pass
 
@@ -2144,7 +2166,7 @@ class Application(tk.Tk):
     # -----------------------------------------------------------------------
     # Send enabled gcode file to the CNC machine
     # -----------------------------------------------------------------------
-    def run(self, lines=None):
+    def run(self, lines=None, **kw):
         self.cleanAfter = True  # Clean when this operation stops
         print("Will clean after this operation")
 
@@ -2167,7 +2189,7 @@ class Application(tk.Tk):
         globCNC.vars["errline"] = ""
 
         # the buffer of the machine should be empty?
-        self.initRun()
+        globSender.initRun()
         self.canvas.clearSelection()
         self._runLines = sys.maxsize  # temporary WARNING this value is used
         # by Sender._serialIO to check if we
@@ -2288,69 +2310,69 @@ class Application(tk.Tk):
         while globSender.log.qsize() > 0 and time.time() - t < 0.1:
             try:
                 msg, line = globSender.log.get_nowait()
-                line = str(line).rstrip("\n")
-                inserted = True
-
-                if msg == globSender.MSG_BUFFER:
-                    self.buffer.insert("end", line)
-
-                elif msg == globSender.MSG_SEND:
-                    self.terminal.insert("end", line)
-                    self.terminal.itemconfig("end", foreground="Blue")
-
-                elif msg == globSender.MSG_RECEIVE:
-                    self.terminal.insert("end", line)
-                    if self._insertCount:
-                        # when counting is started, then continue
-                        self._insertCount += 1
-                    elif line and line[0] in ("[", "$"):
-                        # start the counting on the first line received
-                        # starting with $ or [
-                        self._insertCount = 1
-
-                elif msg == globSender.MSG_OK:
-                    if self.terminal.size() > 0:
-                        if self._insertCount:
-                            pos = self.terminal.size() - self._insertCount
-                            self._insertCount = 0
-                        else:
-                            pos = "end"
-                        self.terminal.insert(pos, self.buffer.get(0))
-                        self.terminal.itemconfig(pos, foreground="Blue")
-                        self.buffer.delete(0)
-                    self.terminal.insert("end", line)
-
-                elif msg == globSender.MSG_ERROR:
-                    if self.terminal.size() > 0:
-                        if self._insertCount:
-                            pos = self.terminal.size() - self._insertCount
-                            self._insertCount = 0
-                        else:
-                            pos = "end"
-                        self.terminal.insert(pos, self.buffer.get(0))
-                        self.terminal.itemconfig(pos, foreground="Blue")
-                        self.buffer.delete(0)
-                    self.terminal.insert("end", line)
-                    self.terminal.itemconfig("end", foreground="Red")
-
-                elif msg == globSender.MSG_RUNEND:
-                    self.terminal.insert("end", line)
-                    self.terminal.itemconfig("end", foreground="Magenta")
-                    self.setStatus(line)
-                    self.enable()
-
-                elif msg == globSender.MSG_CLEAR:
-                    self.buffer.delete(0, "end")
-
-                else:
-                    # Unknown?
-                    self.buffer.insert("end", line)
-                    self.terminal.itemconfig("end", foreground="Magenta")
-
-                if self.terminal.size() > 1000:
-                    self.terminal.delete(0, 500)
             except Empty:
                 break
+            line = str(line).rstrip("\n")
+            inserted = True
+
+            if msg == globSender.MSG_BUFFER:
+                self.buffer.insert("end", line)
+
+            elif msg == globSender.MSG_SEND:
+                self.terminal.insert("end", line)
+                self.terminal.itemconfig("end", foreground="Blue")
+
+            elif msg == globSender.MSG_RECEIVE:
+                self.terminal.insert("end", line)
+                if self._insertCount:
+                    # when counting is started, then continue
+                    self._insertCount += 1
+                elif line and line[0] in ("[", "$"):
+                    # start the counting on the first line received
+                    # starting with $ or [
+                    self._insertCount = 1
+
+            elif msg == globSender.MSG_OK:
+                if self.terminal.size() > 0:
+                    if self._insertCount:
+                        pos = self.terminal.size() - self._insertCount
+                        self._insertCount = 0
+                    else:
+                        pos = "end"
+                    self.terminal.insert(pos, self.buffer.get(0))
+                    self.terminal.itemconfig(pos, foreground="Blue")
+                    self.buffer.delete(0)
+                self.terminal.insert("end", line)
+
+            elif msg == globSender.MSG_ERROR:
+                if self.terminal.size() > 0:
+                    if self._insertCount:
+                        pos = self.terminal.size() - self._insertCount
+                        self._insertCount = 0
+                    else:
+                        pos = "end"
+                    self.terminal.insert(pos, self.buffer.get(0))
+                    self.terminal.itemconfig(pos, foreground="Blue")
+                    self.buffer.delete(0)
+                self.terminal.insert("end", line)
+                self.terminal.itemconfig("end", foreground="Red")
+
+            elif msg == globSender.MSG_RUNEND:
+                self.terminal.insert("end", line)
+                self.terminal.itemconfig("end", foreground="Magenta")
+                self.setStatus(line)
+                self.enable()
+
+            elif msg == globSender.MSG_CLEAR:
+                self.buffer.delete(0, "end")
+
+            else:
+                # Unknown?
+                self.buffer.insert("end", line)
+                self.terminal.itemconfig("end", foreground="Magenta")
+
+            if self.terminal.size() > 1000:
+                self.terminal.delete(0, 500)
 
         if inserted:
             self.terminal.see("end")
@@ -2383,8 +2405,9 @@ class Application(tk.Tk):
                     # globCNC.vars["color"] = STATECOLORDEF
                     style = "Default.StateBtn.TButton"
             self._pause = "Hold" in state
-            self.dro.updateState(style)
-            self.dro.updateCoords()
+            dro = self.leftpanels["DRO"]
+            dro.updateState(style)
+            dro.updateCoords()
             self.canvas.gantry(
                 globCNC.vars["wx"],
                 globCNC.vars["wy"],
@@ -2460,6 +2483,14 @@ class Application(tk.Tk):
     # -----------------------------------------------------------------------
     def set(self, section, item, value):
         return gconfig.set(section, item, value)
+
+    def _refresh(self):
+        """ Refreshes the visible widgets every 500ms
+        """
+        serialPage = self.leftpanels["Serial"]
+        serialPage.connectBtnStyle("Unconnected.Panel.TButton")
+
+        self.after(500, self._refresh)
 
 
 if __name__ == "__main__":

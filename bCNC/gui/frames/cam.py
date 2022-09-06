@@ -10,8 +10,8 @@ from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
 
 from globalConfig import config as gconfig
+from globalConfig import icon as gicon
 from .. import tkextra
-import Utils
 
 from .. import cncribbon
 
@@ -38,7 +38,7 @@ class SideFrame(cncribbon.PageFrame):
         b = ttk.Button(
             frame,
             text=_("Execute"),
-            image=Utils.icons["gear"],
+            image=gicon["gear"],
             compound="left",
             # foreground="DarkRed",
             # activeforeground="DarkRed",

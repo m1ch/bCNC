@@ -6,10 +6,8 @@
 """
 
 from .. import cncribbon
-from tkinter import ttk
-from .. import ribbon
-import Utils
 from .. import utils
+from globalConfig import icon as gicon
 
 name = "AutolevelGroup"
 
@@ -28,17 +26,15 @@ class RibbonGroup(cncribbon.ButtonGroup):
         self.frame.columnconfigure(0, weight=1)
         self.frame.columnconfigure(1, weight=1)
 
-
         # ---
         col, row = 0, 0
         b = utils.LabelButton(
             self.frame,
             self,
             "<<AutolevelMargins>>",
-            image=Utils.icons["margins"],
+            image=gicon["margins"],
             text=_("Margins"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -51,10 +47,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             self,
             "<<AutolevelZero>>",
-            image=Utils.icons["origin"],
+            image=gicon["origin"],
             text=_("Zero"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -73,10 +68,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             self,
             "<<AutolevelClear>>",
-            image=Utils.icons["clear"],
+            image=gicon["clear"],
             text=_("Clear"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -90,10 +84,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             self,
             "<<AutolevelScanMargins>>",
-            image=Utils.icons["margins"],
+            image=gicon["margins"],
             text=_("Scan"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -103,10 +96,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
         row += 1
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["level"],
+            image=gicon["level"],
             text=_("Autolevel"),
             compound="left",
-            anchor="w",
             command=lambda a=app: a.insertCommand("AUTOLEVEL", True),
             style='RibbonGroup.TButton',
         )
@@ -120,11 +112,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             self,
             "<<AutolevelScan>>",
-            image=Utils.icons["gear32"],
+            image=gicon["gear32"],
             text=_("Scan"),
             compound="top",
-            justify="center",
-            # width=48,
             style='RibbonGroup.TButton',
         )
         b.grid(row=row, column=col, rowspan=3, sticky="nsew")

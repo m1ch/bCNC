@@ -370,46 +370,6 @@ class Sender:
         self.load(filename)
 
     # ----------------------------------------------------------------------
-    def _loadRecent0(self, event):
-        self.loadRecent(0)
-
-    # ----------------------------------------------------------------------
-    def _loadRecent1(self, event):
-        self.loadRecent(1)
-
-    # ----------------------------------------------------------------------
-    def _loadRecent2(self, event):
-        self.loadRecent(2)
-
-    # ----------------------------------------------------------------------
-    def _loadRecent3(self, event):
-        self.loadRecent(3)
-
-    # ----------------------------------------------------------------------
-    def _loadRecent4(self, event):
-        self.loadRecent(4)
-
-    # ----------------------------------------------------------------------
-    def _loadRecent5(self, event):
-        self.loadRecent(5)
-
-    # ----------------------------------------------------------------------
-    def _loadRecent6(self, event):
-        self.loadRecent(6)
-
-    # ----------------------------------------------------------------------
-    def _loadRecent7(self, event):
-        self.loadRecent(7)
-
-    # ----------------------------------------------------------------------
-    def _loadRecent8(self, event):
-        self.loadRecent(8)
-
-    # ----------------------------------------------------------------------
-    def _loadRecent9(self, event):
-        self.loadRecent(9)
-
-    # ----------------------------------------------------------------------
     def _saveConfigFile(self, filename=None):
         if filename is None:
             filename = globGCode.filename

@@ -5,11 +5,11 @@
              @m1ch
 """
 
-import Utils
 from .. import utils
 from .. import cncribbon
 
 from globalVariables import N_
+from globalConfig import icon as gicon
 
 name = "RouteGroup"
 
@@ -26,10 +26,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
         col, row = 0, 0
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["conventional"],
+            image=gicon["conventional"],
             text=_("Conventional"),
             compound="left",
-            anchor="w",
             command=lambda s=app: s.insertCommand(
                 "DIRECTION CONVENTIONAL", True),
             style='RibbonGroup.Toolbutton',
@@ -45,10 +44,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
         row += 1
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["climb"],
+            image=gicon["climb"],
             text=_("Climb"),
             compound="left",
-            anchor="w",
             command=lambda s=app: s.insertCommand("DIRECTION CLIMB", True),
             style='RibbonGroup.Toolbutton',
         )
@@ -62,10 +60,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
         row += 1
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["reverse"],
+            image=gicon["reverse"],
             text=_("Reverse"),
             compound="left",
-            anchor="w",
             command=lambda s=app: s.insertCommand("REVERSE", True),
             style='RibbonGroup.Toolbutton',
         )
@@ -78,10 +75,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
         col, row = 1, 0
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["rotate_90"],
+            image=gicon["rotate_90"],
             text=_("Cut CW"),
             compound="left",
-            anchor="w",
             command=lambda s=app: s.insertCommand("DIRECTION CW", True),
             style='RibbonGroup.Toolbutton',
         )
@@ -95,10 +91,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
         row += 1
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["rotate_270"],
+            image=gicon["rotate_270"],
             text=_("Cut CCW"),
             compound="left",
-            anchor="w",
             command=lambda s=app: s.insertCommand("DIRECTION CCW", True),
             style='RibbonGroup.Toolbutton',
         )

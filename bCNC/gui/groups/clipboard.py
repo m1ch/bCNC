@@ -5,12 +5,11 @@
              @m1ch
 """
 
-import Utils
-
 from .. import cncribbon
 from .. import utils
 
 from globalVariables import N_
+from globalConfig import icon as gicon
 
 name = "ClipboardGroup"
 
@@ -28,7 +27,7 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             self,
             "<<Paste>>",
-            image=Utils.icons["paste32"],
+            image=gicon["paste32"],
             text=_("Paste"),
             compound="top",
             takefocus=False,
@@ -43,10 +42,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             self,
             "<<Cut>>",
-            image=Utils.icons["cut"],
+            image=gicon["cut"],
             text=_("Cut"),
             compound="left",
-            anchor="w",
             takefocus=False,
             style='RibbonGroup.Toolbutton',
         )
@@ -59,10 +57,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             self,
             "<<Copy>>",
-            image=Utils.icons["copy"],
+            image=gicon["copy"],
             text=_("Copy"),
             compound="left",
-            anchor="w",
             takefocus=False,
             style='RibbonGroup.Toolbutton',
         )

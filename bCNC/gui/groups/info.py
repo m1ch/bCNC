@@ -5,11 +5,11 @@
              @m1ch
 """
 
-import Utils
 from .. import utils
 from .. import cncribbon
 
 from globalVariables import N_
+from globalConfig import icon as gicon
 
 name = "InfoGroup"
 
@@ -26,10 +26,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
         col, row = 0, 0
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["stats"],
+            image=gicon["stats"],
             text=_("Statistics"),
             compound="left",
-            anchor="w",
             command=app.showStats,
             style='RibbonGroup.Toolbutton',
         )
@@ -41,10 +40,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
         row += 1
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["info"],
+            image=gicon["info"],
             text=_("Info"),
             compound="left",
-            anchor="w",
             command=app.showInfo,
             style='RibbonGroup.Toolbutton',
         )

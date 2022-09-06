@@ -12,13 +12,12 @@ import tkinter as tk
 from tkinter import ttk
 
 from globalConfig import config as gconfig
+from globalConfig import icon as gicon
 from .. import cncribbon
 from .. import tkextra
-import Utils
 from .. import utils
 from cnc import globCNC
 from gcode import globGCode
-from sender import globSender
 
 from cnc import Block
 
@@ -180,7 +179,7 @@ class SideFrame(cncribbon.PageFrame):
         col += 1
         b = ttk.Button(
             lframe,
-            image=Utils.icons["rapid"],
+            image=gicon["rapid"],
             text=_("Goto"),
             compound="left",
             command=self.goto2Probe,
@@ -227,7 +226,7 @@ class SideFrame(cncribbon.PageFrame):
         col += 2
         b = ttk.Button(
             lframe,  # "<<Probe>>",
-            image=Utils.icons["probe32"],
+            image=gicon["probe32"],
             text=_("Probe"),
             compound="left",
             command=self.probe,
@@ -267,7 +266,7 @@ class SideFrame(cncribbon.PageFrame):
         # ---
         b = ttk.Button(
             lframe,
-            image=Utils.icons["target32"],
+            image=gicon["target32"],
             text=_("Center"),
             compound="top",
             command=self.probeCenter,
@@ -315,7 +314,7 @@ class SideFrame(cncribbon.PageFrame):
         b = ttk.Button(
             lframe,
             text=_("Add"),
-            image=Utils.icons["add"],
+            image=gicon["add"],
             compound="left",
             command=lambda s=self: s.event_generate("<<AddMarker>>"),
             # padx=1,
@@ -366,7 +365,7 @@ class SideFrame(cncribbon.PageFrame):
         b = ttk.Button(
             lframe,
             text=_("Delete"),
-            image=Utils.icons["x"],
+            image=gicon["x"],
             compound="left",
             command=self.orientDelete,
             # padx=1,
@@ -413,7 +412,7 @@ class SideFrame(cncribbon.PageFrame):
         b = ttk.Button(
             lframe,
             text=_("Clear"),
-            image=Utils.icons["clear"],
+            image=gicon["clear"],
             compound="left",
             command=self.orientClear,
             # padx=1,
@@ -443,7 +442,7 @@ class SideFrame(cncribbon.PageFrame):
         b = ttk.Button(
             lframe,
             text=_("Orient"),
-            image=Utils.icons["setsquare32"],
+            image=gicon["setsquare32"],
             compound="top",
             command=lambda a=app: a.insertCommand("ORIENT", True),
             # padx=1,

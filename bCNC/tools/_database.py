@@ -7,10 +7,9 @@
 import tkinter as tk
 
 from globalConfig import config as gconfig
+from globalConfig import image as gimage
 from gcode import globGCode
 from gui import tkextra
-import Unicode
-import Utils
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "Vasilis.Vlachoudis@cern.ch"
@@ -110,9 +109,9 @@ class _Base:
             value = self[n]
             if t == "bool":
                 if value:
-                    value = Unicode.BALLOT_BOX_WITH_X
+                    value = "☒"
                 else:
-                    value = Unicode.BALLOT_BOX
+                    value = "☐"
             elif t == "mm" and self.master.inches:
                 try:
                     value /= 25.4
@@ -149,7 +148,8 @@ class _Base:
                     + var[3] + "\n" + var[4] + "\n\n"
                 )
         try:
-            self.master.widget["paned"].remove(self.master.widget["toolHelpFrame"])
+            self.master.widget["paned"].remove(
+                self.master.widget["toolHelpFrame"])
         except tk.TclError:
             pass
         self.master.widget["toolHelp"].config(state="normal")
@@ -158,9 +158,9 @@ class _Base:
             for line in varhelp.splitlines():
                 if (len(line) > 0
                         and line[0] == "#"
-                        and line[1:] in Utils.images.keys()):
+                        and line[1:] in gimage.keys()):
                     self.master.widget["toolHelp"].image_create(
-                        "end", image=Utils.images[line[1:]]
+                        "end", image=gimage[line[1:]]
                     )
                     self.master.widget["toolHelp"].insert("end", "\n")
                 else:
@@ -235,11 +235,11 @@ class _Base:
             edit = tkextra.InPlaceFloat(lb)
         elif t == "bool":
             edit = None
-            value = int(lb.get(active) == Unicode.BALLOT_BOX)
+            value = int(lb.get(active) == "☐")
             if value:
-                lb.set(active, Unicode.BALLOT_BOX_WITH_X)
+                lb.set(active, "☒")
             else:
-                lb.set(active, Unicode.BALLOT_BOX)
+                lb.set(active, "☐")
         elif t == "list":
             edit = tkextra.InPlaceList(lb, values=self.listdb[n])
         elif t == "db":

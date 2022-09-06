@@ -33,18 +33,18 @@ class Page(_page.Page):
     # ----------------------------------------------------------------------
     # Add a widget in the widgets list to enable disable during the run
     # ----------------------------------------------------------------------
-    def register(self):
-        # global wcsvar
-        # wcsvar = tk.IntVar()
-        # wcsvar.set(0)
+    # def register(self):
+    #     # global wcsvar
+    #     # wcsvar = tk.IntVar()
+    #     # wcsvar.set(0)
 
-        self._register(
-            groups=("Connection", "User", "Run"),
-            frames=("DRO", "abcDRO", "Control", "abcControl", "State"),
-        )
+    #     self._register(
+    #         groups=("Connection", "User", "Run"),
+    #         frames=("DRO", "abcDRO", "Control", "abcControl", "State"),
+    #     )
 
-        # self._register(
-        #     (ConnectionGroup, UserGroup, RunGroup),
-        #     (DROFrame, abcDROFrame, ControlFrame, abcControlFrame,
-        # StateFrame),
-        # )
+    # self._register(
+    #     (ConnectionGroup, UserGroup, RunGroup),
+    #     (DROFrame, abcDROFrame, ControlFrame, abcControlFrame,
+    # StateFrame),
+    # )

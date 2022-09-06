@@ -23,11 +23,11 @@ class Page(_page.Page):
     # Add a widget in the widgets list to enable disable during the run
     # -----------------------------------------------------------------------
     def register(self):
-        self._register(
-            groups=("ProbeTab", "Autolevel", "Camera", "Tool"),
-            frames=("ProbeCommon", "Probe", "Autolevel",
-                    "Camera", "Tool"),
-        )
+        # self._register(
+        #     groups=("ProbeTab", "Autolevel", "Camera", "Tool"),
+        #     frames=("ProbeCommon", "Probe", "Autolevel",
+        #             "Camera", "Tool"),
+        # )
         # self._register(
         #     (ProbeTabGroup, AutolevelGroup, CameraGroup, ToolGroup),
         #     (ProbeCommonFrame, ProbeFrame, AutolevelFrame,

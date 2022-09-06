@@ -1,10 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
-from . import tkextra
-import Utils
-
 from globalConfig import config as gconfig
+from globalConfig import icon as gicon
 
 _TABFONT = ("Sans", "-14", "bold")
 _FONT = ("Sans", "-11")
@@ -198,7 +196,7 @@ class MenuButton(ttk.Button, _KeyboardFocus):
                     icon = "empty"
                 menu.add_command(
                     label=name,
-                    image=Utils.icons[icon],
+                    image=gicon[icon],
                     compound="left",
                     command=cmd
                 )
@@ -227,11 +225,16 @@ class UserButton(LabelButton):
     # get information from configuration
     # ----------------------------------------------------------------------
     def get(self):
+        from configparser import NoOptionError
         if self.button == 0:
             return
         name = self.name()
         self["text"] = name
-        self["image"] = Utils.icons.get(self.icon(), Utils.icons["material"])
+        try:
+            ico = gconfig.get("Buttons", f"icon.{self.button}")
+            self["image"] = gicon[ico]
+        except (KeyError, NoOptionError):
+            self["image"] = gicon["material"]
         self["compound"] = "left"
         tooltip = self.tooltip()
         if not tooltip:
@@ -303,13 +306,10 @@ class ToolTip:
 
         def on_leave(event):
             self.unschedule()
-            if ToolTip.tooltip:
-                ToolTip.tooltip.destroy()
-                ToolTip.tooltip = None
+            self.__destroy()
 
-        if ToolTip.tooltip:
-            ToolTip.tooltip.destroy()
-            ToolTip.tooltip = None
+        # Check if an old tooltip is open and destroy in case
+        self.__destroy()
 
         self.id = None
         self.master = master
@@ -334,6 +334,12 @@ class ToolTip:
 
         label = ttk.Label(self.tooltip, text=self.text, style='Tooltip.TLabel')
         label.pack()
+
+    @staticmethod
+    def __destroy():
+        if ToolTip.tooltip:
+            ToolTip.tooltip.destroy()
+            ToolTip.tooltip = None
 
 
 # =============================================================================
@@ -366,7 +372,7 @@ class LabelGroup(ttk.Frame):
             self.label = LabelButton(self, self, f"<<{name}>>", text=name)
             self.label.config(
                 command=command,
-                image=Utils.icons["triangle_down"],
+                image=gicon["triangle_down"],
                 foreground=_FOREGROUND_GROUP,
                 background=_BACKGROUND_GROUP,
                 highlightthickness=0,
@@ -462,7 +468,7 @@ class RecentMenuButton(MenuButton):
             menu.add_command(
                 label="%d %s" % (i + 1, fn),
                 compound="left",
-                image=Utils.icons["new"],
+                image=gicon["new"],
                 accelerator=path,  # Show as accelerator in order to be aligned
                 command=lambda s=self, i=i: s.event_generate(
                     "<<Recent%d>>" % (i)),
@@ -501,7 +507,7 @@ class UserButtonDialog(tk.Toplevel):
         self.icon = ttk.Label(self, relief="raised")
         self.icon.grid(row=row, column=col, sticky="ew")
         col += 1
-        lst = list(sorted(Utils.icons.keys()))
+        lst = list(sorted(gicon.keys()))
         lst.insert(0, UserButtonDialog.NONE)
         self.iconCombo = ttk.Combobox(self, width=5)
         self.iconCombo['state'] = 'readonly'
@@ -519,7 +525,7 @@ class UserButtonDialog(tk.Toplevel):
             row=row, column=col, sticky="e")
         col += 1
         self.tooltip = ttk.Entry(self,)
-                                # background=gconfig.getstr('_colors', "GLOBAL_CONTROL_BACKGROUND"))
+        # background=gconfig.getstr('_colors', "GLOBAL_CONTROL_BACKGROUND"))
         self.tooltip.grid(row=row, column=col, columnspan=2, sticky="ew")
         ToolTip(self.tooltip, _("Tooltip for button"))
 
@@ -553,7 +559,7 @@ class UserButtonDialog(tk.Toplevel):
             self.iconCombo.set(UserButtonDialog.NONE)
         else:
             self.iconCombo.set(icon)
-        self.icon["image"] = Utils.icons.get(icon, "")
+        self.icon["image"] = gicon.get(icon, "")
         self.command.insert("1.0", self.button.command())
 
         # Wait action
@@ -581,7 +587,7 @@ class UserButtonDialog(tk.Toplevel):
 
     # ----------------------------------------------------------------------
     def iconChange(self):
-        self.icon["image"] = Utils.icons.get(self.iconCombo.get(), "")
+        self.icon["image"] = gicon.get(self.iconCombo.get(), "")
 
 
 class PageLabelFrame(ttk.Frame, _LinkApp):
@@ -606,15 +612,15 @@ class PageLabelFrame(ttk.Frame, _LinkApp):
 
 class CollapsiblePageLabelFrame(ttk.Frame, _LinkApp):
     def __init__(self, master, app, name, text=None, **kw):
-        import Unicode
+        # import Unicode
         if text is None:
             text = name
         self.name = name
         self.master = master
         ttk.Frame.__init__(self, master, **kw)
         _LinkApp.__init__(self, app)
-        self._opened_text = f"{Unicode.WHITE_UP_POINTING_TRIANGLE} {text}"
-        self._closed_text = f"{Unicode.WHITE_DOWN_POINTING_TRIANGLE} {text}"
+        self._opened_text = f"△ {text}"
+        self._closed_text = f"▽ {text}"
 
         self.columnconfigure(1, weight=1)
 

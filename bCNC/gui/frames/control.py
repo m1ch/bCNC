@@ -5,20 +5,15 @@
              @m1ch
 """
 
-import tkinter as tk
 from tkinter import ttk
-import Unicode
 import math
 
-from .. import tkextra
 from globalConfig import config as gconfig
 from cnc import globCNC
-from gcode import globGCode
 from sender import globSender
 
 
 from .. import utils
-from .. import cncribbon
 
 _LOWSTEP = 0.0001
 _HIGHSTEP = 1000.0
@@ -93,29 +88,29 @@ class SideFrame(utils.CollapsiblePageLabelFrame):
             # self.addWidget(b)
 
         buttons = (
-            ((0, 1), Unicode.BLACK_UP_POINTING_TRIANGLE,
+            ((0, 1), "▲",
              self.moveZup, _("Move +Z")),
-            ((2, 1), Unicode.UPPER_LEFT_TRIANGLE,
+            ((0, 3), "▼",
+             self.moveZdown, _("Move -Z")),
+            ((2, 1), "◸",
              self.moveXdownYup, _("Move -X +Y")),
-            ((3, 1), Unicode.BLACK_UP_POINTING_TRIANGLE,
+            ((3, 1), "▲",
              self.moveYup, _("Move +Y")),
-            ((4, 1), Unicode.UPPER_RIGHT_TRIANGLE,
+            ((4, 1), "◹",
              self.moveXupYup, _("Move +X +Y")),
-            ((2, 2), Unicode.BLACK_LEFT_POINTING_TRIANGLE,
+            ((2, 2), "◀",
              self.moveXdown, _("Move -X")),
-            ((3, 2), Unicode.LARGE_CIRCLE,
+            ((3, 2), "◯",
              self.go2origin, _("Move to Origin.\n"
                                + "User configurable button.\n"
                                + "Right click to configure.")),
-            ((4, 2), Unicode.BLACK_RIGHT_POINTING_TRIANGLE,
+            ((4, 2), "▶",
              self.moveXup, _("Move +X")),
-            ((0, 3), Unicode.BLACK_DOWN_POINTING_TRIANGLE,
-             self.moveZdown, _("Move -Z")),
-            ((2, 3), Unicode.LOWER_LEFT_TRIANGLE,
+            ((2, 3), "◺",
              self.moveXdownYdown, _("Move -X -Y")),
-            ((3, 3), Unicode.BLACK_DOWN_POINTING_TRIANGLE,
+            ((3, 3), "▼",
              self.moveYdown, _("Move -Y")),
-            ((4, 3), Unicode.LOWER_RIGHT_TRIANGLE,
+            ((4, 3), "◿",
              self.moveXupYdown, _("Move +X -Y")),
         )
 
@@ -149,7 +144,7 @@ class SideFrame(utils.CollapsiblePageLabelFrame):
         utils.ToolTip(b, _("Multiply step by 10"))
         # self.addWidget(b)
         b = ttk.Button(f, text=_("+"), command=self.incStep,
-                    #    width=3,
+                       #    width=3,
                        style='Panel.TButton')
         b.pack(side="left")  # grid(row=0, column=1, sticky="ew")
         utils.ToolTip(b, _("Increase step by 1 unit"))
@@ -166,7 +161,7 @@ class SideFrame(utils.CollapsiblePageLabelFrame):
         utils.ToolTip(b, _("Divide step by 10"))
         # self.addWidget(b)
         b = ttk.Button(f, text=_("-"), command=self.decStep,
-                    #    width=3,
+                       #    width=3,
                        style='Panel.TButton')
         b.pack(side="left")  # grid(row=0, column=1, sticky="ewn")
         utils.ToolTip(b, _("Decrease step by 1 unit"))
@@ -233,6 +228,7 @@ class SideFrame(utils.CollapsiblePageLabelFrame):
             self.step3 = 10
 
     # ----------------------------------------------------------------------
+
     def saveConfig(self):
         gconfig.setstr("Control", "step", self.step.get())
         if self.zstep is not self.step:

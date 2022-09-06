@@ -8,13 +8,10 @@
 import tkinter as tk
 
 from cnc import globCNC
-from gcode import globGCode
-from sender import globSender
 
 from .. import cncribbon
-from .. import ribbon
-import Utils
 from .. import utils
+from globalConfig import icon as gicon
 
 name = "CameraGroup"
 
@@ -25,7 +22,6 @@ name = "CameraGroup"
 class RibbonGroup(cncribbon.ButtonGroup):
     def __init__(self, master, app):
         cncribbon.ButtonGroup.__init__(self, master, "Probe:Camera", app)
-        # self.label["background"] = ribbon._BACKGROUND_GROUP2
         self.grid3rows()
 
         self.switch = tk.BooleanVar()
@@ -36,12 +32,11 @@ class RibbonGroup(cncribbon.ButtonGroup):
         col, row = 0, 0
         self.switchButton = utils.LabelCheckbutton(
             self.frame,
-            image=Utils.icons["camera32"],
+            image=gicon["camera32"],
             text=_("Switch To"),
             compound="top",
             variable=self.switch,
             command=self.switchCommand,
-            # background=ribbon._BACKGROUND,
         )
         self.switchButton.grid(
             row=row, column=col, rowspan=3, padx=5, pady=0, sticky="nsew"
@@ -53,13 +48,11 @@ class RibbonGroup(cncribbon.ButtonGroup):
         col, row = 1, 0
         b = utils.LabelCheckbutton(
             self.frame,
-            image=Utils.icons["edge"],
+            image=gicon["edge"],
             text=_("Edge Detection"),
             compound="left",
             variable=self.edge,
-            anchor="w",
             command=self.edgeDetection,
-            # background=ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, pady=0, sticky="nsew")
         utils.ToolTip(b, _("Turn on/off edge detection"))
@@ -68,13 +61,11 @@ class RibbonGroup(cncribbon.ButtonGroup):
         row += 1
         b = utils.LabelCheckbutton(
             self.frame,
-            image=Utils.icons["freeze"],
+            image=gicon["freeze"],
             text=_("Freeze"),
             compound="left",
             variable=self.freeze,
-            anchor="w",
             command=self.freezeImage,
-            # background=ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, pady=0, sticky="nsew")
         utils.ToolTip(b, _("Turn on/off freeze image"))
@@ -90,11 +81,11 @@ class RibbonGroup(cncribbon.ButtonGroup):
         dy = self.app.canvas.cameraDy
         z = self.app.canvas.cameraZ
         if self.switch.get():
-            self.switchButton.config(image=Utils.icons["endmill32"])
+            self.switchButton.config(image=gicon["endmill32"])
             self.sendGCode(f"G92X{dx + wx:g}Y{dy + wy:g}")
             self.app.canvas.cameraSwitch = True
         else:
-            self.switchButton.config(image=Utils.icons["camera32"])
+            self.switchButton.config(image=gicon["camera32"])
             self.sendGCode("G92.1")
             self.app.canvas.cameraSwitch = False
         if z is None:

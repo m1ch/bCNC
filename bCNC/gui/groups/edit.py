@@ -5,12 +5,11 @@
              @m1ch
 """
 
-import Utils
 from .. import utils
 from .. import cncribbon
-from .. import ribbon
 
 from globalVariables import N_
+from globalConfig import icon as gicon
 
 name = "EditGroup"
 
@@ -61,8 +60,7 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
             self.frame,
             self.app,
             "<<Add>>",
-            image=Utils.icons["add"],
-            anchor="w",
+            image=gicon["add"],
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -87,9 +85,8 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
             self.frame,
             menulist,
             text=_("Add"),
-            image=Utils.icons["triangle_down"],
+            image=gicon["triangle_down"],
             compound="right",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col + 1, padx=0, pady=0, sticky="nsew")
@@ -103,10 +100,9 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
             self.frame,
             app,
             "<<Clone>>",
-            image=Utils.icons["clone"],
+            image=gicon["clone"],
             text=_("Clone"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, columnspan=2,
@@ -120,10 +116,9 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
             self.frame,
             app,
             "<<Delete>>",
-            image=Utils.icons["x"],
+            image=gicon["x"],
             text=_("Delete"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, columnspan=2,
@@ -137,8 +132,7 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
             self.frame,
             self.app,
             "<<EnableToggle>>",
-            image=Utils.icons["toggle"],
-            anchor="w",
+            image=gicon["toggle"],
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -164,11 +158,9 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
             self.frame,
             menulist,
             text=_("Active"),
-            image=Utils.icons["triangle_down"],
+            image=gicon["triangle_down"],
             compound="right",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
-            # background=ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col + 1, padx=0, pady=0, sticky="nsew")
         utils.ToolTip(b, _("Enable or disable blocks of gcode"))
@@ -179,10 +171,9 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
             self.frame,
             self.app,
             "<<Expand>>",
-            image=Utils.icons["expand"],
+            image=gicon["expand"],
             text=_("Expand"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, columnspan=2,
@@ -199,10 +190,9 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
             self.frame,
             self.app,
             "<<Comment>>",
-            image=Utils.icons["comment"],
+            image=gicon["comment"],
             text=_("Comment"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, columnspan=2,
@@ -216,10 +206,9 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
             self.frame,
             self.app,
             "<<Join>>",
-            image=Utils.icons["union"],
+            image=gicon["union"],
             text=_("Join"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, columnspan=2,
@@ -232,10 +221,9 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
             self.frame,
             self.app,
             "<<Split>>",
-            image=Utils.icons["cut"],
+            image=gicon["cut"],
             text=_("Split"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, columnspan=2,

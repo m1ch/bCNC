@@ -10,7 +10,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from globalConfig import config as gconfig
-import Utils
+from globalConfig import icon as gicon
 from globalConstants import __prg__
 
 from gui import utils
@@ -32,8 +32,8 @@ class CheckUpdateDialog(tk.Toplevel):
         self.version = version
 
         # -----
-        la = ttk.Label(self, image=Utils.icons["bCNC"],)
-                    #   relief="raised", padx=0, pady=0)
+        la = ttk.Label(self, image=gicon["bCNC"],)
+        #   relief="raised", padx=0, pady=0)
         la.pack(side="top", fill="both")
 
         # ----
@@ -66,7 +66,8 @@ class CheckUpdateDialog(tk.Toplevel):
         frame.grid_columnconfigure(1, weight=1)
 
         # ----
-        frame = tk.LabelFrame(self, text=_("Check Interval"),)  # padx=3, pady=5)
+        # padx=3, pady=5)
+        frame = tk.LabelFrame(self, text=_("Check Interval"),)
         frame.pack(fill="both")
 
         la = ttk.Label(frame, text=_("Last Check:"))
@@ -107,7 +108,7 @@ class CheckUpdateDialog(tk.Toplevel):
         b = ttk.Button(
             frame,
             text=_("Close"),
-            image=Utils.icons["x"],
+            image=gicon["x"],
             compound="left",
             command=self.later,
         )
@@ -116,7 +117,7 @@ class CheckUpdateDialog(tk.Toplevel):
         self.checkButton = ttk.Button(
             frame,
             text=_("Check Now"),
-            image=Utils.icons["global"],
+            image=gicon["global"],
             compound="left",
             command=self.check,
         )
@@ -217,7 +218,6 @@ def need2Check():
 # =============================================================================
 if __name__ == "__main__":
     root = tk.Tk()
-    Utils.loadIcons()
     gconfig.load_configuration()
     dlg = CheckUpdateDialog(tk.Tk, 0)
     root.mainloop()

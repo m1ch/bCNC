@@ -9,10 +9,13 @@ from globalConstants import (
     __iniUser__,
     __LANGUAGES__,
     __controllerpath__,
+    __toolspath__,
     __pluginpath__,
     __pagespath__,
     __framespath__,
     __groupspath__,
+    __iconpath__,
+    __imagepath__,
     __localespath__,
     _maxRecent,
 )
@@ -54,25 +57,6 @@ _FONT_SECTION = "Font"
 gettext.install(True, localedir=None)
 
 
-def _search_controllers():
-    import glob
-    # import traceback
-
-    controllers = {}
-    for f in glob.glob(f"{__controllerpath__}/*.py"):
-        name, _ = os.path.splitext(os.path.basename(f))
-        if name[0] == "_":
-            continue
-        controllers[name] = f
-        # try:
-        #     exec(f"import {name}")
-        #     self.controllers[name] = eval(f"{name}.Controller(self)")
-        # except (ImportError, AttributeError):
-        #     typ, val, tb = sys.exc_info()
-        #     traceback.print_exception(typ, val, tb)
-    return(controllers)
-
-
 def _search_py_modules(path):
     import glob
 
@@ -87,23 +71,33 @@ def _search_py_modules(path):
     return(modules)
 
 
-def _search_plugins():
+def _search_files(path, recursive=False, type=None):
     import glob
-    # import traceback
 
-    plugins = {}
-    for f in glob.glob(f"{__prgpath__}/plugins/*.py"):
-        name, _ = os.path.splitext(os.path.basename(f))
-        if name[0] == "_":
+    files = []
+
+    path = [path]
+
+    p = f"{path.pop(0)}/*"
+    if recursive:
+        p = f"{p}*/*"
+    if type:
+        p = f"{p}.{type}"
+    for f in glob.glob(p, recursive=recursive):
+        if os.path.isdir(f):
             continue
-        plugins[name] = f
-        # try:
-        #     exec(f"import {name}")
-        #     self.controllers[name] = eval(f"{name}.Controller(self)")
-        # except (ImportError, AttributeError):
-        #     typ, val, tb = sys.exc_info()
-        #     traceback.print_exception(typ, val, tb)
-    return(plugins)
+        name, ext = os.path.splitext(os.path.basename(f))
+        ext = ext[1:] if ext[0] == "." else ext
+        f_ = {
+            "dir": os.path.dirname(os.path.abspath(f)),
+            "basename": os.path.basename(f),
+            "name": name,
+            "ext": ext,
+            "full": f,
+        }
+        files.append(f_)
+
+    return files
 
 
 # -----------------------------------------------------------------------------
@@ -140,9 +134,72 @@ def make_font(name, value=None):
     return font
 
 
+# FIXME: Icons need description and dicts in class!
+# from PIL import ImageTk, Image
+# myimg = ImageTk.PhotoImage(Image.open('myimage.png'))
+class _Icon():
+    __icons = {}
+
+    def __getitem__(self, key):
+        return self.get(key)
+
+    def __setitem__(self, key, value):
+        self.set(key, value)
+
+    def set(self, key, value):
+        icons = self.__icons
+        icons[key] = value
+
+    def keys(self):
+        icons = self.__icons
+        return icons.keys()
+
+    def get(self, key, default=None):
+        import tkinter as tk
+        icons = self.__icons
+        if key not in icons:
+            return default
+        if isinstance(icons[key], str):
+            icons[key] = tk.PhotoImage(file=icons[key])
+            if config.getbool("CNC", "doublesizeicon"):
+                icons[key] = icons[key].zoom(2, 2)
+        return icons[key]
+
+
+class _Image():
+    __images = {}
+
+    def __getitem__(self, key):
+        return self.get(key)
+
+    def __setitem__(self, key, value):
+        self.set(key, value)
+
+    def set(self, key, value):
+        images = self.__images
+        images[key] = value
+
+    def keys(self):
+        images = self.__images
+        return images.keys()
+
+    def get(self, key, default=None):
+        import tkinter as tk
+        images = self.__images
+        if key not in images:
+            return default
+        if isinstance(images[key], str):
+            images[key] = tk.PhotoImage(file=images[key])
+            if config.getbool("CNC", "doublesizeicon"):
+                images[key] = images[key].zoom(2, 2)
+        return images[key]
+
+
 # New class to provide config for everyone
 # FIXME: create single instance of this and pass it to all parts of application
 class _Config(configparser.ConfigParser):
+    machines = {}
+
     def __init__(self):
         configparser.ConfigParser.__init__(self)
         # FIXME: This is here to debug the fact that config is sometimes
@@ -158,7 +215,7 @@ class _Config(configparser.ConfigParser):
     # -------------------------------------------------------------------------
     def load_configuration(self, system_only=False):
         # global _errorReport, language
-        from globalVariables import glob_error_report, glob_language
+        # from globalVariables import glob_error_report, glob_language
         ini_files = [__iniSystem__]
         if not system_only:
             ini_files.append(self._user_ini)
@@ -170,6 +227,64 @@ class _Config(configparser.ConfigParser):
         self.initiate_translation()
         self.define_colors()
         self.search_py_modules()
+        self.search_images()
+        self.parse_machines()
+
+        self.check_configuration()
+
+    def check_configuration(self):
+        """ Check the sanity of the configuration and raise an exception
+            if not.
+        """
+        from pydoc import locate
+        # self.add_section("_enabled_pages")
+        active_groups = []
+        active_pannels = []
+        self.active_pages = []
+
+        for page in self[__prg__]["ribbon"].split(" "):
+            if page[-1] == ">":
+                page = page[:-1]
+            # FIXME: Add check if page exist
+            self.active_pages.append(page)
+            if f"{page}.ribbon" not in self[__prg__]:
+                pass  # FIXME: Raise an exception!
+            groups = self[__prg__][f"{page}.ribbon"].split(" ")
+            if f"{page}.page" not in self[__prg__]:
+                pass  # FIXME: Raise an exception!
+            panels = self[__prg__][f"{page}.page"].split(" ")
+
+            while groups:
+                g = groups.pop()
+                if g not in self["_guigroups"]:
+                    print(f"ERROR: {g}, from {page} was not found in groups!")
+                    continue  # FIXME: Raise an exception!
+                if g in active_groups:
+                    continue
+                active_groups.append(g)
+                module_path = self["_guigroups"][g]
+                module = locate(module_path)
+                try:
+                    groups.extend(module.required_groups)
+                except AttributeError:
+                    pass
+                try:
+                    panels.extend(module.required_frames)
+                except AttributeError:
+                    pass
+
+            while panels:
+                p = panels.pop()
+                if p[-1] == "*":
+                    p = p[:-1]
+                if p not in self["_guiframes"]:
+                    print(f"ERROR: {g}, from {page} was not found in frames!")
+                    continue  # FIXME: Raise an exception!
+                elif p not in active_pannels:
+                    active_pannels.append(p)
+
+        self.active_groups = active_groups
+        self.active_pannels = active_pannels
 
     def define_colors(self):
         self.add_section("_colors")
@@ -208,7 +323,7 @@ class _Config(configparser.ConfigParser):
         lang.install()
 
     def search_py_modules(self):
-        """Serch for all optional python modules like plugins, widgets, ...
+        """Search for all optional python modules like plugins, widgets, ...
         """
         # Find available controllers -----------------------------------------
         controllers = _search_py_modules(__controllerpath__)
@@ -228,11 +343,74 @@ class _Config(configparser.ConfigParser):
         self.add_section("_guigroups")
         for name, path in modules.items():
             self.set('_guigroups', name, path)
+        # Find available tools -----------------------------------------------
+        modules = _search_py_modules(__toolspath__)
+        self.add_section("_tools")
+        for name, path in modules.items():
+            self["_tools"][name] = path
         # Find available plugins ---------------------------------------------
         modules = _search_py_modules(__pluginpath__)
         self.add_section("_plugins")
         for name, path in modules.items():
             self.set('_plugins', name, path)
+
+    def search_images(self):
+        """ Search for icons and images in the project
+        """
+        global icon
+        for ext in ["gif", "png"]:
+            ico = _search_files(__iconpath__, type=ext)
+            for x in ico:
+                icon[x["name"]] = x["full"]
+
+        global image
+        for ext in ["gif", "png"]:
+            img = _search_files(__imagepath__, type=ext)
+            for x in img:
+                image[x["name"]] = x["full"]
+
+    def parse_machines(self):
+        """ Parse the machine settings to the internal format
+        """
+        machines = self.machines
+        for key, value in self["Machines"].items():
+            if key == "last_used":
+                continue
+            name, key = key.split(".")
+            if name not in self.machines:
+                machines[name] = {"axis": {},
+                                  "table": {}}
+                machines[name]["axis"]["names"] = []
+                for a in self["Machines"][f"{name}.axis"][1:-1].split(","):
+                    machines[name]["axis"][a] = {}
+                    machines[name]["axis"]["names"].append(a)
+            if value.startswith("[") and value.endswith("]"):
+                if key == "axis":
+                    continue
+                if "," in value:
+                    value = value[1:-1].split(",")
+                elif "-" in value:
+                    machines[name][key] = {}
+                    machines[name][key]["min"], machines[name][key]["max"] = \
+                        value[1:-1].split("-")
+                    continue
+                else:
+                    value = value[1:-1]
+            else:
+                machines[name][key] = value
+                continue
+            if key == "table" and len(value) == 2:
+                machines[name][key]["x"] = value[0]
+                machines[name][key]["y"] = value[1]
+            elif key == "leftfront" and len(value) == 2:
+                machines[name]["table"]["x_off"] = value[0]
+                machines[name]["table"]["y_off"] = value[1]
+            elif len(value) == len(machines[name]["axis"]["names"]):
+                for i in range(len(machines[name]["axis"]["names"])):
+                    a = machines[name]["axis"]["names"][i]
+                    machines[name]["axis"][a][key] = value[i]
+            else:
+                machines[name][key] = value
 
     # -------------------------------------------------------------------------
     # Print the full configuration to stdout
@@ -312,8 +490,8 @@ class _Config(configparser.ConfigParser):
     # # -----------------------------------------------------------------------
     def getbool(self, section, name, default=False):
         try:
-            return bool(int(self.get(section, name)))
-        except Exception:
+            return self[section].getboolean(name)
+        except ValueError:
             return default
 
     # -------------------------------------------------------------------------
@@ -431,3 +609,5 @@ class _Config(configparser.ConfigParser):
 
 
 config = _Config()
+icon = _Icon()
+image = _Image()

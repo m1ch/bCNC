@@ -7,13 +7,12 @@
 
 import tkinter as tk
 
-import Utils
 from .. import utils
 from ..cnccanvas import ACTION_MOVE, ACTION_ORIGIN
 from .. import cncribbon
-from .. import ribbon
 
 from globalVariables import N_
+from globalConfig import icon as gicon
 
 name = "MoveGroup"
 
@@ -51,14 +50,12 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
         col, row = 0, 0
         b = utils.LabelRadiobutton(
             self.frame,
-            image=Utils.icons["move32"],
+            image=gicon["move32"],
             text=_("Move"),
             compound="top",
-            anchor="w",
             variable=app.canvas.actionVar,
             value=ACTION_MOVE,
             command=app.canvas.setActionMove,
-            # background=ribbon._BACKGROUND,
             style="RibbonGroup.Toolbutton"
         )
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky="nsew")
@@ -69,14 +66,12 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
         col += 1
         b = utils.LabelRadiobutton(
             self.frame,
-            image=Utils.icons["origin32"],
+            image=gicon["origin32"],
             text=_("Origin"),
             compound="top",
-            anchor="w",
             variable=app.canvas.actionVar,
             value=ACTION_ORIGIN,
             command=app.canvas.setActionOrigin,
-            # background=ribbon._BACKGROUND,
             style="RibbonGroup.Toolbutton"
         )
         b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky="nsew")
@@ -101,7 +96,7 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
         ):
             menu.add_command(
                 label=n,
-                image=Utils.icons[i],
+                image=gicon[i],
                 compound="left",
                 command=lambda a=self.app, c=c: a.insertCommand(c, True),
             )

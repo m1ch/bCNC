@@ -26,20 +26,20 @@ class Page(_page.Page):
     # ----------------------------------------------------------------------
     # Add a widget in the widgets list to enable disable during the run
     # ----------------------------------------------------------------------
-    def register(self):
-        self._register(
-            groups=(
-                "Clipboard",
-                "Select",
-                "Edit",
-                "Move",
-                "Order",
-                "Transform",
-                "Route",
-                "Info",
-            ),
-            frames=("Editor",),
-        )
+    # def register(self):
+    #     self._register(
+    #         groups=(
+    #             "Clipboard",
+    #             "Select",
+    #             "Edit",
+    #             "Move",
+    #             "Order",
+    #             "Transform",
+    #             "Route",
+    #             "Info",
+    #         ),
+    #         frames=("Editor",),
+    #     )
     #     self._register(
     #         (
     #             ClipboardGroup,

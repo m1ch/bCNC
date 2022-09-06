@@ -6,11 +6,11 @@
              @m1ch
 """
 
-import Utils
 from .. import utils
 from .. import cncribbon
 
 from globalVariables import N_
+from globalConfig import icon as gicon
 
 name = "TransformGroup"
 
@@ -27,10 +27,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
         col, row = 0, 0
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["rotate_90"],
+            image=gicon["rotate_90"],
             text=_("CW"),
             compound="left",
-            anchor="w",
             command=lambda s=app: s.insertCommand("ROTATE CW", True),
             style='RibbonGroup.Toolbutton',
         )
@@ -42,10 +41,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
         row += 1
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["rotate_180"],
+            image=gicon["rotate_180"],
             text=_("Flip"),
             compound="left",
-            anchor="w",
             command=lambda s=app: s.insertCommand("ROTATE FLIP", True),
             style='RibbonGroup.Toolbutton',
         )
@@ -57,10 +55,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
         row += 1
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["rotate_270"],
+            image=gicon["rotate_270"],
             text=_("CCW"),
             compound="left",
-            anchor="w",
             command=lambda s=app: s.insertCommand("ROTATE CCW", True),
             style='RibbonGroup.Toolbutton',
         )
@@ -73,10 +70,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
         col, row = 1, 0
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["flip_horizontal"],
+            image=gicon["flip_horizontal"],
             text=_("Horizontal"),
             compound="left",
-            anchor="w",
             command=lambda s=app: s.insertCommand("MIRROR horizontal", True),
             style='RibbonGroup.Toolbutton',
         )
@@ -88,10 +84,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
         row += 1
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["flip_vertical"],
+            image=gicon["flip_vertical"],
             text=_("Vertical"),
             compound="left",
-            anchor="w",
             command=lambda s=app: s.insertCommand("MIRROR vertical", True),
             style='RibbonGroup.Toolbutton',
         )

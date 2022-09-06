@@ -20,6 +20,7 @@ class SideFrame(cncribbon.PageFrame):
         cncribbon.PageFrame.__init__(self, master, N_("Terminal"), app)
 
         # ---
+        # FIXME: Replase Listbox with treeview
         self.terminal = tk.Listbox(
             self,
             # background=gconfig.getstr('_colors', "GLOBAL_CONTROL_BACKGROUND"),
@@ -27,7 +28,8 @@ class SideFrame(cncribbon.PageFrame):
             height=5,
         )
         self.terminal.grid(row=0, column=0, sticky="nsew")
-        sb = ttk.Scrollbar(self, orient="vertical", command=self.terminal.yview)
+        sb = ttk.Scrollbar(self, orient="vertical",
+                           command=self.terminal.yview)
         sb.grid(row=0, column=1, sticky="ns")
         self.terminal.config(yscrollcommand=sb.set)
         self.terminal.bind("<<Copy>>", self.copy)

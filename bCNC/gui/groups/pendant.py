@@ -5,14 +5,13 @@
              @m1ch
 """
 
-import Utils
-
 from .. import utils
 
 from .. import cncribbon
 
 
 from globalVariables import N_
+from globalConfig import icon as gicon
 
 name = "PendantGroup"
 
@@ -29,9 +28,8 @@ class RibbonGroup(cncribbon.ButtonGroup):
         b = utils.LabelButton(
             self.frame,
             text=_("Start"),
-            image=Utils.icons["start_pendant"],
+            image=gicon["start_pendant"],
             compound="left",
-            anchor="w",
             command=app.startPendant,
             style='RibbonGroup.Toolbutton',
         )
@@ -42,9 +40,8 @@ class RibbonGroup(cncribbon.ButtonGroup):
         b = utils.LabelButton(
             self.frame,
             text=_("Stop"),
-            image=Utils.icons["stop_pendant"],
+            image=gicon["stop_pendant"],
             compound="left",
-            anchor="w",
             command=app.stopPendant,
             style='RibbonGroup.Toolbutton',
         )

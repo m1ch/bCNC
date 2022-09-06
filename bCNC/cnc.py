@@ -7,7 +7,6 @@ import math
 import os
 import re
 
-import Unicode
 from bmath import (
     solveOverDetermined,
     sqrt,
@@ -2064,10 +2063,10 @@ class Block(list):
     def header(self):
         e = (
             self.expand
-            and Unicode.BLACK_DOWN_POINTING_TRIANGLE
-            or Unicode.BLACK_RIGHT_POINTING_TRIANGLE
+            and "▼"
+            or "▶"
         )
-        v = self.enable and Unicode.BALLOT_BOX_WITH_X or Unicode.BALLOT_BOX
+        v = self.enable and "☒" or "☐"
         try:
             return f"{e} {v} {self.name()} - [{len(self)}]"
         except UnicodeDecodeError:

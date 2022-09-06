@@ -41,8 +41,6 @@ from tkinter import ttk
 from tkinter import _setit, _cnfmerge
 from tkinter.colorchooser import askcolor
 
-from . import bfiledialog
-import Unicode
 from Helpers import to_zip
 
 GLOBAL_CONTROL_BACKGROUND = "White"
@@ -282,7 +280,8 @@ def _textPaste(event):
 # -----------------------------------------------------------------------------
 def bindClasses(root):
     root.bind_class(
-        "Entry", "<Control-Key-a>", lambda e: e.widget.selection_range(0, "end")
+        "Entry", "<Control-Key-a>", lambda e: e.widget.selection_range(
+            0, "end")
     )
     root.bind_class("Entry", "<<Paste>>", _entryPaste)
     root.bind_class("Text", "<<Paste>>", _textPaste)
@@ -1430,7 +1429,8 @@ class MultiListbox(ttk.Frame):
             except Exception:
                 self.paneframe.add(frame,)  # minsize=16)  # tk8.4
             if header:
-                lbl = ttk.Label(frame, text=li, )  # borderwidth=1, relief="raised")
+                # borderwidth=1, relief="raised")
+                lbl = ttk.Label(frame, text=li, )
                 lbl.pack(fill="x")
                 lbl.bind("<Button-1>", lambda e, s=self, c=col: s.sort(c))
                 self._labels.append(lbl)
@@ -1455,7 +1455,7 @@ class MultiListbox(ttk.Frame):
             frame = ttk.Frame(self)
             frame.pack(side="right", fill="y")
             ttk.Label(frame, ).pack(fill="x")
-                    #   borderwidth=1, relief="raised")
+            #   borderwidth=1, relief="raised")
 
         self.scrollbar = ttk.Scrollbar(
             frame, orient="vertical", takefocus=False, command=self._scroll
@@ -1839,10 +1839,10 @@ class MultiListbox(ttk.Frame):
 
         if reverse:
             self._labels[column].config(
-                text=txt + Unicode.BLACK_DOWN_POINTING_TRIANGLE)
+                text=txt + "▼")
         else:
             self._labels[column].config(
-                text=txt + Unicode.BLACK_UP_POINTING_TRIANGLE)
+                text=txt + "▲")
         self.event_generate("<<ListboxSort>>")
 
     # ----------------------------------------------------------------------
@@ -1961,7 +1961,7 @@ class ImageListbox(tk.Text):
             i = int(first)
             if 0 <= i < len(self._selection):
                 tk.Text.delete(self, f"{int(i + 1)}.0",
-                            f"{int(i + 1)}.0 + 1 lines")
+                               f"{int(i + 1)}.0 + 1 lines")
                 del self._selection[i]
             return "break"
 
@@ -1971,7 +1971,7 @@ class ImageListbox(tk.Text):
         first = int(first)
         lines = int(last) - first
         tk.Text.delete(self, f"{int(first + 1)}.0",
-                    f"{int(first + 1)}.0 + {int(lines)} lines")
+                       f"{int(first + 1)}.0 + {int(lines)} lines")
         try:
             del self._selection[first:last]
         except IndexError:
@@ -2648,9 +2648,9 @@ class InPlaceColor(InPlaceEdit):
     # ----------------------------------------------------------------------
     def createWidget(self):
         b = ttk.Button(self.frame, text="x",
-                #        padx=0,
-                #    pady=0,
-                   command=self.clearColor)
+                       #        padx=0,
+                       #    pady=0,
+                       command=self.clearColor)
         b.pack(side="left")
         self.edit = ttk.Button(self.frame, command=self.selectColor)
         self.edit.pack(side="right", expand=True, fill="both")
@@ -2980,7 +2980,7 @@ class Combobox(ttk.Frame):
         # Create entry and button
         if label:
             self._text = ttk.Label(self,
-                                #    relief="groove", anchor="w",
+                                   #    relief="groove", anchor="w",
                                    *args, **kwargs)
         else:
             self._text = ttk.Entry(self, *args, **kwargs)
@@ -3315,7 +3315,8 @@ class Combobox(ttk.Frame):
 # =============================================================================
 class ExOptionMenu(ttk.OptionMenu):
     def __init__(self, master, variable, value, *values, **kwargs):
-        ttk.OptionMenu.__init__(self, master, variable, value, *values, **kwargs)
+        ttk.OptionMenu.__init__(self, master, variable,
+                                value, *values, **kwargs)
         self.variable = variable
         self.command = kwargs.get("command")
 
@@ -4503,11 +4504,11 @@ class ExLabelFrame(ttk.LabelFrame):
         self.frame.pack_forget()
         lbl = self["text"]
         if lbl[-1] in (
-            Unicode.BLACK_UP_POINTING_TRIANGLE,
-            Unicode.BLACK_DOWN_POINTING_TRIANGLE,
+            "▲",
+            "▼",
         ):
             lbl = lbl[:-1]
-        self["text"] = lbl + Unicode.BLACK_UP_POINTING_TRIANGLE
+        self["text"] = lbl + "▲"
 
     # ----------------------------------------------------------------------
     def expand(self):
@@ -4515,8 +4516,8 @@ class ExLabelFrame(ttk.LabelFrame):
         self.frame.pack(fill="both")
         lbl = self["text"]
         if lbl[-1] in (
-            Unicode.BLACK_UP_POINTING_TRIANGLE,
-            Unicode.BLACK_DOWN_POINTING_TRIANGLE,
+            "▲",
+            "▼",
         ):
             self["text"] = lbl[:-1]
 
@@ -5073,7 +5074,7 @@ if __name__ == "__main__":
     for i in range(100):
         mlb.insert(
             "end", (f"{int(i)} Important Message",
-                  "John Doe", f"10/10/{int(1900 + i):04d}")
+                    "John Doe", f"10/10/{int(1900 + i):04d}")
         )
     mlb.pack(expand=True, fill="both")
 

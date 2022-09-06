@@ -5,7 +5,6 @@
              @m1ch
 """
 
-import Utils
 from .. import tkdialogs
 
 from .. import utils
@@ -13,6 +12,7 @@ from .. import utils
 from .. import cncribbon
 
 from globalVariables import N_
+from globalConfig import icon as gicon
 
 name = "OptionsGroup"
 
@@ -30,10 +30,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
         b = utils.LabelButton(
             self.frame,
             text=_("Report"),
-            image=Utils.icons["debug"],
+            image=gicon["debug"],
             compound="left",
             command=tkdialogs.ReportDialog.sendErrorReport,
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="ew")
@@ -44,10 +43,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
         b = utils.LabelButton(
             self.frame,
             text=_("Updates"),
-            image=Utils.icons["global"],
+            image=gicon["global"],
             compound="left",
             command=self.app.checkUpdates,
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="ew")
@@ -57,10 +55,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
         b = utils.LabelButton(
             self.frame,
             text=_("About"),
-            image=Utils.icons["about"],
+            image=gicon["about"],
             compound="left",
             command=self.app.about,
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="ew")

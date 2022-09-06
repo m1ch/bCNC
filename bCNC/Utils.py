@@ -4,23 +4,13 @@
 #  Email: Vasilis.Vlachoudis@cern.ch
 #   Date: 16-Apr-2015
 
-import glob
 import os
 import sys
 import traceback
 
-import tkinter as tk
 import tkinter.font as tkfont
-from tkinter import ttk
-
-from globalConstants import (
-    __prgpath__,
-)
-from globalConfig import config as gconfig
 
 from lib.log import say
-
-from gui import tkdialogs
 
 try:
     import serial
@@ -33,48 +23,6 @@ images = {}
 language = ""
 
 errors = []
-
-
-# -----------------------------------------------------------------------------
-def loadIcons():
-    # FIXME: Optimize
-    global icons
-    icons = {}
-    for img in glob.glob(f"{__prgpath__}{os.sep}icons{os.sep}*.gif"):
-        name, ext = os.path.splitext(os.path.basename(img))
-        try:
-            icons[name] = tk.PhotoImage(file=img)
-            if gconfig.getbool("CNC", "doublesizeicon"):
-                icons[name] = icons[name].zoom(2, 2)
-        except tk.TclError:
-            pass
-
-    # Images
-    global images
-    images = {}
-    for img in glob.glob(f"{__prgpath__}{os.sep}images{os.sep}*.gif"):
-        name, ext = os.path.splitext(os.path.basename(img))
-        try:
-            images[name] = tk.PhotoImage(file=img)
-            if gconfig.getbool("CNC", "doublesizeicon"):
-                images[name] = images[name].zoom(2, 2)
-        except tk.TclError:
-            pass
-
-
-# -----------------------------------------------------------------------------
-def delIcons():
-    global icons
-    if len(icons) > 0:
-        for i in icons.values():
-            del i
-        icons = {}  # needed otherwise it complains on deleting the icons
-
-    global images
-    if len(images) > 0:
-        for i in images.values():
-            del i
-        images = {}  # needed otherwise it complains on deleting the icons
 
 
 # -----------------------------------------------------------------------------
@@ -128,8 +76,19 @@ def comports(include_links=True):
 
 
 # =============================================================================
+def getDictKeyByValue(dict, value):
+    try:
+        index = list(dict.values()).index(value)
+    except ValueError:
+        return None
+    return list(dict.keys())[index]
+
+
+# =============================================================================
 def addException():
     from globalVariables import glob_errors
+    from gui import tkdialogs
+
     # global errors
     try:
         typ, val, tb = sys.exc_info()
@@ -144,15 +103,6 @@ def addException():
             tkdialogs.ReportDialog(self.widget)  # noqa: F821 - see fixme
     except Exception:
         say(str(sys.exc_info()))
-
-
-# =============================================================================
-def getDictKeyByValue(dict, value):
-    try:
-        index = list(dict.values()).index(value)
-    except ValueError:
-        return None
-    return list(dict.keys())[index]
 
 
 # =============================================================================
@@ -178,6 +128,3 @@ class CallWrapper:
             pass
         except Exception:
             addException()
-
-
-

@@ -5,9 +5,9 @@
 import tkinter as tk
 from tkinter import ttk
 
-import Utils
 from . import utils
 from . import styles
+from globalConfig import icon as gicon
 
 __author__ = "Vasilis Vlachoudis"
 __email__ = "vvlachoudis@gmail.com"
@@ -64,7 +64,7 @@ class LabelGroup(ttk.Frame):
                                            f"<<{name}>>",
                                            command=command,
                                            text=name,
-                                           image=Utils.icons["triangle_down"],
+                                           image=gicon["triangle_down"],
                                            compound='right',
                                            style='Bottom.RibbonGroup.TButton')
             self.label.pack(side="bottom", fill="x", pady=0)
@@ -100,7 +100,7 @@ class MenuGroup(LabelGroup):
 
         self.label = ttk.Menubutton(f,
                                     text=name,
-                                    image=Utils.icons["triangle_down"],
+                                    image=gicon["triangle_down"],
                                     compound='right',
                                     style='Bottom.RibbonGroup.TButton')
         self.label.pack(side="bottom", fill="x", pady=0)
@@ -131,7 +131,7 @@ class MenuGroup(LabelGroup):
                         icon = "empty"
                     menu.add_command(
                         label=name,
-                        image=Utils.icons[icon],
+                        image=gicon[icon],
                         compound="left",
                         command=cmd
                     )
@@ -160,7 +160,7 @@ class MenuGroup(LabelGroup):
         #             icon = "empty"
         #         menu.add_command(
         #             label=name,
-        #             image=Utils.icons[icon],
+        #             image=gicon[icon],
         #             compound="left",
         #             command=cmd
         #         )
@@ -229,7 +229,7 @@ class TabButton(ttk.Radiobutton):
 #     def __init__(self, master, **kw):
 #         self.master = master
 #         self.name = self._name_
-#         self._icon = Utils.icons[self._icon_]
+#         self._icon = gicon[self._icon_]
 #         self._tab = None  # Tab button
 #         self.ribbons = []
 #         self.frames = []
@@ -414,7 +414,7 @@ class TabRibbonFrame(ttk.Frame):
         # Add basic buttons
         def add_button(icon, cmd_event, tooltip, side):
             kw = {
-                "image": Utils.icons[icon],
+                "image": gicon[icon],
                 "style": 'TopBar.TButton'
             }
             if type(cmd_event) is str:
@@ -431,7 +431,8 @@ class TabRibbonFrame(ttk.Frame):
         add_button("load", "<<Open>>", _("Open file [Ctrl-O]"), "left")
         add_button("save", "<<Save>>", _("Save all [Ctrl-S]"), "left")
         add_button("undo", "<<Undo>>", _("Undo [Ctrl-Z]"), "left")
-        add_button("triangle_down", self.undolist, None, "left")
+        # FIXME: Undolist not implemented
+        # add_button("triangle_down", self.undolist, None, "left")
         add_button("redo", "<<Redo>>", _("Redo [Ctrl-Y]"), "left")
 
         ttk.Separator(frame, orient="vertical").pack(
@@ -499,15 +500,14 @@ class TabRibbonFrame(ttk.Frame):
     def changePage(self, page=None):
         if page is not None:
             if isinstance(page, str):  # not isinstance(page, Page):
-                try:
-                    page = self.pages[page]
-                except KeyError:
+                if page not in self.pages:
                     return
+                page = self.pages[page]
             self.activePage.set(page.name)
         else:
-            try:
+            if self.activePage.get() in self.pages:
                 page = self.pages[self.activePage.get()]
-            except KeyError:
+            else:
                 return
 
         if page is self.oldActive:

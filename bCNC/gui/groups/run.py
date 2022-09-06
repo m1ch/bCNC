@@ -5,10 +5,9 @@
              @m1ch
 """
 
-import Utils
-
 from .. import utils
 from .. import cncribbon
+from globalConfig import icon as gicon
 
 name = "RunGroup"
 
@@ -24,7 +23,7 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             self,
             "<<Run>>",
-            image=Utils.icons["start32"],
+            image=gicon["start32"],
             text=_("Start"),
             compound="top",
             style='RibbonGroup.TButton',
@@ -38,7 +37,7 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             self,
             "<<Pause>>",
-            image=Utils.icons["pause32"],
+            image=gicon["pause32"],
             text=_("Pause"),
             compound="top",
             style='RibbonGroup.TButton',
@@ -54,7 +53,7 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             self,
             "<<Stop>>",
-            image=Utils.icons["stop32"],
+            image=gicon["stop32"],
             text=_("Stop"),
             compound="top",
             style='RibbonGroup.TButton',

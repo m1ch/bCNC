@@ -5,11 +5,11 @@
              @m1ch
 """
 
-import Utils
 from .. import utils
 from .. import cncribbon
 
 from globalVariables import N_
+from globalConfig import icon as gicon
 
 name = "OrderGroup"
 
@@ -40,10 +40,9 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
             self.frame,
             self,
             "<Control-Key-Prior>",
-            image=Utils.icons["up"],
+            image=gicon["up"],
             text=_("Up"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -59,10 +58,9 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
             self.frame,
             self,
             "<Control-Key-Next>",
-            image=Utils.icons["down"],
+            image=gicon["down"],
             text=_("Down"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -78,10 +76,9 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
             self.frame,
             self,
             "<<Invert>>",
-            image=Utils.icons["swap"],
+            image=gicon["swap"],
             text=_("Invert"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")

@@ -5,14 +5,12 @@
              @m1ch
 """
 
-import Utils
-
 from .. import utils
 
-from .. import cncribbon
-
+from ..cncribbon import ButtonGroup
 
 from globalVariables import N_
+from globalConfig import icon as gicon
 
 name = "CloseGroup"
 
@@ -20,18 +18,17 @@ name = "CloseGroup"
 # =============================================================================
 # Close Group
 # =============================================================================
-class RibbonGroup(cncribbon.ButtonGroup):
+class RibbonGroup(ButtonGroup):
     def __init__(self, master, app):
-        cncribbon.ButtonGroup.__init__(self, master, N_("Close"), app)
+        ButtonGroup.__init__(self, master, N_("Close"), app)
 
         # ---
         b = utils.LabelButton(
             self.frame,
             text=_("Exit"),
-            image=Utils.icons["exit32"],
+            image=gicon["exit32"],
             compound="top",
             command=app.quit,
-            anchor="w",
             style='RibbonGroup.TButton',
         )
         b.pack(fill="both", expand=True)

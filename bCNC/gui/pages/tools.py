@@ -26,14 +26,14 @@ class Page(_page.Page):
     # ----------------------------------------------------------------------
     # Add a widget in the widgets list to enable disable during the run
     # ----------------------------------------------------------------------
-    def register(self):
-        self._register(
-            # GeneratorGroup,
-            # ArtisticGroup,
-            # MacrosGroup,
-            groups=("Config", "DataBase", "CAM"),
-            frames=("Tools",),
-        )
+    # def register(self):
+    #     self._register(
+    #         # GeneratorGroup,
+    #         # ArtisticGroup,
+    #         # MacrosGroup,
+    #         groups=("Config", "DataBase", "CAM"),
+    #         frames=("cam",),
+    #     )
 
     #     self._register(
     #         (

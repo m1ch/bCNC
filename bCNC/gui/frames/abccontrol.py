@@ -7,7 +7,7 @@
 
 import tkinter as tk
 from tkinter import ttk
-import Unicode
+# import Unicode
 import math
 
 from globalConfig import config as gconfig
@@ -64,7 +64,7 @@ class SideFrame(utils.CollapsiblePageLabelFrame):
 
         b = ttk.Button(
             frame,
-            text=Unicode.BLACK_UP_POINTING_TRIANGLE,
+            text="▲",
             command=self.moveAup,
             # width=width,
             # height=height,
@@ -78,7 +78,7 @@ class SideFrame(utils.CollapsiblePageLabelFrame):
         col += 2
         b = ttk.Button(
             frame,
-            text=Unicode.UPPER_LEFT_TRIANGLE,
+            text="◸",
             command=self.moveBdownCup,
             # width=width,
             # height=height,
@@ -92,7 +92,7 @@ class SideFrame(utils.CollapsiblePageLabelFrame):
         col += 1
         b = ttk.Button(
             frame,
-            text=Unicode.BLACK_UP_POINTING_TRIANGLE,
+            text="▲",
             command=self.moveCup,
             # width=width,
             # height=height,
@@ -105,7 +105,7 @@ class SideFrame(utils.CollapsiblePageLabelFrame):
         col += 1
         b = ttk.Button(
             frame,
-            text=Unicode.UPPER_RIGHT_TRIANGLE,
+            text="◹",
             command=self.moveBupCup,
             # width=width,
             # height=height,
@@ -144,7 +144,7 @@ class SideFrame(utils.CollapsiblePageLabelFrame):
         col += 1
         b = ttk.Button(
             frame,
-            text=Unicode.BLACK_LEFT_POINTING_TRIANGLE,
+            text="◀",
             command=self.moveBdown,
             # width=width,
             # height=height,
@@ -157,7 +157,7 @@ class SideFrame(utils.CollapsiblePageLabelFrame):
         col += 1
         b = ttk.Button(
             frame,
-            text=Unicode.LARGE_CIRCLE,
+            text="◯",
             command=self.go2abcorigin,
             # width=width,
             # height=height,
@@ -170,7 +170,7 @@ class SideFrame(utils.CollapsiblePageLabelFrame):
         col += 1
         b = ttk.Button(
             frame,
-            text=Unicode.BLACK_RIGHT_POINTING_TRIANGLE,
+            text="▶",
             command=self.moveBup,
             # width=width,
             # height=height,
@@ -244,7 +244,7 @@ class SideFrame(utils.CollapsiblePageLabelFrame):
 
         b = ttk.Button(
             frame,
-            text=Unicode.BLACK_DOWN_POINTING_TRIANGLE,
+            text="▼",
             command=self.moveAdown,
             # width=width,
             # height=height,
@@ -257,7 +257,7 @@ class SideFrame(utils.CollapsiblePageLabelFrame):
         col += 2
         b = ttk.Button(
             frame,
-            text=Unicode.LOWER_LEFT_TRIANGLE,
+            text="◺",
             command=self.moveBdownCdown,
             # width=width,
             # height=height,
@@ -270,7 +270,7 @@ class SideFrame(utils.CollapsiblePageLabelFrame):
         col += 1
         b = ttk.Button(
             frame,
-            text=Unicode.BLACK_DOWN_POINTING_TRIANGLE,
+            text="▼",
             command=self.moveCdown,
             # width=width,
             # height=height,
@@ -283,7 +283,7 @@ class SideFrame(utils.CollapsiblePageLabelFrame):
         col += 1
         b = ttk.Button(
             frame,
-            text=Unicode.LOWER_RIGHT_TRIANGLE,
+            text="◿",
             command=self.moveBupCdown,
             # width=width,
             # height=height,

@@ -6,9 +6,8 @@
 """
 
 from .. import cncribbon
-from .. import ribbon
-import Utils
 from .. import utils
+from globalConfig import icon as gicon
 
 name = "ToolGroup"
 
@@ -19,13 +18,12 @@ name = "ToolGroup"
 class RibbonGroup(cncribbon.ButtonGroup):
     def __init__(self, master, app):
         cncribbon.ButtonGroup.__init__(self, master, "Probe:Tool", app)
-        # self.label["background"] = ribbon._BACKGROUND_GROUP2
 
         b = utils.LabelButton(
             self.frame,
             self,
             "<<ToolCalibrate>>",
-            image=Utils.icons["calibrate32"],
+            image=gicon["calibrate32"],
             text=_("Calibrate"),
             compound="top",
             # width=48,
@@ -43,7 +41,7 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             self,
             "<<ToolChange>>",
-            image=Utils.icons["endmill32"],
+            image=gicon["endmill32"],
             text=_("Change"),
             compound="top",
             # width=48,

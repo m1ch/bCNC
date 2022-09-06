@@ -5,9 +5,9 @@
              @m1ch
 """
 
-import Utils
 from globalVariables import N_
-from .. import commands
+from globalConfig import icon as gicon
+from sender import globSender
 from .. import utils
 from .. import cncribbon
 
@@ -26,10 +26,10 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
             app,
             [
                 (_("Restore Settings"),
-                 "grbl_settings", commands.grblRestoreSettings),
+                 "grbl_settings", globSender.grblRestoreSettings),
                 (_("Restore Workspace"),
-                 "grbl_params", commands.grblRestoreWCS),
-                (_("Restore All"), "reset", commands.grblRestoreAll),
+                 "grbl_params", globSender.grblRestoreWCS),
+                (_("Restore All"), "reset", globSender.grblRestoreAll),
             ],
         )
         self.grid3rows()
@@ -42,12 +42,11 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
         col, row = 0, 0
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["grbl_settings"],
+            image=gicon["grbl_settings"],
             text=_("Settings"),
             compound="left",
-            anchor="w",
             state=state,
-            command=commands.viewSettings,
+            command=globSender.viewSettings,
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -58,11 +57,10 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
         row += 1
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["grbl_params"],
+            image=gicon["grbl_params"],
             text=_("Parameters"),
             compound="left",
-            anchor="w",
-            command=commands.viewParameters,
+            command=globSender.viewParameters,
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -72,11 +70,10 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
         row += 1
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["grbl_state"],
+            image=gicon["grbl_state"],
             text=_("State"),
             compound="left",
-            anchor="w",
-            command=commands.viewState,
+            command=globSender.viewState,
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -88,11 +85,10 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
         row = 0
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["grbl_build"],
+            image=gicon["grbl_build"],
             text=_("Build"),
             compound="left",
-            anchor="w",
-            command=commands.viewBuild,
+            command=globSender.viewBuild,
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -102,12 +98,11 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
         row += 1
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["grbl_startup"],
+            image=gicon["grbl_startup"],
             text=_("Startup"),
             compound="left",
-            anchor="w",
             state=state,
-            command=commands.viewStartup,
+            command=globSender.viewStartup,
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -119,12 +114,11 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
         # FIXME Checkbutton!!!!!
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["grbl_check"],
+            image=gicon["grbl_check"],
             text=_("Check gcode"),
             compound="left",
-            anchor="w",
             state=state,
-            command=commands.checkGcode,
+            command=globSender.checkGcode,
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -134,14 +128,13 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
 
         # ---
         col += 1
-        row = 1
+        row = 2
         b = utils.LabelButton(
             self.frame,
-            image=Utils.icons["grbl_help"],
+            image=gicon["grbl_help"],
             text=_("Help"),
             compound="left",
-            anchor="w",
-            command=commands.grblHelp,
+            command=globSender.grblHelp,
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")

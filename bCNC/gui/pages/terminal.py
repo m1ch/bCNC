@@ -25,6 +25,6 @@ class Page(_page.Page):
     # ----------------------------------------------------------------------
     # Add a widget in the widgets list to enable disable during the run
     # ----------------------------------------------------------------------
-    def register(self):
-        self._register(groups=("Commands", "Terminal"), frames=("Terminal",))
-        # self._register((CommandsGroup, TerminalGroup), (TerminalFrame,))
+    # def register(self):
+    #     self._register(groups=("Commands", "Terminal"), frames=("Terminal",))
+    #     # self._register((CommandsGroup, TerminalGroup), (TerminalFrame,))

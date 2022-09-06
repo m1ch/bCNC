@@ -16,14 +16,13 @@ import tkinter as tk
 from tkinter import ttk
 
 from globalConfig import config as gconfig
+from globalConfig import icon as gicon
 from cnc import globCNC
 from gcode import globGCode
 from sender import globSender
 
 import bmath
 import Camera
-from . import tkextra
-import Utils
 from . import commands as cmd
 from . import utils
 
@@ -1599,7 +1598,8 @@ class cnccanvas(tk.Canvas):
             ymin = (globCNC.vars["aymin"] // 10) * 10
             ymax = (globCNC.vars["aymax"] // 10 + 1) * 10
             for i in range(
-                int(globCNC.vars["aymin"] // 10), int(globCNC.vars["aymax"] // 10) + 2
+                int(globCNC.vars["aymin"]
+                    // 10), int(globCNC.vars["aymax"] // 10) + 2
             ):
                 y = i * 10.0
                 xyz = [(xmin, y, 0), (xmax, y, 0)]
@@ -1610,7 +1610,8 @@ class cnccanvas(tk.Canvas):
                 self.tag_lower(item)
 
             for i in range(
-                int(globCNC.vars["axmin"] // 10), int(globCNC.vars["axmax"] // 10) + 2
+                int(globCNC.vars["axmin"]
+                    // 10), int(globCNC.vars["axmax"] // 10) + 2
             ):
                 x = i * 10.0
                 xyz = [(x, ymin, 0), (x, ymax, 0)]
@@ -2168,28 +2169,28 @@ class CanvasFrame(ttk.Frame):
         utils.ToolTip(b, _("Change viewing angle"))
 
         b = ttk.Button(
-            toolbar, image=Utils.icons["zoom_in"],
+            toolbar, image=gicon["zoom_in"],
             command=self.canvas.menuZoomIn
         )
         utils.ToolTip(b, _("Zoom In [Ctrl-=]"))
         b.pack(side="left")
 
         b = ttk.Button(
-            toolbar, image=Utils.icons["zoom_out"],
+            toolbar, image=gicon["zoom_out"],
             command=self.canvas.menuZoomOut
         )
         utils.ToolTip(b, _("Zoom Out [Ctrl--]"))
         b.pack(side="left")
 
         b = ttk.Button(
-            toolbar, image=Utils.icons["zoom_on"],
+            toolbar, image=gicon["zoom_on"],
             command=self.canvas.fit2Screen
         )
         utils.ToolTip(b, _("Fit to screen [F]"))
         b.pack(side="left")
 
         ttk.Label(toolbar, text=_("Tool:"),
-                  image=Utils.icons["sep"], compound="left").pack(
+                  image=gicon["sep"], compound="left").pack(
             side="left", padx=2
         )
         # -----
@@ -2197,7 +2198,7 @@ class CanvasFrame(ttk.Frame):
         # -----
         b = tk.Radiobutton(
             toolbar,
-            image=Utils.icons["select"],
+            image=gicon["select"],
             indicatoron=False,
             variable=self.canvas.actionVar,
             value=ACTION_SELECT,
@@ -2209,7 +2210,7 @@ class CanvasFrame(ttk.Frame):
 
         b = tk.Radiobutton(
             toolbar,
-            image=Utils.icons["pan"],
+            image=gicon["pan"],
             indicatoron=False,
             variable=self.canvas.actionVar,
             value=ACTION_PAN,
@@ -2220,7 +2221,7 @@ class CanvasFrame(ttk.Frame):
 
         b = tk.Radiobutton(
             toolbar,
-            image=Utils.icons["ruler"],
+            image=gicon["ruler"],
             indicatoron=False,
             variable=self.canvas.actionVar,
             value=ACTION_RULER,
@@ -2232,14 +2233,14 @@ class CanvasFrame(ttk.Frame):
         # -----------
         # Draw flags
         # -----------
-        ttk.Label(toolbar, text=_("Draw:"), image=Utils.icons["sep"],
-                 compound="left").pack(
+        ttk.Label(toolbar, text=_("Draw:"), image=gicon["sep"],
+                  compound="left").pack(
             side="left", padx=2
         )
 
         b = tk.Checkbutton(
             toolbar,
-            image=Utils.icons["axes"],
+            image=gicon["axes"],
             indicatoron=False,
             variable=self.draw_axes,
             command=self.drawAxes,
@@ -2249,7 +2250,7 @@ class CanvasFrame(ttk.Frame):
 
         b = tk.Checkbutton(
             toolbar,
-            image=Utils.icons["grid"],
+            image=gicon["grid"],
             indicatoron=False,
             variable=self.draw_grid,
             command=self.drawGrid,
@@ -2259,7 +2260,7 @@ class CanvasFrame(ttk.Frame):
 
         b = tk.Checkbutton(
             toolbar,
-            image=Utils.icons["margins"],
+            image=gicon["margins"],
             indicatoron=False,
             variable=self.draw_margin,
             command=self.drawMargin,
@@ -2270,7 +2271,7 @@ class CanvasFrame(ttk.Frame):
         b = tk.Checkbutton(
             toolbar,
             text="P",
-            image=Utils.icons["measure"],
+            image=gicon["measure"],
             indicatoron=False,
             variable=self.draw_probe,
             command=self.drawProbe,
@@ -2280,7 +2281,7 @@ class CanvasFrame(ttk.Frame):
 
         b = tk.Checkbutton(
             toolbar,
-            image=Utils.icons["endmill"],
+            image=gicon["endmill"],
             indicatoron=False,
             variable=self.draw_paths,
             command=self.toggleDrawFlag,
@@ -2290,7 +2291,7 @@ class CanvasFrame(ttk.Frame):
 
         b = tk.Checkbutton(
             toolbar,
-            image=Utils.icons["rapid"],
+            image=gicon["rapid"],
             indicatoron=False,
             variable=self.draw_rapid,
             command=self.toggleDrawFlag,
@@ -2300,7 +2301,7 @@ class CanvasFrame(ttk.Frame):
 
         b = tk.Checkbutton(
             toolbar,
-            image=Utils.icons["workspace"],
+            image=gicon["workspace"],
             indicatoron=False,
             variable=self.draw_workarea,
             command=self.drawWorkarea,
@@ -2310,7 +2311,7 @@ class CanvasFrame(ttk.Frame):
 
         b = tk.Checkbutton(
             toolbar,
-            image=Utils.icons["camera"],
+            image=gicon["camera"],
             indicatoron=False,
             variable=self.draw_camera,
             command=self.drawCamera,
@@ -2320,7 +2321,7 @@ class CanvasFrame(ttk.Frame):
         if Camera.cv is None:
             b.config(state="disabled")
 
-        b = ttk.Button(toolbar, image=Utils.icons["refresh"],
+        b = ttk.Button(toolbar, image=gicon["refresh"],
                        command=self.viewChange)
         utils.ToolTip(b, _("Redraw display [Ctrl-R]"))
         b.pack(side="left")

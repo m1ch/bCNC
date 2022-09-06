@@ -5,11 +5,9 @@
              @m1ch
 """
 
-import Utils
 from globalVariables import N_
+from globalConfig import icon as gicon
 
-
-from .. import ribbon
 from .. import cncribbon
 from .. import utils
 
@@ -28,13 +26,11 @@ class RibbonGroup(cncribbon.ButtonGroup):
         col, row = 0, 0
         b = utils.LabelRadiobutton(
             self.frame,
-            image=Utils.icons["stock32"],
+            image=gicon["stock32"],
             text=_("Stock"),
             compound="top",
-            anchor="w",
             variable=app.tools.active,
             value="Stock",
-            # background=ribbon._BACKGROUND,
             style='RibbonGroup.Toolbutton'
         )
         b.grid(row=row, column=col, rowspan=3, padx=2, pady=0, sticky="nsew")
@@ -45,13 +41,11 @@ class RibbonGroup(cncribbon.ButtonGroup):
         col, row = 1, 0
         b = utils.LabelRadiobutton(
             self.frame,
-            image=Utils.icons["material"],
+            image=gicon["material"],
             text=_("Material"),
             compound="left",
-            anchor="w",
             variable=app.tools.active,
             value="Material",
-            # background=ribbon._BACKGROUND,
             style='RibbonGroup.Toolbutton'
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -62,13 +56,11 @@ class RibbonGroup(cncribbon.ButtonGroup):
         row += 1
         b = utils.LabelRadiobutton(
             self.frame,
-            image=Utils.icons["endmill"],
+            image=gicon["endmill"],
             text=_("End Mill"),
             compound="left",
-            anchor="w",
             variable=app.tools.active,
             value="EndMill",
-            # background=ribbon._BACKGROUND,
             style='RibbonGroup.Toolbutton'
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -81,10 +73,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             app,
             "<<ToolRename>>",
-            image=Utils.icons["rename"],
+            image=gicon["rename"],
             text=_("Rename"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -98,10 +89,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             app,
             "<<ToolAdd>>",
-            image=Utils.icons["add"],
+            image=gicon["add"],
             text=_("Add"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -115,10 +105,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             app,
             "<<ToolClone>>",
-            image=Utils.icons["clone"],
+            image=gicon["clone"],
             text=_("Clone"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
@@ -132,10 +121,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             app,
             "<<ToolDelete>>",
-            image=Utils.icons["x"],
+            image=gicon["x"],
             text=_("Delete"),
             compound="left",
-            anchor="w",
             style='RibbonGroup.Toolbutton',
         )
         b.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")

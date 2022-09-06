@@ -8,14 +8,13 @@
 import os
 import tkinter as tk
 
-import Utils
 from globalVariables import N_
 from globalConfig import config as gconfig
+from globalConfig import icon as gicon
 from globalConstants import _maxRecent
 
 from .. import styles
 from .. import utils
-from .. import ribbon
 from .. import cncribbon
 
 name = "FileGroup"
@@ -37,7 +36,7 @@ class _RecentMenuButton(utils.MenuButton):
             menu.add_command(
                 label="%d %s" % (i + 1, fn),
                 compound="left",
-                image=Utils.icons["new"],
+                image=gicon["new"],
                 accelerator=path,  # Show as accelerator in order to be aligned
                 command=lambda s=self, i=i: s.event_generate(
                     "<<Recent%d>>" % (i)),
@@ -62,7 +61,7 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             self,
             "<<New>>",
-            image=Utils.icons["new32"],
+            image=gicon["new32"],
             text=_("New"),
             compound="top",
             style='RibbonGroup.TButton',
@@ -78,7 +77,7 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             self,
             "<<Open>>",
-            image=Utils.icons["open32"],
+            image=gicon["open32"],
             style='RibbonGroup.TButton',
         )
         b.grid(row=row, column=col, rowspan=2, padx=0, pady=0, sticky="nsew")
@@ -90,7 +89,7 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             None,
             text=_("Open"),
-            image=Utils.icons["triangle_down"],
+            image=gicon["triangle_down"],
             style='RibbonGroup.TButton',
             compound="right",
         )
@@ -104,7 +103,7 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             self,
             "<<Import>>",
-            image=Utils.icons["import32"],
+            image=gicon["import32"],
             text=_("Import"),
             compound="top",
             style='RibbonGroup.TButton',
@@ -119,7 +118,7 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self.frame,
             self,
             "<<Save>>",
-            image=Utils.icons["save32"],
+            image=gicon["save32"],
             command=app.save,
             style='RibbonGroup.TButton',
         )
@@ -133,7 +132,7 @@ class RibbonGroup(cncribbon.ButtonGroup):
             self,
             "<<SaveAs>>",
             text=_("Save"),
-            image=Utils.icons["triangle_down"],
+            image=gicon["triangle_down"],
             compound="right",
             style='RibbonGroup.TButton',
         )

@@ -10,11 +10,11 @@ from tkinter import ttk
 
 import Utils
 from globalConfig import config as gconfig
+from globalConfig import icon as gicon
 from globalConstants import __LANGUAGES__
 from globalVariables import N_
 
 
-from .. import ribbon
 from .. import cncribbon
 from .. import utils
 
@@ -43,7 +43,7 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
                padx=0, pady=0, sticky="nsew")
 
         b = ttk.Label(f,
-                      image=Utils.icons["globe"],
+                      image=gicon["globe"],
                       style='RibbonGroup.TLabel')
         b.pack(side="left")
 
@@ -59,17 +59,8 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
         lang = ttk.Combobox(f, textvariable=self.language, width=16)
         lang['state'] = 'readonly'
         lang['values'] = languages
-        # lang.bind('<<ComboboxSelected>>', self.waitChange)
         lang['background'] = gconfig.getstr(
             '_colors', "GLOBAL_CONTROL_BACKGROUND")
-        # lang = ttk.OptionMenu(
-        #     f,
-        #     self.language,
-        #     languages[0],
-        #     *languages,
-        #     style='RibbonGroup.TMenubutton',
-        # )
-        # lang.config(width=16)
 
         lang.pack(side="right", fill="x", expand=True)
         utils.ToolTip(
@@ -82,14 +73,12 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
         row += 1
         b = utils.LabelRadiobutton(
             self.frame,
-            image=Utils.icons["config"],
+            image=gicon["config"],
             text=_("Config"),
             compound="left",
-            # anchor="w",
             variable=app.tools.active,
             value="CNC",
             style='RibbonGroup.Toolbutton',
-            # background=ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, padx=1, pady=0, sticky="nsew")
         utils.ToolTip(b, _("Machine configuration for bCNC"))
@@ -99,14 +88,12 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
         col += 1
         b = utils.LabelRadiobutton(
             self.frame,
-            image=Utils.icons["shortcut"],
+            image=gicon["shortcut"],
             text=_("Shortcuts"),
             compound="left",
-            # anchor="w",
             variable=app.tools.active,
             value="Shortcut",
             style='RibbonGroup.Toolbutton',
-            # background=ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, padx=1, pady=0, sticky="nsew")
         utils.ToolTip(b, _("Shortcuts configuration"))
@@ -117,14 +104,12 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
         col = 0
         b = utils.LabelRadiobutton(
             self.frame,
-            image=Utils.icons["arduino"],
+            image=gicon["arduino"],
             text=_("Controller"),
             compound="left",
-            # anchor="w",
             variable=app.tools.active,
             value="Controller",
             style='RibbonGroup.Toolbutton',
-            # background=ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, padx=1, pady=0, sticky="nsew")
         utils.ToolTip(b, _("Controller (GRBL) configuration"))
@@ -134,14 +119,12 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
         col += 1
         b = utils.LabelRadiobutton(
             self.frame,
-            image=Utils.icons["camera"],
+            image=gicon["camera"],
             text=_("Camera"),
             compound="left",
-            # anchor="w",
             variable=app.tools.active,
             value="Camera",
             style='RibbonGroup.Toolbutton',
-            # background=ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, padx=1, pady=0, sticky="nsew")
         utils.ToolTip(b, _("Camera Configuration"))
@@ -172,27 +155,27 @@ class RibbonGroup(cncribbon.ButtonMenuGroup):
 
     #     menu.add_command(
     #         label=_("User File"),
-    #         image=Utils.icons["about"],
+    #         image=gicon["about"],
     #         compound="left",
     #         command=self.app.showUserFile,
     #     )
     #     menu.add_radiobutton(
     #         label=_("Events"),
-    #         image=Utils.icons["event"],
+    #         image=gicon["event"],
     #         compound="left",
     #         variable=self.app.tools.active,
     #         value="Events",
     #     )
     #     menu.add_radiobutton(
     #         label=_("Colors"),
-    #         image=Utils.icons["color"],
+    #         image=gicon["color"],
     #         compound="left",
     #         variable=self.app.tools.active,
     #         value="Color",
     #     )
     #     menu.add_radiobutton(
     #         label=_("Fonts"),
-    #         image=Utils.icons["font"],
+    #         image=gicon["font"],
     #         compound="left",
     #         variable=self.app.tools.active,
     #         value="Font",

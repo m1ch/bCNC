@@ -11,7 +11,7 @@ from operator import attrgetter
 import tkinter as tk
 
 from globalConfig import config as gconfig
-import Utils
+from globalConfig import icon as gicon
 from globalConstants import __prg__, __prgpath__
 
 __author__ = "Vasilis Vlachoudis"
@@ -50,24 +50,6 @@ class Tools:
         self.widget = {}
         self.listbox = None
 
-        # CNC should be first to load the inches
-        # for cls in [
-        #     Camera,
-        #     Config,
-        #     Font,
-        #     Color,
-        #     Controller,
-        #     Cut,
-        #     Drill,
-        #     EndMill,
-        #     Events,
-        #     Material,
-        #     Pocket,
-        #     Profile,
-        #     Shortcut,
-        #     Stock,
-        #     Tabs,
-        # ]:
         for cls in tools:
             mod = locate(f"tools.{cls}")
             tool = mod.Tool(self)
@@ -184,4 +166,4 @@ class Tools:
         icon = self.tools[self.active.get().upper()].icon
         if icon is None:
             icon = "gear"
-        self.buttons["exe"].config(image=Utils.icons[icon])
+        self.buttons["exe"].config(image=gicon[icon])

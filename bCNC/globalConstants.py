@@ -64,11 +64,14 @@ __prgpath__: Final = os.path.abspath(os.path.dirname(sys.argv[0])) \
 __localespath__: Final = os.path.join(__prgpath__, "locale")
 __libpath__: Final = os.path.join(__prgpath__, "lib")
 __pluginpath__: Final = os.path.join(__prgpath__, "plugins")
+__toolspath__: Final = os.path.join(__prgpath__, "tools")
 __controllerpath__: Final = os.path.join(__prgpath__, "controllers")
 __guipath__: Final = os.path.join(__prgpath__, "gui")
 __pagespath__: Final = os.path.join(__guipath__, "pages")
 __framespath__: Final = os.path.join(__guipath__, "frames")
 __groupspath__: Final = os.path.join(__guipath__, "groups")
+__iconpath__: Final = os.path.join(__guipath__, "icons")
+__imagepath__: Final = os.path.join(__guipath__, "images")
 
 
 # =============================================================================

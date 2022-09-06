@@ -4,7 +4,6 @@ import os
 # from pydoc import Helper
 import sys
 import argparse
-from typing import Final
 
 from globalConstants import (
     __prg__,
@@ -138,7 +137,6 @@ def main() -> int:
 
     import bmain
     from gui import tkextra
-    import Utils
     import Updates
 
     try:
@@ -241,7 +239,6 @@ def main() -> int:
     globSender.close()
     globSender.quit()
     gconfig.save_configuration()
-    Utils.delIcons()
 
     return exit_code
 

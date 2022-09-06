@@ -3,8 +3,6 @@
 # Author: vvlachoudis@gmail.com
 # Date: 24-Aug-2014
 
-import Utils
-
 try:
     import cv2 as cv
 except ImportError:

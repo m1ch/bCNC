@@ -9,13 +9,15 @@ import tkinter as tk
 
 import Camera
 from .. import cncribbon
-from .. import ribbon
-import Utils
 from .. import utils
 
 from globalVariables import N_
+from globalConfig import icon as gicon
 
 name = "ProbeTabGroup"
+
+required_groups = ["Autolevel", "Camera", "Tool"]
+required_frames = ["Probe", "Autolevel", "Camera", "Tool"]
 
 
 # =============================================================================
@@ -30,12 +32,11 @@ class RibbonGroup(cncribbon.ButtonGroup):
         col, row = 0, 0
         b = utils.LabelRadiobutton(
             self.frame,
-            image=Utils.icons["probe32"],
+            image=gicon["probe32"],
             text=_("Probe"),
             compound="top",
             variable=self.tab,
             value="Probe",
-            # background=ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, padx=5, pady=0, sticky="nsew")
         utils.ToolTip(b, _("Simple probing along a direction"))
@@ -44,12 +45,11 @@ class RibbonGroup(cncribbon.ButtonGroup):
         col += 1
         b = utils.LabelRadiobutton(
             self.frame,
-            image=Utils.icons["level32"],
+            image=gicon["level32"],
             text=_("Autolevel"),
             compound="top",
             variable=self.tab,
             value="Autolevel",
-            # background=ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, padx=5, pady=0, sticky="nsew")
         utils.ToolTip(b, _("Autolevel Z surface"))
@@ -58,12 +58,11 @@ class RibbonGroup(cncribbon.ButtonGroup):
         col += 1
         b = utils.LabelRadiobutton(
             self.frame,
-            image=Utils.icons["camera32"],
+            image=gicon["camera32"],
             text=_("Camera"),
             compound="top",
             variable=self.tab,
             value="Camera",
-            # background=ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, padx=5, pady=0, sticky="nsew")
         utils.ToolTip(b, _("Work surface camera view and alignment"))
@@ -74,12 +73,11 @@ class RibbonGroup(cncribbon.ButtonGroup):
         col += 1
         b = utils.LabelRadiobutton(
             self.frame,
-            image=Utils.icons["endmill32"],
+            image=gicon["endmill32"],
             text=_("Tool"),
             compound="top",
             variable=self.tab,
             value="Tool",
-            # background=ribbon._BACKGROUND,
         )
         b.grid(row=row, column=col, padx=5, pady=0, sticky="nsew")
         utils.ToolTip(b, _("Setup probing for manual tool change"))

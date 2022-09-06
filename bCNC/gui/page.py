@@ -4,15 +4,11 @@
         Ribbon.py - Page
         CNCRibbon.py - Page
 """
-import sys
 from tkinter import ttk
 
 from .. import commands
 from .. import utils
-from globalConstants import __prg__
-from globalConfig import config as gconfig
 from globalConfig import icon as gicon
-from cnc import globCNC
 
 
 # =============================================================================
@@ -30,10 +26,10 @@ class Page:
     _icon_ = None
     _doc_ = "Tooltip"
 
-    def __init__(self, master, app):
+    def __init__(self, master, app, name):
         self.app = app
         self.master = master
-        self.name = self._name_
+        self.name = name
         self._icon = gicon[self._icon_]
         self._tab = None  # Tab button
         self.ribbons = []
@@ -43,21 +39,6 @@ class Page:
         self.init()
         self.create()
         self.register()
-
-        for n in gconfig.getstr(__prg__, f"{self.name}.ribbon").split():
-            self.addRibbonGroup(n)
-
-        for n in gconfig.getstr(__prg__, f"{self.name}.page").split():
-            last = n[-1]
-            # FIXME: Should not be hardcoded!
-            if ((n == "abcDRO" or n == "abcControl")
-                    and globCNC.enable6axisopt is False):
-                sys.stdout.write("Not Loading 6 axis displays\n")
-                continue
-            if last == "*":
-                self.addPageFrame(n[:-1], fill="both", expand=True)
-            else:
-                self.addPageFrame(n)
 
     # -----------------------------------------------------------------------
     # Override initialization

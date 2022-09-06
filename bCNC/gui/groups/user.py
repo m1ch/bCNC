@@ -8,7 +8,6 @@
 from globalConfig import config as gconfig
 
 from .. import utils
-from .. import ribbon
 from .. import cncribbon
 
 name = "UserGroup"
@@ -25,8 +24,9 @@ class RibbonGroup(cncribbon.ButtonGroup):
         n = gconfig.getint("Buttons", "n", 6)
         for i in range(1, n):
             b = utils.UserButton(
-                self.frame, self.app, i, anchor="w",
-                background=ribbon._BACKGROUND,
+                self.frame,
+                self.app,
+                i,
                 style='RibbonGroup.Toolbutton',
             )
             col, row = divmod(i - 1, 3)
